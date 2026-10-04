@@ -1,0 +1,123 @@
+- generic [ref=f1e3]:
+  - banner [ref=f1e4]:
+    - generic [ref=f1e5]:
+      - link "인터뷰AI 홈" [ref=f1e6] [cursor=pointer]:
+        - /url: /
+        - generic [ref=f1e14]:
+          - generic [ref=f1e15]: 인터뷰AI
+          - generic [ref=f1e16]: AI 모의 면접 솔루션
+      - navigation [ref=f1e17]:
+        - link "대시보드" [ref=f1e23] [cursor=pointer]:
+          - /url: /dashboard
+        - link "모의 면접" [ref=f1e24] [cursor=pointer]:
+          - /url: /interviews
+        - link "AI 채팅" [ref=f1e25] [cursor=pointer]:
+          - /url: /chat
+        - button "로그아웃" [ref=f1e26]
+  - main [ref=f1e20]:
+    - generic [ref=f1e86]:
+      - generic [ref=f1e87]:
+        - list "진행 단계" [ref=f1e88]:
+          - listitem [ref=f1e89]:
+            - generic [aria-hidden] [ref=f1e90]: check_circle
+            - text: 질문 구성 완료
+          - listitem [ref=f1e91]:
+            - generic [ref=f1e92]: "2"
+            - text: 장치 점검
+          - listitem [ref=f1e93]:
+            - generic [ref=f1e94]: "3"
+            - text: 실전 모의 면접
+        - generic [ref=f1e95]: 백엔드 개발자 신입 모의 면접
+      - heading "면접 전 환경 점검" [level=1] [ref=f1e96]
+      - paragraph [ref=f1e97]: 실제 면접과 같은 환경에서 시작할 수 있도록 카메라, 마이크, 소리를 확인합니다. 영상은 이 브라우저 안에서만 쓰이고 서버로 전송되지 않습니다.
+      - generic [ref=f1e98]:
+        - generic [ref=f1e99]:
+          - generic [ref=f1e100]:
+            - generic "카메라 미리보기" [ref=f1e176]
+            - generic [ref=f1e177]:
+              - generic [ref=f1e178]: 미리보기
+              - generic [ref=f1e180]: 1280×720 · 30fps
+          - generic [ref=f1e105]:
+            - generic [aria-hidden] [ref=f1e106]: wb_sunny
+            - generic [ref=f1e107]:
+              - paragraph [ref=f1e108]: 조명과 구도 안내
+              - paragraph [ref=f1e109]: 얼굴에 그림자가 지지 않게 밝은 곳에서, 카메라 렌즈를 바라보며 어깨까지 화면에 보이도록 앉아 주세요. 미리보기는 거울처럼 좌우가 반전되어 보이지만 분석에는 원본 영상이 쓰입니다.
+        - generic [ref=f1e110]:
+          - generic [ref=f1e111]:
+            - generic [ref=f1e112]:
+              - heading "입출력 장치 선택" [level=2] [ref=f1e113]:
+                - generic [aria-hidden] [ref=f1e114]: tune
+                - text: 입출력 장치 선택
+              - generic [ref=f1e181]: 카메라 2개 · 마이크 1개
+            - generic [ref=f1e115]:
+              - generic [ref=f1e116]:
+                - generic [ref=f1e117]: 카메라
+                - combobox "카메라" [ref=f1e119]:
+                  - option "가짜 카메라 (테스트)" [selected]
+                  - option "가짜 카메라 2"
+              - generic [ref=f1e120]:
+                - generic [ref=f1e121]: 마이크
+                - combobox "마이크" [ref=f1e123]:
+                  - option "가짜 마이크 (테스트)" [selected]
+              - paragraph [ref=f1e124]: 스피커·헤드폰 출력은 운영체제(또는 브라우저)의 소리 설정을 따릅니다.
+          - generic [ref=f1e125]:
+            - heading "마이크 소리 확인" [level=2] [ref=f1e127]:
+              - generic [aria-hidden] [ref=f1e128]: graphic_eq
+              - text: 마이크 소리 확인
+            - generic [ref=f1e129]:
+              - meter "마이크 소리 크기" [ref=f1e130]
+              - generic [ref=f1e132]:
+                - status [ref=f1e133]: 소리가 너무 커요. 마이크에서 조금 떨어져 말해 보세요
+                - generic [ref=f1e134]: 96%
+            - paragraph [ref=f1e135]:
+              - generic [aria-hidden] [ref=f1e136]: record_voice_over
+              - text: 마이크를 향해 평소 목소리로 "안녕하세요, 잘 들리나요?" 하고 말해 보세요. 막대가 표시선을 넘으면 통과예요.
+          - generic [ref=f1e137]:
+            - heading "음성 출력 테스트" [level=2] [ref=f1e139]:
+              - generic [aria-hidden] [ref=f1e140]: hearing
+              - text: 음성 출력 테스트
+            - generic [ref=f1e141]:
+              - paragraph [ref=f1e142]:
+                - text: "\"안녕하세요. 모의 면접을 시작하겠습니다.\"를 읽어 줍니다. 소리가 들리는지 확인하세요."
+                - generic [ref=f1e143]: "목소리: Microsoft Heami - Korean (Korean)"
+              - button "테스트 재생" [ref=f1e145]:
+                - generic [aria-hidden] [ref=f1e146]: play_circle
+                - text: 테스트 재생
+              - generic [ref=f1e147] [cursor=pointer]:
+                - checkbox "소리 없이 질문을 텍스트로만 볼게요" [ref=f1e148]
+                - text: 소리 없이 질문을 텍스트로만 볼게요
+          - generic [ref=f1e149]:
+            - heading "최종 점검 체크리스트" [level=2] [ref=f1e150]
+            - list [ref=f1e151]:
+              - listitem [ref=f1e152]:
+                - generic [aria-hidden] [ref=f1e153]: check_circle
+                - generic [ref=f1e154]: 브라우저 권한 허용
+              - listitem [ref=f1e156]:
+                - generic [aria-hidden] [ref=f1e157]: check_circle
+                - generic [ref=f1e158]:
+                  - text: 카메라 화면 표시
+                  - generic [ref=f1e182]: 1280×720
+              - listitem [ref=f1e159]:
+                - generic [aria-hidden] [ref=f1e160]: check_circle
+                - generic [ref=f1e161]: 마이크 소리 감지
+              - listitem [ref=f1e163]:
+                - generic [aria-hidden] [ref=f1e164]: radio_button_unchecked
+                - generic [ref=f1e165]:
+                  - text: 음성 출력 확인
+                  - generic [ref=f1e166]: 테스트 재생으로 소리를 확인하세요
+      - generic [ref=f1e167]:
+        - generic [ref=f1e168]:
+          - generic [aria-hidden] [ref=f1e170]: pending
+          - generic [ref=f1e171]:
+            - paragraph [ref=f1e172]: 아직 확인이 필요한 항목이 있어요
+            - paragraph [ref=f1e173]: "남은 항목: 음성 출력"
+        - generic [ref=f1e174]:
+          - link "면접 상세로" [ref=f1e175] [cursor=pointer]:
+            - /url: /interviews/6
+          - button "다시 측정하기" [active] [ref=f1e183]:
+            - generic [aria-hidden] [ref=f1e184]: refresh
+            - text: 다시 측정하기
+          - button "준비 완료" [disabled]:
+            - text: 준비 완료
+            - generic [aria-hidden]: arrow_forward
+  - contentinfo [ref=f1e22]: © 2026 인터뷰AI

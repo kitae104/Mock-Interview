@@ -1,0 +1,131 @@
+- generic [ref=f2e3]:
+  - banner [ref=f2e4]:
+    - generic [ref=f2e5]:
+      - link "인터뷰AI 홈" [ref=f2e6] [cursor=pointer]:
+        - /url: /
+        - generic [ref=f2e14]:
+          - generic [ref=f2e15]: 인터뷰AI
+          - generic [ref=f2e16]: AI 모의 면접 솔루션
+      - navigation [ref=f2e17]:
+        - link "대시보드" [ref=f2e23] [cursor=pointer]:
+          - /url: /dashboard
+        - link "모의 면접" [ref=f2e24] [cursor=pointer]:
+          - /url: /interviews
+        - link "AI 채팅" [ref=f2e25] [cursor=pointer]:
+          - /url: /chat
+        - button "로그아웃" [ref=f2e26]
+  - main [ref=f2e20]:
+    - generic [ref=f2e27]:
+      - generic [ref=f2e28]:
+        - list "진행 단계" [ref=f2e29]:
+          - listitem [ref=f2e30]:
+            - generic [aria-hidden] [ref=f2e31]: check_circle
+            - text: 질문 구성 완료
+          - listitem [ref=f2e32]:
+            - generic [ref=f2e33]: "2"
+            - text: 장치 점검
+          - listitem [ref=f2e34]:
+            - generic [ref=f2e35]: "3"
+            - text: 실전 모의 면접
+        - generic [ref=f2e36]: 백엔드 개발자 신입 모의 면접
+      - heading "면접 전 환경 점검" [level=1] [ref=f2e37]
+      - paragraph [ref=f2e38]: 실제 면접과 같은 환경에서 시작할 수 있도록 카메라, 마이크, 소리를 확인합니다. 영상은 이 브라우저 안에서만 쓰이고 서버로 전송되지 않습니다.
+      - generic [ref=f2e39]:
+        - generic [ref=f2e40]:
+          - alert [ref=f2e119]:
+            - generic [ref=f2e120]:
+              - generic [aria-hidden] [ref=f2e121]: error
+              - generic [ref=f2e122]:
+                - heading "보안 연결이 아니어서 카메라·마이크를 쓸 수 없어요" [level=2] [ref=f2e123]
+                - paragraph [ref=f2e124]: 브라우저는 보안 연결(HTTPS)이거나 localhost 로 연 페이지에서만 카메라와 마이크를 허용합니다. 지금 주소는 그 조건에 맞지 않습니다.
+                - paragraph [ref=f2e125]: 이렇게 해 보세요
+                - list [ref=f2e126]:
+                  - listitem [ref=f2e127]: 주소창이 https:// 또는 http://localhost 로 시작하는지 확인하세요.
+                  - listitem [ref=f2e128]: "같은 PC 에서 서비스를 실행 중이라면 IP 주소(예: http://192.168.0.5:3000) 대신 http://localhost:3000 으로 접속하세요."
+                  - listitem [ref=f2e129]: 다른 기기에서 접속해야 한다면 서비스를 HTTPS 로 제공해야 합니다. 관리자에게 문의하세요.
+          - generic [ref=f2e46]:
+            - generic [aria-hidden] [ref=f2e47]: wb_sunny
+            - generic [ref=f2e48]:
+              - paragraph [ref=f2e49]: 조명과 구도 안내
+              - paragraph [ref=f2e50]: 얼굴에 그림자가 지지 않게 밝은 곳에서, 카메라 렌즈를 바라보며 어깨까지 화면에 보이도록 앉아 주세요. 미리보기는 거울처럼 좌우가 반전되어 보이지만 분석에는 원본 영상이 쓰입니다.
+        - generic [ref=f2e51]:
+          - generic [ref=f2e52]:
+            - heading "입출력 장치 선택" [level=2] [ref=f2e54]:
+              - generic [aria-hidden] [ref=f2e55]: tune
+              - text: 입출력 장치 선택
+            - generic [ref=f2e56]:
+              - generic [ref=f2e57]:
+                - generic [ref=f2e58]: 카메라
+                - combobox "카메라" [disabled] [ref=f2e60]:
+                  - option "사용할 수 있는 카메라가 없어요" [selected]
+              - generic [ref=f2e61]:
+                - generic [ref=f2e62]: 마이크
+                - combobox "마이크" [disabled] [ref=f2e64]:
+                  - option "사용할 수 있는 마이크가 없어요" [selected]
+              - paragraph [ref=f2e65]: 스피커·헤드폰 출력은 운영체제(또는 브라우저)의 소리 설정을 따릅니다.
+          - generic [ref=f2e66]:
+            - heading "마이크 소리 확인" [level=2] [ref=f2e68]:
+              - generic [aria-hidden] [ref=f2e69]: graphic_eq
+              - text: 마이크 소리 확인
+            - generic [ref=f2e70]:
+              - meter "마이크 소리 크기" [ref=f2e71]
+              - generic [ref=f2e73]:
+                - status [ref=f2e74]: 마이크가 연결되지 않았어요
+                - generic [ref=f2e75]: 0%
+            - paragraph [ref=f2e76]:
+              - generic [aria-hidden] [ref=f2e77]: record_voice_over
+              - text: 마이크를 향해 평소 목소리로 "안녕하세요, 잘 들리나요?" 하고 말해 보세요. 막대가 표시선을 넘으면 통과예요.
+          - generic [ref=f2e78]:
+            - heading "음성 출력 테스트" [level=2] [ref=f2e80]:
+              - generic [aria-hidden] [ref=f2e81]: hearing
+              - text: 음성 출력 테스트
+            - status [ref=f2e130]:
+              - paragraph [ref=f2e83]:
+                - generic [aria-hidden] [ref=f2e131]: volume_off
+                - text: 한국어 목소리를 찾지 못했어요
+              - paragraph [ref=f2e132]:
+                - text: 질문을 소리로 읽어 줄 수 없어서
+                - strong [ref=f2e133]: 화면의 텍스트로만 진행
+                - text: 됩니다. 질문을 듣고 싶다면 아래 방법으로 한국어 목소리를 설치해 보세요.
+              - group [ref=f2e134]:
+                - generic "Windows 에서 한국어 목소리 설치하기" [ref=f2e135] [cursor=pointer]
+                - list [ref=f2e136]:
+                  - listitem [ref=f2e137]: 설정 → 시간 및 언어 → 언어 및 지역에서 "한국어"가 있는지 확인하고, 없으면 추가하세요.
+                  - listitem [ref=f2e138]: 한국어 옆 "…" → 언어 옵션 → "음성" 항목이 설치되어 있는지 확인하고, 없으면 설치하세요. (설정 → 접근성 → 내레이터 → 음성 추가에서 한국어를 추가할 수도 있습니다.)
+                  - listitem [ref=f2e139]: Microsoft Edge 는 온라인 한국어 음성을 기본 제공하므로, Edge 로 열어 보는 것도 방법입니다.
+                  - listitem [ref=f2e140]: 브라우저를 완전히 종료했다가 다시 열어 주세요.
+          - generic [ref=f2e90]:
+            - heading "최종 점검 체크리스트" [level=2] [ref=f2e91]
+            - list [ref=f2e92]:
+              - listitem [ref=f2e93]:
+                - generic [aria-hidden] [ref=f2e94]: radio_button_unchecked
+                - generic [ref=f2e95]:
+                  - text: 브라우저 권한 허용
+                  - generic [ref=f2e96]: 카메라와 마이크 사용을 허용해 주세요
+              - listitem [ref=f2e97]:
+                - generic [aria-hidden] [ref=f2e98]: radio_button_unchecked
+                - generic [ref=f2e99]: 카메라 화면 표시
+              - listitem [ref=f2e100]:
+                - generic [aria-hidden] [ref=f2e101]: radio_button_unchecked
+                - generic [ref=f2e102]:
+                  - text: 마이크 소리 감지
+                  - generic [ref=f2e103]: 마이크에 대고 말해 보세요
+              - listitem [ref=f2e104]:
+                - generic [aria-hidden] [ref=f2e105]: check_circle
+                - generic [ref=f2e106]: 질문은 텍스트로만 진행
+      - generic [ref=f2e108]:
+        - generic [ref=f2e109]:
+          - generic [aria-hidden] [ref=f2e111]: pending
+          - generic [ref=f2e112]:
+            - paragraph [ref=f2e113]: 아직 확인이 필요한 항목이 있어요
+            - paragraph [ref=f2e114]: "남은 항목: 카메라, 마이크 소리"
+        - generic [ref=f2e115]:
+          - link "면접 상세로" [ref=f2e116] [cursor=pointer]:
+            - /url: /interviews/6
+          - button "다시 측정하기" [ref=f2e117]:
+            - generic [aria-hidden] [ref=f2e118]: refresh
+            - text: 다시 측정하기
+          - button "준비 완료" [disabled]:
+            - text: 준비 완료
+            - generic [aria-hidden]: arrow_forward
+  - contentinfo [ref=f2e22]: © 2026 인터뷰AI

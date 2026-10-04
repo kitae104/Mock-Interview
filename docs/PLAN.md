@@ -296,7 +296,7 @@ whisper 는 무음에서 "시청해 주셔서 감사합니다" 같은 문장을 
 | 사용 랜드마크 | Pose: 0 코, 11·12 어깨, 15·16 손목(visibility ≥ `POSE_VISIBILITY_MIN(0.5)` 일 때만) |
 | 블렌드셰이프 | `eyeBlinkLeft/Right`, `eyeLookIn/Out/Up/DownLeft·Right`, `mouthSmileLeft/Right` |
 
-핵심 상수는 프론트 `src/interview/constants.ts` **한 파일**에 모읍니다(임계값 목록은 아래 표). 전송하는 JSON 에는 사용한 임계값 스냅샷(`clientThresholds`)과 `version` 을 넣어 나중에 해석할 수 있게 합니다. 판정 라벨 구간(5.3)은 백엔드 `thresholds.py` 에 있어 서버에서 적용합니다.
+핵심 상수는 프론트 `src/features/interview/constants.ts` **한 파일**에 모읍니다(임계값 목록은 아래 표). 전송하는 JSON 에는 사용한 임계값 스냅샷(`clientThresholds`)과 `version` 을 넣어 나중에 해석할 수 있게 합니다. 판정 라벨 구간(5.3)은 백엔드 `thresholds.py` 에 있어 서버에서 적용합니다.
 
 ### 5.2 지표 정의와 계산식
 
@@ -493,15 +493,16 @@ whisper 는 무음에서 "시청해 주셔서 감사합니다" 같은 문장을 
 - 추가(재검토): 질문 구성표(`plannedCategories`)와 `prepSeconds`, 분당 호출 한도(`app/interviews/ratelimit.py`), 평가 의도·좋은 답변 요소를 IN_PROGRESS 동안 제외하는 응답 변환, 외부 호출 전 `db.commit()` 으로 연결 반환, 프론트 `?from=` 미리 채우기·예상 소요 시간. 테스트에 "IN_PROGRESS 동안 `intent` null", "429 한도", "질문 id 가 다른 면접 소속이면 404" 포함.
 - 완료 조건: 가짜 모델로 질문 N개가 생성·저장되고 화면에서 생성 후 `/check` 로 이동(이 단계에서는 빈 화면 자리).
 
-### ② 카메라·마이크 점검 화면
+### ② 카메라·마이크 점검 화면 (프론트 구현 완료 — 백엔드 `POST /start`·동의·토큰 만료 확인은 보류)
+- 구현 범위 메모: 이번에는 점검 화면만 만들었고 [준비 완료]는 `/interviews/:id/run`(5단계에서 만들 진행 화면, 지금은 안내 자리)으로 이동만 합니다. 아래 "백엔드"의 `POST /start`(동의 기록 포함)와 "프론트 추가"(토큰 만료 확인), 1.3 의 안내·동의 체크박스, 표정·자세 분석 토글은 아직 없습니다. 동의 없이 음성이 전송되지 않도록 서버가 막는 것(7.6)은 `POST /start` 를 만들 때 함께 적용합니다.
 - 백엔드: `POST /{id}/start`(상태 전이, `consent`·`consentVersion` 검증과 `consented_at` 저장, `nonverbalEnabled`, `baseline` 저장 — `baseline` 은 선택).
-- 프론트: `InterviewCheckPage` 의 1~4단계(동의, 마이크 레벨, 소리 테스트, 카메라 미리보기·조명), `src/interview/devices.ts`(getUserMedia, 장치 목록, AnalyserNode 레벨), `src/interview/tts.ts`(ko-KR 음성 선택, `speak()`, 취소), 안내 문구 컴포넌트, 권한 거부·장치 없음 오류 안내.
+- 프론트: `InterviewCheckPage` 의 1~4단계(동의, 마이크 레벨, 소리 테스트, 카메라 미리보기·조명), `src/features/interview/useMediaStream.ts`(getUserMedia 1280x720, 장치 목록·변경, 화면을 떠나면 트랙 stop), `useAudioLevel.ts`(AudioContext + AnalyserNode 레벨), `speech.ts`(ko-KR 음성 고르기, `speak()` 읽기 끝 Promise, 취소, 한국어 음성 설치 안내), `mediaFailure.ts`(권한 거부·장치 없음·사용 중·보안 연결 아님 구분 안내), `checkPrefs.ts`(점검에서 고른 값을 진행 화면으로 전달), 안내 문구 컴포넌트, 권한 거부·장치 없음 오류 안내.
 - 테스트: 시작 전이(READY→IN_PROGRESS, 재호출 시 기준 갱신, COMPLETED 면 409, 남의 면접 404, `consent=false` 면 400 이고 상태 불변).
 - 프론트 추가: 토큰 만료 시각(`exp`) 기반 남은 시간 확인(`src/auth` 의 토큰 읽기 유틸 — 토큰을 직접 다루지 않는 규칙에 따라 `AuthContext` 에 `tokenExpiresAt` 노출).
 - 완료 조건: 권한 허용 후 레벨 막대·소리·카메라가 동작하고 [면접 시작] 으로 IN_PROGRESS 가 됨(기준 자세 측정은 ③에서 추가).
 
 ### ③ 비언어 분석 모듈
-- 프론트: `@mediapipe/tasks-vision` 의존성, `scripts/setup-mediapipe.mjs`(wasm 을 `node_modules` 에서 복사, `face_landmarker.task`·`pose_landmarker_lite.task` 다운로드 → `public/mediapipe/`, `.gitignore` 등록, `postinstall` 에 연결), `src/interview/constants.ts`, `features.ts`(행렬→각도, 블렌드셰이프→눈 방향·미소·깜빡임, 포즈→기울기·자세·손목 속도, 모두 순수 함수), `accumulator.ts`(프레임 → 요약 지표), `analyzer.ts`(`NonverbalAnalyzer.start(video, baseline) / stop() → NonverbalMetrics`), `InterviewCheckPage` 5단계(기준 자세 측정, 얼굴·어깨 검출 표시), `?debug=1` 일 때 실시간 지표 표시.
+- 프론트: `@mediapipe/tasks-vision` 의존성, `scripts/setup-mediapipe.mjs`(wasm 을 `node_modules` 에서 복사, `face_landmarker.task`·`pose_landmarker_lite.task` 다운로드 → `public/mediapipe/`, `.gitignore` 등록, `postinstall` 에 연결), `src/features/interview/constants.ts`, `features.ts`(행렬→각도, 블렌드셰이프→눈 방향·미소·깜빡임, 포즈→기울기·자세·손목 속도, 모두 순수 함수), `accumulator.ts`(프레임 → 요약 지표), `analyzer.ts`(`NonverbalAnalyzer.start(video, baseline) / stop() → NonverbalMetrics`), `InterviewCheckPage` 5단계(기준 자세 측정, 얼굴·어깨 검출 표시), `?debug=1` 일 때 실시간 지표 표시.
 - 단위 테스트: 순수 함수 검증을 위해 `vitest` 를 devDependency 로 추가하고 `npm run test` 스크립트를 만듭니다(현재 프론트에 테스트 러너가 없음). 합성 입력으로 응시·깜빡임·자세·제스처 계산을 확인.
 - 백엔드: `app/interviews/nonverbal.py`(`NonverbalMetrics` pydantic 검증 + `judge_nonverbal()` 판정), `POST /start` 의 `baseline` 스키마 검증, 판정 단위 테스트.
 - 완료 조건: 점검 화면에서 기준 자세가 측정되어 서버에 저장되고 `?debug=1` 에서 지표가 움직이는 것을 사람이 눈으로 확인(부호·임계값 보정은 이때 실제 카메라로).
@@ -509,7 +510,7 @@ whisper 는 무음에서 "시청해 주셔서 감사합니다" 같은 문장을 
 ### ④ 음성 인식과 말하기 지표
 - 백엔드: `uv add python-multipart`, `app/ai/transcribe.py`(`Transcriber` 프로토콜, `OpenAITranscriber` — `POST {OPENAI_BASE_URL}/audio/transcriptions`, `model=whisper-1`, `response_format=verbose_json`, `timestamp_granularities[]=word`, `language=ko`, `prompt`; `get_transcriber`, `TranscriberDep`; 오류는 `ModelError`), `app/interviews/speech_metrics.py`(4장 순수 함수), `thresholds.py` 의 판정 구간·군말 목록, `POST /{id}/questions/{questionId}/answer`(multipart), 판정 계산 `judge_speech()`, 설정 `STT_MODEL`, `STT_TIMEOUT_SECONDS`, `INTERVIEW_MAX_AUDIO_MB`.
 - 보안(7.6): 업로드 검증(`Content-Length` 사전 확인, `상한+1` 바이트 읽기, 머리 바이트 확인, 고정 파일 이름), `app/interviews/redact.py`(개인정보 패턴 가림 + 단위 테스트)를 저장 전·LLM 전송 전에 적용, 외부 호출 전 DB 연결 반환.
-- 프론트: `client.ts` FormData 처리, `src/interview/recorder.ts`(MediaRecorder: 지원 mime 선택 `audio/webm;codecs=opus` → `audio/mp4`, 최대 시간 타이머, 마이크 레벨로 `voiceActiveRatio` 계산, 시간 초과 시 자동 stop), `interviewsApi.submitAnswer(id, questionId, form)`.
+- 프론트: `client.ts` FormData 처리, `src/features/interview/recorder.ts`(MediaRecorder: 지원 mime 선택 `audio/webm;codecs=opus` → `audio/mp4`, 최대 시간 타이머, 마이크 레벨로 `voiceActiveRatio` 계산, 시간 초과 시 자동 stop), `interviewsApi.submitAnswer(id, questionId, form)`.
 - 테스트: `tests/test_speech_metrics.py`(음절·속도·침묵·군말·무음 경계값), `tests/test_interviews.py` 의 답변 업로드(가짜 `Transcriber`: 정상 201, 잘못된 형식 415, 큰 파일 413, 비어 있는 파일 400, 중복 409, 시작 전 409, 인식 실패 502 시 저장 없음, 남의 질문 404, 무음 처리, 머리 바이트 불일치 415, `Content-Length` 초과 413, 전화번호·이메일 가림, 동시 중복 업로드가 한 건만 저장), `OpenAITranscriber` 는 `httpx.post` 를 monkeypatch 해 요청 형식만 확인.
 - 완료 조건: 실제 마이크로 녹음한 파일(수동)이 텍스트와 지표로 저장됨. 오디오는 어디에도 남지 않음을 코드 리뷰로 확인.
 

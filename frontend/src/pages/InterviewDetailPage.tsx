@@ -5,7 +5,6 @@ import { interviewsApi, type InterviewDetail } from '../api/interviews.ts'
 import DeleteInterviewButton from '../components/interview/DeleteInterviewButton.tsx'
 import Alert from '../components/ui/Alert.tsx'
 import Badge from '../components/ui/Badge.tsx'
-import Button from '../components/ui/Button.tsx'
 import Card from '../components/ui/Card.tsx'
 import Icon from '../components/ui/Icon.tsx'
 import { buttonClass } from '../components/ui/styles.ts'
@@ -60,11 +59,18 @@ export default function InterviewDetailPage() {
           </div>
         </div>
         <div className="flex flex-col items-end gap-2">
-          {/* 면접 시작(카메라·마이크 점검)은 다음 단계(docs/PLAN.md 8장 ②)에서 연결합니다. */}
-          <Button disabled size="lg" title="다음 단계에서 연결됩니다">
-            <Icon name="videocam" />
-            면접 시작
-          </Button>
+          {interview.status === 'COMPLETED' ? (
+            <Link to={`/interviews/new?from=${interview.id}`} className={buttonClass({ size: 'lg' })}>
+              <Icon name="replay" />
+              같은 조건으로 다시 연습
+            </Link>
+          ) : (
+            // 카메라·마이크 점검 화면으로 갑니다. 점검이 끝나면 [준비 완료]로 진행 화면(5단계)으로 이어집니다.
+            <Link to={`/interviews/${interview.id}/check`} className={buttonClass({ size: 'lg' })}>
+              <Icon name="videocam" />
+              {interview.status === 'IN_PROGRESS' ? '이어서 시작' : '면접 시작'}
+            </Link>
+          )}
           <DeleteInterviewButton interviewId={interview.id} onDeleted={() => navigate('/interviews', { replace: true })} />
         </div>
       </div>

@@ -1,0 +1,80 @@
+- generic [ref=f1e3]:
+  - banner [ref=f1e4]:
+    - generic [ref=f1e5]:
+      - link "인터뷰AI 홈" [ref=f1e6] [cursor=pointer]:
+        - /url: /
+        - generic [ref=f1e14]:
+          - generic [ref=f1e15]: 인터뷰AI
+          - generic [ref=f1e16]: AI 모의 면접 솔루션
+      - navigation [ref=f1e17]:
+        - link "대시보드" [ref=f1e23] [cursor=pointer]:
+          - /url: /dashboard
+        - link "모의 면접" [ref=f1e24] [cursor=pointer]:
+          - /url: /interviews
+        - link "AI 채팅" [ref=f1e25] [cursor=pointer]:
+          - /url: /chat
+        - button "로그아웃" [ref=f1e26]
+  - main [ref=f1e20]:
+    - generic [ref=f1e293]:
+      - link "면접 목록" [ref=f1e294] [cursor=pointer]:
+        - /url: /interviews
+        - generic [aria-hidden] [ref=f1e295]: chevron_left
+        - text: 면접 목록
+      - generic [ref=f1e296]:
+        - generic [ref=f1e297]:
+          - heading "백엔드 개발자 신입 모의 면접" [level=1] [ref=f1e298]
+          - generic [ref=f1e299]:
+            - generic [ref=f1e300]: 백엔드 개발자
+            - generic [ref=f1e301]: 신입
+            - generic [ref=f1e302]: 준비됨
+            - generic [ref=f1e303]: 2026. 10. 4. 오후 7:21 생성
+        - generic [ref=f1e304]:
+          - link "면접 시작" [ref=f1e305] [cursor=pointer]:
+            - /url: /interviews/6/check
+            - generic [aria-hidden] [ref=f1e306]: videocam
+            - text: 면접 시작
+          - button "삭제" [ref=f1e307]
+      - generic [ref=f1e309]:
+        - generic [ref=f1e310]:
+          - term [ref=f1e311]: 질문 수
+          - definition [ref=f1e312]: 3문항
+        - generic [ref=f1e313]:
+          - term [ref=f1e314]: 답변 시간
+          - definition [ref=f1e315]: 질문마다 최대 120초
+        - generic [ref=f1e316]:
+          - term [ref=f1e317]: 생각할 시간
+          - definition [ref=f1e318]: 10초
+      - heading "면접 질문 3개" [level=2] [ref=f1e319]
+      - paragraph [ref=f1e320]: 면접을 시작하면 질문이 하나씩 나옵니다. 평가 의도는 시작 전에 미리 볼 수 있어요.
+      - list [ref=f1e321]:
+        - listitem [ref=f1e322]:
+          - generic [ref=f1e324]:
+            - generic [ref=f1e325]: "1"
+            - generic [ref=f1e326]:
+              - generic [ref=f1e327]: 자기소개
+              - paragraph [ref=f1e328]: 본인 소개와 백엔드 개발자가 되기로 결심한 계기를 간략히 말씀해주시겠습니까?
+              - group [ref=f1e329]:
+                - generic "평가 의도 보기" [ref=f1e330] [cursor=pointer]:
+                  - generic [aria-hidden] [ref=f1e331]: psychology
+                  - text: 평가 의도 보기
+        - listitem [ref=f1e332]:
+          - generic [ref=f1e334]:
+            - generic [ref=f1e335]: "2"
+            - generic [ref=f1e336]:
+              - generic [ref=f1e337]: 직무 지식
+              - paragraph [ref=f1e338]: RESTful API의 기본 개념과 설계 원칙에 대해 설명해주시겠습니까?
+              - group [ref=f1e339]:
+                - generic "평가 의도 보기" [ref=f1e340] [cursor=pointer]:
+                  - generic [aria-hidden] [ref=f1e341]: psychology
+                  - text: 평가 의도 보기
+        - listitem [ref=f1e342]:
+          - generic [ref=f1e344]:
+            - generic [ref=f1e345]: "3"
+            - generic [ref=f1e346]:
+              - generic [ref=f1e347]: 상황 대처
+              - paragraph [ref=f1e348]: 개발 중 예상치 못한 버그가 발생했을 때 문제를 해결한 경험과 본인의 접근 방식을 알려주시겠습니까?
+              - group [ref=f1e349]:
+                - generic "평가 의도 보기" [ref=f1e350] [cursor=pointer]:
+                  - generic [aria-hidden] [ref=f1e351]: psychology
+                  - text: 평가 의도 보기
+  - contentinfo [ref=f1e22]: © 2026 인터뷰AI
