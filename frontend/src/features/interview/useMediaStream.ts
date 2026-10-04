@@ -135,6 +135,8 @@ export function useMediaStream({ initialCameraId, initialMicrophoneId }: Options
         // 사용 중에 장치가 뽑히면 트랙이 끝납니다. (우리가 stop() 한 경우에는 이 이벤트가 오지 않습니다.)
         track.addEventListener('ended', () => {
           if (streamRef.current !== media) return
+          // 한쪽 장치가 끊기면 남은 장치도 바로 닫습니다 (카메라 표시등이 계속 켜져 있지 않게).
+          media.getTracks().forEach((t) => t.stop())
           setFailure(
             describeMediaFailure('no-device', track.kind === 'video' ? 'camera' : 'microphone'),
           )

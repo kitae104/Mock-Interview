@@ -27,6 +27,16 @@
 
 ## 바로 실행 (Docker Compose)
 
+Windows 에서는 PowerShell 스크립트 하나로 DB·백엔드·프론트엔드를 한 번에 실행하고 멈출 수 있습니다 (Docker Desktop 이 꺼져 있으면 시작을 시도하고, 백엔드가 준비될 때까지 기다린 뒤 주소를 알려 줍니다).
+
+```powershell
+.un.ps1            # 빌드하고 실행
+.un.ps1 --stop     # 중지 (컨테이너만 내리고 DB 데이터는 유지)
+# 실행 정책 오류가 나면: powershell -NoProfile -ExecutionPolicy Bypass -File .un.ps1
+```
+
+아래는 같은 일을 하는 `make` 명령입니다.
+
 ```bash
 make up                # = docker compose up -d --build
 make down              # = docker compose down  (DB 데이터는 유지)

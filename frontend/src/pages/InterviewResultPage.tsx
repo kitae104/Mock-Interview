@@ -168,7 +168,7 @@ function ReportView({ report, interview }: { report: InterviewReport; interview:
           </h2>
           <ol className="mt-3 space-y-2 text-sm">
             {report.topStrengths.map((text, i) => (
-              <li key={text} className="flex gap-2">
+              <li key={`${i}-${text}`} className="flex gap-2">
                 <span className="font-mono font-semibold text-success">{i + 1}</span>
                 <span>{text}</span>
               </li>
@@ -182,7 +182,7 @@ function ReportView({ report, interview }: { report: InterviewReport; interview:
           </h2>
           <ol className="mt-3 space-y-3 text-sm">
             {report.topImprovements.map((item, i) => (
-              <li key={item.point} className="flex gap-2">
+              <li key={`${i}-${item.point}`} className="flex gap-2">
                 <span className="font-mono font-semibold text-warning">{i + 1}</span>
                 <span>
                   <span className="font-medium">{item.point}</span>
@@ -209,8 +209,8 @@ function ReportView({ report, interview }: { report: InterviewReport; interview:
           다음 연습 계획
         </h2>
         <ol className="mt-3 list-decimal space-y-1.5 pl-5 text-sm">
-          {report.practicePlan.map((step) => (
-            <li key={step}>{step}</li>
+          {report.practicePlan.map((step, i) => (
+            <li key={`${i}-${step}`}>{step}</li>
           ))}
         </ol>
       </Card>
@@ -321,8 +321,8 @@ function QuestionCard({ question: q, open, onToggle }: { question: QuestionDto; 
                 <div>
                   <h3 className="text-sm font-semibold text-success">잘한 점</h3>
                   <ul className="mt-1 list-disc space-y-1 pl-5 text-sm">
-                    {feedback.strengths.map((s) => (
-                      <li key={s}>{s}</li>
+                    {feedback.strengths.map((s, i) => (
+                      <li key={`${i}-${s}`}>{s}</li>
                     ))}
                   </ul>
                 </div>
@@ -331,8 +331,8 @@ function QuestionCard({ question: q, open, onToggle }: { question: QuestionDto; 
                 <div>
                   <h3 className="text-sm font-semibold text-warning">고칠 점</h3>
                   <ul className="mt-1 space-y-1.5 text-sm">
-                    {feedback.improvements.map((item) => (
-                      <li key={item.point}>
+                    {feedback.improvements.map((item, i) => (
+                      <li key={`${i}-${item.point}`}>
                         <span className="font-medium">{item.point}</span>
                         {item.suggestion && <span className="block text-muted-foreground">{item.suggestion}</span>}
                       </li>

@@ -211,4 +211,75 @@ describe('UploadQueue', () => {
     expect(calls).toHaveLength(2) // 재시도 1회까지만
     expect(states()).toEqual(['1:failed:2'])
   })
+
+  it('dispose() 뒤에도 resume() 하면 다시 보낸다 (StrictMode 가 마운트 직후 정리 함수를 부르는 경우)', async () => {
+    const { queue, calls, states } = setup()
+    queue.dispose()
+    queue.resume()
+    queue.add(1, 'a')
+    await vi.runAllTimersAsync()
+    expect(calls).toHaveLength(1)
+    expect(states()).toEqual(['1:done:1'])
+  })
+
+  it('dispose() 해 둔 동안 넣은 항목은 resume() 하면 보낸다', async () => {
+    const { queue, calls, states } = setup()
+    queue.dispose()
+    queue.add(1, 'a')
+    await vi.runAllTimersAsync()
+    expect(calls).toHaveLength(0) // 멈춰 있는 동안에는 보내지 않는다
+    queue.resume()
+    await vi.runAllTimersAsync()
+    expect(states()).toEqual(['1:done:1'])
+  })
+
+  it('재시도를 기다리다 dispose() 된 항목은 resume() 하면 바로 이어서 보낸다', async () => {
+    const { queue, calls, states } = setup([{ status: 502 }, 'ok'])
+    queue.add(1, 'a')
+    await vi.advanceTimersByTimeAsync(0)
+    expect(states()).toEqual(['1:retrying:1'])
+    queue.dispose()
+    await vi.advanceTimersByTimeAsync(10_000)
+    expect(calls).toHaveLength(1)
+    queue.resume()
+    await vi.runAllTimersAsync()
+    expect(calls).toHaveLength(2)
+    expect(states()).toEqual(['1:done:2'])
+  })
+
+  it('보내는 중에 dispose() 됐다가 끝난 항목은 resume() 하면 다시 보낸다', async () => {
+    let release: () => void = () => {}
+    const calls: string[] = []
+    const queue = new UploadQueue<string>(async (_id, payload) => {
+      calls.push(payload)
+      if (calls.length === 1) await new Promise<void>((resolve) => (release = resolve))
+    })
+    queue.add(1, 'a')
+    await vi.advanceTimersByTimeAsync(0)
+    queue.dispose()
+    release() // 멈춘 사이에 처음 시도가 끝나 결과가 버려짐
+    await vi.advanceTimersByTimeAsync(0)
+    expect(queue.getSnapshot()[0].status).toBe('uploading')
+    queue.resume()
+    await vi.runAllTimersAsync()
+    expect(calls).toEqual(['a', 'a'])
+    expect(queue.getSnapshot()[0].status).toBe('done')
+  })
+
+  it('보내는 중인 질문에 새 내용을 넣으면 이전 결과는 버리고 새 내용을 보낸다', async () => {
+    let release: () => void = () => {}
+    const calls: string[] = []
+    const queue = new UploadQueue<string>(async (_id, payload) => {
+      calls.push(payload)
+      if (calls.length === 1) await new Promise<void>((resolve) => (release = resolve))
+    })
+    queue.add(1, '처음 내용')
+    await vi.advanceTimersByTimeAsync(0)
+    queue.add(1, '새 내용')
+    release()
+    await vi.runAllTimersAsync()
+    expect(calls).toEqual(['처음 내용', '새 내용'])
+    expect(queue.getSnapshot()).toHaveLength(1)
+    expect(queue.getSnapshot()[0]).toMatchObject({ status: 'done', attempts: 1 })
+  })
 })

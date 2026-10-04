@@ -92,8 +92,16 @@ export function useInterviewRun(options: Options) {
     const sampleStart = baseline && analysisRunning && analyzer.isRunning ? analyzer.sampleCount : null
     setElapsedMs(0)
     setError(null)
+    try {
+      recorder.start({ maxSeconds: run.maxAnswerSeconds, onTick: setElapsedMs })
+    } catch (err) {
+      // MediaRecorder 를 시작하지 못함: 녹음 중 화면에 갇히지 않게 시작 화면으로 돌아갑니다.
+      recorderRef.current = null
+      recorder.cancel()
+      setError(err instanceof Error ? err.message : '녹음을 시작하지 못했어요.')
+      return setPhase('gate')
+    }
     setPhase('recording')
-    recorder.start({ maxSeconds: run.maxAnswerSeconds, onTick: setElapsedMs })
 
     recorder.result.then(
       (recording) => {

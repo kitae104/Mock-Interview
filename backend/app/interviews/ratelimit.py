@@ -24,8 +24,16 @@ class SlidingWindowLimiter:
                 hits.popleft()
             if len(hits) >= limit:
                 return False
+            self._sweep(now)
             hits.append(now)
             return True
+
+    def _sweep(self, now: float) -> None:
+        """한 번도 다시 오지 않는 사용자의 기록이 쌓이지 않도록, 창이 지난 키를 가끔 지웁니다."""
+        if len(self._hits) < 1000:
+            return
+        for key in [k for k, v in self._hits.items() if not v or now - v[-1] >= self.window]:
+            del self._hits[key]
 
     def reset(self) -> None:
         with self._lock:

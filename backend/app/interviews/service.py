@@ -4,6 +4,7 @@ from datetime import timedelta
 
 from pydantic import ValidationError
 from sqlalchemy import func, select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, selectinload
 
 from app.ai.providers import ChatModel, ModelError
@@ -95,6 +96,8 @@ def create(
     # 질문 생성은 수십 초 걸릴 수 있으므로, 그동안 DB 연결을 붙잡지 않도록 읽기 트랜잭션을 끝냅니다 (PLAN.md 3.2).
     db.commit()
     questions = _generate_questions(model, payload, request.question_count)
+    # 질문을 만드는 동안 같은 사용자의 다른 요청이 끝났을 수 있으므로 저장 직전에 하루 한도를 다시 확인합니다.
+    _enforce_daily_limit(db, user, settings)
 
     interview = Interview(
         user_id=user.id,
@@ -283,7 +286,8 @@ def submit_answer(
     if interview.status == InterviewStatus.READY:
         raise ApiError(409, NOT_STARTED)  # 동의를 기록하고 시작한 면접만 음성을 받습니다 (docs/PLAN.md 7.6)
     audio_format = _check_audio(audio, settings)
-    nonverbal = _parse_nonverbal(nonverbal_json)
+    # 분석을 끈 면접에서는 비언어 지표를 받지도 저장하지도 않습니다 (안내 문구와 같게).
+    nonverbal = _parse_nonverbal(nonverbal_json) if interview.nonverbal_enabled else None
     enforce_ai_rate(user.id, settings.interview_ai_rate_per_minute)
 
     # 이후에 쓸 값을 먼저 꺼내 둡니다. 음성 인식은 수 초~수십 초 걸리므로,
@@ -303,7 +307,8 @@ def submit_answer(
 
     client_seconds = duration_ms / 1000
     audio_seconds = result.duration if result.duration else client_seconds
-    timed_out = client_seconds >= max_answer_seconds - TIMEOUT_TOLERANCE_SECONDS
+    # 클라이언트가 보낸 시간을 낮춰도 서버가 잰 오디오 길이가 있으므로 둘 중 긴 쪽으로 판단합니다.
+    timed_out = max(client_seconds, audio_seconds) >= max_answer_seconds - TIMEOUT_TOLERANCE_SECONDS
     words = [{"w": w.word, "s": w.start, "e": w.end} for w in result.words[:MAX_STORED_WORDS]]
     # 지표는 인식된 원문으로 계산하고, 저장하는 텍스트에서는 전화번호 같은 개인정보 패턴을 가립니다.
     metrics = compute_speech_metrics(
@@ -317,28 +322,32 @@ def submit_answer(
         transcript, stored_words = "", []  # 빈 답변: 무음에서 지어낸 문장은 버립니다.
     else:
         transcript = redact_text(result.text)
-        stored_words = [{**w, "w": redact_text(w["w"])} for w in words]
+        stored_words = _redact_words(words)
 
-    answer = db.scalar(select(InterviewAnswer).where(InterviewAnswer.question_id == question_id))
-    created = answer is None
-    if answer is None:
-        answer = InterviewAnswer(question_id=question_id, interview_id=interview_id)
-        db.add(answer)
-    answer.transcript = transcript
-    answer.words = stored_words
-    answer.language = result.language
-    answer.audio_seconds = round(audio_seconds, 2)
-    answer.client_seconds = round(client_seconds, 2)
-    answer.timed_out = timed_out
-    answer.speech_metrics = metrics
-    answer.nonverbal_metrics = nonverbal.model_dump(by_alias=True) if nonverbal else None
-    # 답변이 바뀌었으므로 이전 피드백과 점수는 더 이상 맞지 않습니다.
-    answer.feedback = None
-    answer.feedback_status = "NONE"
-    answer.score = None
-    answer.feedback_generated_at = None
-    answer.created_at = utcnow()
-    db.commit()
+    # 음성 인식을 기다리는 동안 면접이 끝났거나 지워졌을 수 있으므로, 저장 직전에 상태를 다시 읽습니다.
+    current = db.scalar(select(Interview.status).where(Interview.id == interview_id))
+    if current is None:
+        raise ApiError(404, NOT_FOUND)
+    if current != InterviewStatus.IN_PROGRESS:
+        raise ApiError(409, INTERVIEW_COMPLETED if current == InterviewStatus.COMPLETED else NOT_STARTED)
+
+    fields = {
+        "transcript": transcript,
+        "words": stored_words,
+        "language": result.language,
+        "audio_seconds": round(audio_seconds, 2),
+        "client_seconds": round(client_seconds, 2),
+        "timed_out": timed_out,
+        "speech_metrics": metrics,
+        "nonverbal_metrics": nonverbal.model_dump(by_alias=True) if nonverbal else None,
+        # 답변이 바뀌었으므로 이전 피드백과 점수는 더 이상 맞지 않습니다.
+        "feedback": None,
+        "feedback_status": "NONE",
+        "score": None,
+        "feedback_generated_at": None,
+        "created_at": utcnow(),
+    }
+    answer, created = _save_answer(db, interview_id, question_id, fields)
     _fill_feedback(db, interview, question, answer, model, settings)
     response = _answer(answer, category)
     assert response is not None
@@ -346,6 +355,45 @@ def submit_answer(
 
 
 # ---- 내부 함수 ----
+
+
+def _save_answer(db: Session, interview_id: int, question_id: int, fields: dict) -> tuple[InterviewAnswer, bool]:
+    """답변을 저장합니다(없으면 만들고, 있으면 덮어씀). 같은 질문의 업로드가 동시에 들어와 먼저 저장한 쪽이 있으면
+    unique 위반이 나므로, 그때는 그 답변을 다시 읽어 덮어씁니다 (재시도 겹침을 오류로 만들지 않기 위해)."""
+    for attempt in (1, 2):
+        answer = db.scalar(select(InterviewAnswer).where(InterviewAnswer.question_id == question_id))
+        created = answer is None
+        if answer is None:
+            answer = InterviewAnswer(question_id=question_id, interview_id=interview_id)
+            db.add(answer)
+        for name, value in fields.items():
+            setattr(answer, name, value)
+        try:
+            db.commit()
+        except IntegrityError:
+            db.rollback()
+            if attempt == 2:
+                raise
+            continue
+        return answer, created
+    raise AssertionError("unreachable")  # pragma: no cover
+
+
+def _redact_words(words: list[dict]) -> list[dict]:
+    """단어별 타임스탬프를 저장하기 위해 개인정보를 가립니다.
+
+    전화번호·카드번호는 여러 단어로 쪼개져 인식되기 때문에 단어 하나씩으로는 패턴이 잡히지 않습니다.
+    그래서 이어 붙인 문장에서 가릴 것이 발견되면 숫자나 @ 가 들어간 단어를 모두 가립니다.
+    """
+    joined = " ".join(str(w["w"]) for w in words)
+    spread = redact_text(joined) != joined  # 이어 붙인 문장에서 가릴 것이 발견됨
+    result = []
+    for w in words:
+        text = redact_text(str(w["w"]))
+        if spread and text == str(w["w"]) and re.search(r"[0-9@]", text):
+            text = "[가림]"
+        result.append({**w, "w": text})
+    return result
 
 
 def _fill_feedback(
@@ -417,6 +465,13 @@ def _build_report(db: Session, interview: Interview, model: ChatModel, settings:
     except ModelError as e:
         log.warning("종합 리포트 생성 실패: %s", e)
         raise ApiError(502, FEEDBACK_FAILED) from e
+    except (KeyError, TypeError, ValueError, AttributeError) as e:  # 저장된 피드백 JSON 의 모양이 예상과 다름
+        log.warning("종합 리포트 입력 오류: %s", type(e).__name__)
+        raise ApiError(502, FEEDBACK_FAILED) from e
+    # 같은 요청이 겹쳐 먼저 끝난 쪽이 있으면 그 리포트를 그대로 두어 리포트가 하나로 정해지게 합니다 (PLAN 3.2).
+    db.refresh(interview)
+    if interview.report is not None:
+        return
     interview.report = report
     interview.overall_score = report["overallScore"]
     interview.report_generated_at = utcnow()

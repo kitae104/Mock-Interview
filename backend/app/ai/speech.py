@@ -13,7 +13,7 @@ import httpx
 from fastapi import Depends
 
 from app.ai.config import AiSettings, AiSettingsDep
-from app.ai.providers import ModelError
+from app.ai.providers import ModelError, response_shape
 
 # 한국어 면접 답변을 군말까지 그대로 받아 적도록 유도하는 문구 (docs/PLAN.md 4.2).
 # 음성 인식은 군말을 지우는 경향이 있습니다.
@@ -106,7 +106,7 @@ def _parse(data: object) -> Transcription:
             no_speech_probs=no_speech,
         )
     except (AssertionError, KeyError, TypeError, ValueError, AttributeError) as e:
-        raise ModelError(f"예상하지 못한 응답 형식: {data!r:.200}") from e
+        raise ModelError(f"예상하지 못한 응답 형식 ({response_shape(data)})") from e
 
 
 def get_speech_to_text(settings: AiSettingsDep) -> SpeechToText:

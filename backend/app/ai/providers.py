@@ -18,6 +18,13 @@ class ModelError(Exception):
     """모델 호출 실패 (키 없음, 네트워크, 제공자 오류). 라우터가 502 로 바꿉니다."""
 
 
+def response_shape(data: object) -> str:
+    """예상하지 못한 응답을 설명하는 문구. 응답 내용(사용자 답변이 섞일 수 있음)은 넣지 않고 모양만 알립니다."""
+    if isinstance(data, dict):
+        return "키: " + ", ".join(sorted(str(k) for k in data)[:10])
+    return f"형식: {type(data).__name__}"
+
+
 class ChatModel(Protocol):
     def complete(self, system: str, messages: list[Message]) -> str: ...
 
@@ -43,7 +50,7 @@ class OpenAICompatibleModel:
         try:
             return data["choices"][0]["message"]["content"] or ""
         except (KeyError, IndexError, TypeError) as e:
-            raise ModelError(f"예상하지 못한 응답 형식: {data!r:.200}") from e
+            raise ModelError(f"예상하지 못한 응답 형식 ({response_shape(data)})") from e
 
 
 class AnthropicModel:
@@ -67,7 +74,7 @@ class AnthropicModel:
         try:
             return "".join(block.get("text", "") for block in data["content"] if block.get("type") == "text")
         except (KeyError, TypeError) as e:
-            raise ModelError(f"예상하지 못한 응답 형식: {data!r:.200}") from e
+            raise ModelError(f"예상하지 못한 응답 형식 ({response_shape(data)})") from e
 
 
 def _post(url: str, headers: dict[str, str], body: dict, settings: AiSettings) -> dict:

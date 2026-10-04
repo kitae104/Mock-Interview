@@ -96,7 +96,11 @@ function RunScreen({ interview, prefs }: { interview: InterviewDetail; prefs: Pr
         }),
       ),
   )
-  useEffect(() => () => queue.dispose(), [queue])
+  // StrictMode(개발 서버)는 마운트 직후 정리 함수를 한 번 부르므로, 마운트할 때마다 resume() 으로 다시 시작합니다.
+  useEffect(() => {
+    queue.resume()
+    return () => queue.dispose()
+  }, [queue])
   const uploads = useSyncExternalStore(queue.subscribe, queue.getSnapshot)
 
   // 시선·자세 알림: 기본 꺼짐. 켜면 답변하는 동안 화면 모서리에 짧은 안내가 뜹니다.
@@ -192,10 +196,17 @@ function RunScreen({ interview, prefs }: { interview: InterviewDetail; prefs: Pr
   }, [allUploaded, finish])
 
   const [confirmStop, setConfirmStop] = useState(false)
-  const stop = () => {
+  const [stopAfterUpload, setStopAfterUpload] = useState(false)
+  const stop = useCallback(() => {
     leaving.current = true
     navigate(`/interviews/${id}`)
-  }
+  }, [id, navigate])
+  // 아직 서버에 저장되지 않은 답변: 전송 중·재시도 대기·전송 실패. 화면을 나가면 이 답변들은 사라집니다.
+  const notStored = uploads.filter((u) => u.status !== 'done').length
+  // [전송 후 나가기]: 보내는 중인 답변이 모두 끝나면 나갑니다 (전송에 실패한 답변은 기다려도 보내지지 않으므로 제외).
+  useEffect(() => {
+    if (stopAfterUpload && pending.length === 0) stop()
+  }, [stopAfterUpload, pending.length, stop])
 
   const remainingSeconds = interview.maxAnswerSeconds - run.elapsedMs / 1000
   const recording = run.phase === 'recording'
@@ -309,12 +320,25 @@ function RunScreen({ interview, prefs }: { interview: InterviewDetail; prefs: Pr
             </Button>
           ) : (
             <span className="flex items-center gap-2 text-sm" role="alertdialog" aria-label="면접 중단 확인">
-              정말 중단할까요? 답한 질문은 저장돼 있어요.
-              <Button size="sm" variant="outline" onClick={() => setConfirmStop(false)}>
+              {notStored > 0 || recording ? (
+                <span>
+                  아직 서버에 저장되지 않은 답변이 {notStored + (recording ? 1 : 0)}개 있어요
+                  {recording && notStored > 0 && ' (녹음 중인 답변 포함)'}
+                  {recording && notStored === 0 && ' (지금 녹음 중인 답변)'}. 지금 나가면 그 답변은 사라지고, 이어서 할 때 다시 답해야 해요.
+                </span>
+              ) : (
+                <span>정말 중단할까요? 답한 질문은 저장돼 있고, 이어서 하기로 남은 질문부터 다시 할 수 있어요.</span>
+              )}
+              <Button size="sm" variant="outline" onClick={() => { setConfirmStop(false); setStopAfterUpload(false) }}>
                 계속하기
               </Button>
+              {pending.length > 0 && !recording && (
+                <Button size="sm" variant="secondary" disabled={stopAfterUpload} onClick={() => setStopAfterUpload(true)}>
+                  {stopAfterUpload ? '전송 끝나길 기다리는 중...' : '전송 후 나가기'}
+                </Button>
+              )}
               <Button size="sm" variant="destructive" onClick={stop}>
-                중단하기
+                {notStored > 0 || recording ? '바로 나가기' : '중단하기'}
               </Button>
             </span>
           )}

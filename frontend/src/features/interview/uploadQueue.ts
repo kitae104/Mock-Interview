@@ -37,6 +37,8 @@ interface Entry<P> {
   item: UploadItem
   payload: P
   timer: number | null
+  /** add() 로 내용이 바뀔 때마다 올립니다. 이전 내용을 보내던 시도의 결과는 이 번호가 다르면 버립니다. */
+  generation: number
 }
 
 /**
@@ -53,6 +55,8 @@ export class UploadQueue<P> {
   private snapshot: readonly UploadItem[] = []
   private disposed = false
   private running = false
+  /** 지금 서버로 보내는 중인 항목 */
+  private inflight = new Set<Entry<P>>()
 
   constructor(send: (questionId: number, payload: P) => Promise<unknown>, options: UploadQueueOptions = {}) {
     this.send = send
@@ -68,9 +72,10 @@ export class UploadQueue<P> {
       if (existing.timer !== null) window.clearTimeout(existing.timer)
       existing.payload = payload
       existing.timer = null
+      existing.generation++
       existing.item = { questionId, status: 'queued', attempts: 0, error: null }
     } else {
-      this.entries.push({ item: { questionId, status: 'queued', attempts: 0, error: null }, payload, timer: null })
+      this.entries.push({ item: { questionId, status: 'queued', attempts: 0, error: null }, payload, timer: null, generation: 0 })
     }
     this.emit()
     void this.pump()
@@ -89,11 +94,28 @@ export class UploadQueue<P> {
     for (const e of this.entries) if (e.item.status === 'failed') this.retry(e.item.questionId)
   }
 
-  /** 대기·재시도 타이머를 모두 멈추고 더 이상 보내지 않습니다 (화면을 떠날 때). */
+  /** 대기·재시도 타이머를 모두 멈추고 더 이상 보내지 않습니다 (화면을 떠날 때). resume() 으로 다시 시작할 수 있습니다. */
   dispose(): void {
     this.disposed = true
-    for (const e of this.entries) if (e.timer !== null) window.clearTimeout(e.timer)
-    this.listeners.clear()
+    for (const e of this.entries) {
+      if (e.timer !== null) window.clearTimeout(e.timer)
+      e.timer = null
+    }
+  }
+
+  /**
+   * dispose() 한 대기열을 다시 시작합니다. React StrictMode 는 마운트 직후 effect 의 정리 함수를 한 번 부른 뒤 다시 실행하므로,
+   * dispose() 가 영구적이면 개발 서버에서 업로드가 시작되지 않습니다. 멈춰 있던 항목은 대기 상태로 되돌려 이어서 보냅니다.
+   */
+  resume(): void {
+    if (!this.disposed) return
+    this.disposed = false
+    for (const e of this.entries) {
+      const stalled = e.item.status === 'retrying' || (e.item.status === 'uploading' && !this.inflight.has(e))
+      if (stalled) e.item = { ...e.item, status: 'queued' }
+    }
+    this.emit()
+    void this.pump()
   }
 
   // useSyncExternalStore 용 (화살표 함수라 this 가 고정됩니다)
@@ -131,13 +153,15 @@ export class UploadQueue<P> {
   }
 
   private async attempt(entry: Entry<P>): Promise<void> {
+    const generation = entry.generation
     this.update(entry, { status: 'uploading', attempts: entry.item.attempts + 1 })
+    this.inflight.add(entry)
     try {
       await this.send(entry.item.questionId, entry.payload)
-      if (this.disposed) return
+      if (this.disposed || entry.generation !== generation) return // 그 사이 내용이 바뀐 답변의 결과는 버립니다 (바뀐 내용은 이어서 보냅니다).
       this.update(entry, { status: 'done', error: null })
     } catch (error) {
-      if (this.disposed) return
+      if (this.disposed || entry.generation !== generation) return
       const { attempts, questionId } = entry.item
       if (this.shouldRetry(error) && attempts <= this.maxRetries) {
         // 잠깐 쉬었다가 다시 대기열로: 기다리는 동안 다른 질문의 업로드가 먼저 진행됩니다.
@@ -145,13 +169,15 @@ export class UploadQueue<P> {
         const delay = this.delays[Math.min(attempts - 1, this.delays.length - 1)] ?? 2000
         entry.timer = window.setTimeout(() => {
           entry.timer = null
-          if (this.disposed || entry.item.questionId !== questionId || entry.item.status !== 'retrying') return
+          if (this.disposed || entry.generation !== generation || entry.item.questionId !== questionId || entry.item.status !== 'retrying') return
           this.update(entry, { status: 'queued' })
           void this.pump()
         }, delay)
       } else {
         this.update(entry, { status: 'failed', error: error instanceof Error ? error.message : '전송하지 못했어요.' })
       }
+    } finally {
+      this.inflight.delete(entry)
     }
   }
 }

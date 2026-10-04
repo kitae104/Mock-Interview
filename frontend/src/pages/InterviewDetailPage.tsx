@@ -134,8 +134,8 @@ export default function InterviewDetailPage() {
                           <div>
                             <p className="font-medium text-foreground">좋은 답변에 들어갈 요소</p>
                             <ul className="mt-1 list-disc space-y-0.5 pl-5">
-                              {q.expectedPoints.map((p) => (
-                                <li key={p}>{p}</li>
+                              {q.expectedPoints.map((p, i) => (
+                                <li key={`${i}-${p}`}>{p}</li>
                               ))}
                             </ul>
                           </div>
