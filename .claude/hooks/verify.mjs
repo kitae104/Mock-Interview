@@ -59,7 +59,11 @@ const AREAS = {
   frontend: {
     match: (p) => p.startsWith('frontend/'),
     available: () => exists('frontend', 'node_modules'),
-    checks: [{ name: 'npm run lint', cmd: 'npm', args: ['run', 'lint', '--silent'], cwd: 'frontend' }, typecheck],
+    checks: [
+      { name: 'npm run lint', cmd: 'npm', args: ['run', 'lint', '--silent'], cwd: 'frontend' },
+      typecheck,
+      { name: 'npm run test', cmd: 'npm', args: ['run', 'test', '--silent'], cwd: 'frontend' },
+    ],
   },
   fastapi: pythonArea('fastapi'),
   ml: pythonArea('ml'),

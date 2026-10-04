@@ -45,7 +45,7 @@ def test_alembic_upgrade_creates_interview_tables(tmp_path):
         assert columns("interview_answers") == {
             "id", "question_id", "interview_id", "transcript", "words", "language", "audio_seconds",
             "client_seconds", "timed_out", "speech_metrics", "nonverbal_metrics", "feedback", "score",
-            "feedback_generated_at", "created_at",
+            "feedback_generated_at", "created_at", "feedback_status",
         }  # fmt: skip
 
         # 질문은 면접 안에서 번호가 겹치지 않고, 질문 하나에 답변 하나만 둘 수 있다

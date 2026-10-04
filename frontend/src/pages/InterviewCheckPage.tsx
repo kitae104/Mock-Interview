@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { ApiError } from '../api/client.ts'
-import { interviewsApi, type InterviewDetail } from '../api/interviews.ts'
+import { interviewsApi, type InterviewConfig, type InterviewDetail } from '../api/interviews.ts'
+import ConsentNotice from '../components/interview/ConsentNotice.tsx'
 import CameraPreview from '../components/interview/CameraPreview.tsx'
+import RetryInterviewButton from '../components/interview/RetryInterviewButton.tsx'
 import MediaFailurePanel from '../components/interview/MediaFailurePanel.tsx'
 import MicLevelMeter from '../components/interview/MicLevelMeter.tsx'
 import Alert from '../components/ui/Alert.tsx'
@@ -12,6 +14,10 @@ import Card from '../components/ui/Card.tsx'
 import Icon from '../components/ui/Icon.tsx'
 import SelectField from '../components/ui/SelectField.tsx'
 import { buttonClass } from '../components/ui/styles.ts'
+import { BASELINE_SECONDS } from '../features/interview/analyzer/config.ts'
+import { measureBaseline } from '../features/interview/analyzer/measureBaseline.ts'
+import type { Baseline, BaselineFailure } from '../features/interview/analyzer/types.ts'
+import { useNonverbalAnalyzer } from '../features/interview/analyzer/useNonverbalAnalyzer.ts'
 import { loadCheckPrefs, saveCheckPrefs } from '../features/interview/checkPrefs.ts'
 import { cancelSpeech, getVoiceInstallGuide, speak } from '../features/interview/speech.ts'
 import { useAudioLevel } from '../features/interview/useAudioLevel.ts'
@@ -82,11 +88,23 @@ export default function InterviewCheckPage() {
   const navigate = useNavigate()
   const [interview, setInterview] = useState<InterviewDetail | null>(null)
   const [loadError, setLoadError] = useState<string | null>(null)
+  const [config, setConfig] = useState<InterviewConfig | null>(null)
+  const [consent, setConsent] = useState(false)
+  const [starting, setStarting] = useState(false)
+  const [startError, setStartError] = useState<string | null>(null)
 
   const prefs = useMemo(() => loadCheckPrefs(id), [id])
   const media = useMediaStream({ initialCameraId: prefs?.cameraId, initialMicrophoneId: prefs?.microphoneId })
   const audio = useAudioLevel(media.stream)
   const koreanVoice = useKoreanVoice()
+
+  // 표정·자세 분석: 같은 <video> 를 분석기에 연결합니다. 모델을 쓸 수 없으면 분석 없이 진행합니다.
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const analysis = useNonverbalAnalyzer({ videoRef, stream: media.stream })
+  const [measured, setMeasured] = useState<{ baseline: Baseline; stream: MediaStream | null } | null>(null)
+  const [measureProgress, setMeasureProgress] = useState<number | null>(null)
+  const [measureFailure, setMeasureFailure] = useState<BaselineFailure | null>(null)
+  const measureAbortRef = useRef<AbortController | null>(null)
 
   const [textOnly, setTextOnly] = useState(prefs?.speech === 'off')
   const [test, setTest] = useState<TestState>('idle')
@@ -103,6 +121,17 @@ export default function InterviewCheckPage() {
     }
   }, [id])
 
+  useEffect(() => {
+    let cancelled = false
+    interviewsApi
+      .config()
+      .then((data) => !cancelled && setConfig(data))
+      .catch(() => !cancelled && setStartError('안내 문구 버전을 확인하지 못했어요. 새로고침한 뒤 다시 시도해 주세요.'))
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
   // 화면을 떠나면 읽던 소리를 멈춥니다. (카메라·마이크는 useMediaStream 이 닫습니다.)
   useEffect(
     () => () => {
@@ -112,13 +141,24 @@ export default function InterviewCheckPage() {
     [],
   )
 
+  // 카메라가 바뀌거나 화면을 떠나면 진행 중인 기준 자세 측정을 멈춥니다.
+  useEffect(() => {
+    return () => measureAbortRef.current?.abort()
+  }, [media.stream])
+
   const noVoice = !koreanVoice.loading && !koreanVoice.voice
   const textOnlyMode = textOnly || noVoice
   const soundOk = textOnlyMode || test === 'done'
   const permissionOk = media.status === 'ready'
   const cameraOk = permissionOk && media.stream?.getVideoTracks()[0]?.readyState === 'live'
   const micOk = permissionOk && audio.detected
-  const allOk = Boolean(cameraOk) && micOk && soundOk
+  // 분석 모델을 쓸 수 없으면(네트워크 차단 등) 기준 자세 없이도 진행할 수 있습니다.
+  const analysisUnavailable = analysis.status === 'unavailable'
+  const baseline = measured && measured.stream === media.stream ? measured.baseline : null
+  const baselineOk = analysisUnavailable ? permissionOk : baseline !== null
+  const measuring = measureProgress !== null
+  const devicesOk = Boolean(cameraOk) && micOk && soundOk && baselineOk
+  const allOk = devicesOk && consent && config !== null
   const busy = media.status === 'requesting'
 
   const playTest = async () => {
@@ -136,14 +176,59 @@ export default function InterviewCheckPage() {
 
   const stopTest = () => abortRef.current?.abort()
 
-  const handleReady = () => {
-    saveCheckPrefs(id, { cameraId: media.cameraId, microphoneId: media.microphoneId, speech: textOnlyMode ? 'off' : 'on' })
+  const startMeasure = async () => {
+    measureAbortRef.current?.abort()
+    const controller = new AbortController()
+    measureAbortRef.current = controller
+    const stream = media.stream
+    setMeasureFailure(null)
+    setMeasureProgress(0)
+    const result = await measureBaseline(analysis.analyzer, { signal: controller.signal, onProgress: setMeasureProgress })
+    if (controller.signal.aborted) return // 화면을 떠났거나 카메라가 바뀜: 결과를 쓰지 않음
+    setMeasureProgress(null)
+    if (result && result.ok) setMeasured({ baseline: result.baseline, stream })
+    else if (result) setMeasureFailure(result.reason)
+  }
+
+  const handleReady = async () => {
+    if (!config || starting) return
+    const useAnalysis = baseline !== null && !analysisUnavailable
+    setStarting(true)
+    setStartError(null)
+    try {
+      // 동의를 서버에 기록하고 면접을 시작합니다. 이 호출이 성공해야 답변 음성을 올릴 수 있습니다.
+      await interviewsApi.start(id, {
+        consent,
+        consentVersion: config.consentVersion,
+        nonverbalEnabled: useAnalysis,
+        baseline: useAnalysis ? baseline : null,
+      })
+    } catch (err) {
+      setStartError(err instanceof ApiError ? err.message : '면접을 시작하지 못했습니다. 잠시 후 다시 시도해 주세요.')
+      setStarting(false)
+      return
+    }
+    saveCheckPrefs(id, {
+      cameraId: media.cameraId,
+      microphoneId: media.microphoneId,
+      speech: textOnlyMode ? 'off' : 'on',
+      analysis: useAnalysis ? 'on' : 'off',
+      baseline: useAnalysis ? baseline : undefined,
+    })
     abortRef.current?.abort()
     cancelSpeech()
     navigate(`/interviews/${id}/run`)
   }
 
-  const remaining = [!cameraOk && '카메라', !micOk && '마이크 소리', !soundOk && '음성 출력'].filter(Boolean).join(', ')
+  const remaining = [
+    !cameraOk && '카메라',
+    !micOk && '마이크 소리',
+    !soundOk && '음성 출력',
+    !baselineOk && '기준 자세 측정',
+    !consent && '안내 동의',
+  ]
+    .filter(Boolean)
+    .join(', ')
   const guide = noVoice ? getVoiceInstallGuide() : null
 
   if (loadError) {
@@ -167,9 +252,7 @@ export default function InterviewCheckPage() {
             <Link to={`/interviews/${interview.id}`} className={buttonClass({ variant: 'outline' })}>
               면접 상세로
             </Link>
-            <Link to={`/interviews/new?from=${interview.id}`} className={buttonClass()}>
-              같은 조건으로 다시 연습
-            </Link>
+            <RetryInterviewButton interviewId={interview.id} variant="primary" />
           </div>
         </Card>
       </div>
@@ -187,10 +270,18 @@ export default function InterviewCheckPage() {
         {interview && <Badge variant="outline">{interview.title}</Badge>}
       </div>
 
-      <h1 className="mt-6 font-heading text-3xl font-bold tracking-tight">면접 전 환경 점검</h1>
+      <p className="mt-6 flex items-center gap-1.5 text-sm font-semibold text-primary">
+        <Icon name="videocam" size={18} />
+        카메라·마이크·소리 점검
+      </p>
+      <h1 className="mt-1 font-heading text-3xl font-bold tracking-tight">면접 전 환경 점검</h1>
       <p className="mt-2 max-w-2xl text-muted-foreground">
         실제 면접과 같은 환경에서 시작할 수 있도록 카메라, 마이크, 소리를 확인합니다. 영상은 이 브라우저 안에서만 쓰이고 서버로 전송되지 않습니다.
       </p>
+
+      <div className="mt-6">
+        <ConsentNotice checked={consent} onChange={setConsent} />
+      </div>
 
       <div className="mt-8 grid gap-6 lg:grid-cols-12">
         {/* 왼쪽: 카메라 */}
@@ -199,7 +290,12 @@ export default function InterviewCheckPage() {
             <MediaFailurePanel failure={media.failure} onRetry={() => void media.retry()} retrying={busy} />
           ) : (
             <>
-              <CameraPreview stream={media.stream} loading={busy || media.status === 'idle'} settings={media.videoSettings} />
+              <CameraPreview
+                stream={media.stream}
+                loading={busy || media.status === 'idle'}
+                settings={media.videoSettings}
+                videoRef={videoRef}
+              />
               {busy && (
                 <p role="status" className="text-sm text-muted-foreground">
                   카메라·마이크 권한을 요청하고 있어요. 브라우저 주소창 근처에 나타나는 창에서 &quot;허용&quot;을 눌러 주세요.
@@ -207,6 +303,82 @@ export default function InterviewCheckPage() {
               )}
             </>
           )}
+          <Card>
+            <CardTitle icon="accessibility_new" aside={baseline ? '측정 완료' : undefined}>
+              기준 자세 측정
+            </CardTitle>
+            {analysisUnavailable ? (
+              <div role="status" className="rounded-control bg-warning/10 p-3 text-sm">
+                <p className="flex items-center gap-1.5 font-medium text-warning">
+                  <Icon name="cloud_off" size={18} />
+                  표정·자세 분석을 쓸 수 없어요
+                </p>
+                <p className="mt-1 text-muted-foreground">{analysis.error}</p>
+                <p className="mt-1 text-muted-foreground">
+                  <strong className="text-foreground">분석 없이 면접을 진행할 수 있어요.</strong> 답변 내용과 말하기 분석은 그대로 받을 수 있고, 시선·자세·표정 지표만 빠집니다.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <p className="text-sm text-muted-foreground">
+                  편한 자세로 바르게 앉아 카메라 렌즈를 바라보세요. {BASELINE_SECONDS}초 동안 지금의 시선과 자세를 기준으로 기록해 두고, 면접 중에는 이 기준과 비교해서 분석합니다.
+                </p>
+                <div className="flex flex-wrap gap-2" aria-label="인식 상태">
+                  <Badge variant={analysis.presence.face ? 'success' : 'muted'}>
+                    <Icon name={analysis.presence.face ? 'check_circle' : 'face'} size={16} />
+                    얼굴 {analysis.presence.face ? '인식됨' : '인식 안 됨'}
+                  </Badge>
+                  <Badge variant={analysis.presence.shoulders ? 'success' : 'muted'}>
+                    <Icon name={analysis.presence.shoulders ? 'check_circle' : 'accessibility_new'} size={16} />
+                    어깨 {analysis.presence.shoulders ? '보임' : '안 보임'}
+                  </Badge>
+                  {analysis.status === 'loading' && (
+                    <Badge variant="muted">
+                      <Icon name="progress_activity" size={16} className="animate-spin" />
+                      분석 모델 불러오는 중...
+                    </Badge>
+                  )}
+                </div>
+                {measuring ? (
+                  <div role="status">
+                    <div className="h-2 overflow-hidden rounded-full bg-muted">
+                      <div className="h-full rounded-full bg-primary transition-[width] duration-100" style={{ width: `${Math.round((measureProgress ?? 0) * 100)}%` }} />
+                    </div>
+                    <p className="mt-1.5 text-sm font-medium">움직이지 말고 정면을 바라보세요... {Math.max(0, Math.ceil(BASELINE_SECONDS * (1 - (measureProgress ?? 0))))}초</p>
+                  </div>
+                ) : (
+                  <Button
+                    variant={baseline ? 'outline' : 'primary'}
+                    onClick={() => void startMeasure()}
+                    disabled={analysis.status !== 'running' || !permissionOk}
+                  >
+                    <Icon name={baseline ? 'refresh' : 'play_circle'} />
+                    {baseline ? '다시 측정하기' : `기준 자세 측정 (${BASELINE_SECONDS}초)`}
+                  </Button>
+                )}
+                {measureFailure && (
+                  <Alert>
+                    {measureFailure === 'no-face'
+                      ? '얼굴이 잘 보이지 않았어요. 카메라 정면에서 얼굴 전체가 보이도록 앉아 다시 측정해 주세요.'
+                      : '분석이 아직 시작되지 않았어요. 잠시 후 다시 시도해 주세요.'}
+                  </Alert>
+                )}
+                {baseline && !measuring && (
+                  <p className="flex items-start gap-1.5 rounded-control bg-success/10 p-3 text-sm">
+                    <Icon name="check_circle" size={18} className="mt-px text-success" />
+                    <span>
+                      기준 자세를 기록했어요.
+                      {!baseline.poseAvailable && (
+                        <span className="mt-0.5 block text-muted-foreground">
+                          어깨가 화면에 보이지 않아 자세·손 동작 지표는 쓰지 않아요. 어깨까지 보이게 앉아 다시 측정하면 함께 분석할 수 있어요.
+                        </span>
+                      )}
+                    </span>
+                  </p>
+                )}
+              </div>
+            )}
+          </Card>
           <Card className="flex items-start gap-3 bg-accent/40 p-4 shadow-none">
             <Icon name="wb_sunny" size={22} className="mt-0.5 text-primary" />
             <div className="text-sm">
@@ -338,7 +510,7 @@ export default function InterviewCheckPage() {
 
           <Card>
             <h2 className="mb-3 font-heading text-base font-bold">최종 점검 체크리스트</h2>
-            <ul className="space-y-2">
+            <ul className="grid gap-2 sm:grid-cols-2">
               <CheckItem ok={permissionOk} label="브라우저 권한 허용" hint={permissionOk ? undefined : '카메라와 마이크 사용을 허용해 주세요'} />
               <CheckItem
                 ok={Boolean(cameraOk)}
@@ -346,6 +518,12 @@ export default function InterviewCheckPage() {
                 hint={cameraOk && media.videoSettings ? `${media.videoSettings.width}×${media.videoSettings.height}` : undefined}
               />
               <CheckItem ok={micOk} label="마이크 소리 감지" hint={micOk ? undefined : '마이크에 대고 말해 보세요'} />
+              <CheckItem
+                ok={baselineOk}
+                label={analysisUnavailable ? '표정·자세 분석 없이 진행' : '기준 자세 측정'}
+                hint={baselineOk ? undefined : '바르게 앉아 기준 자세를 측정해 주세요'}
+              />
+              <CheckItem ok={consent} label="안내 내용 동의" hint={consent ? undefined : '위 안내를 읽고 동의해 주세요'} />
               <CheckItem
                 ok={soundOk}
                 label={textOnlyMode ? '질문은 텍스트로만 진행' : '음성 출력 확인'}
@@ -378,12 +556,17 @@ export default function InterviewCheckPage() {
             <Icon name="refresh" />
             다시 측정하기
           </Button>
-          <Button size="lg" onClick={handleReady} disabled={!allOk || busy}>
-            준비 완료
+          <Button size="lg" onClick={() => void handleReady()} disabled={!allOk || busy || starting}>
+            {starting ? '시작하는 중...' : '준비 완료'}
             <Icon name="arrow_forward" />
           </Button>
         </div>
       </Card>
+      {startError && (
+        <div className="mt-4">
+          <Alert>{startError}</Alert>
+        </div>
+      )}
     </div>
   )
 }

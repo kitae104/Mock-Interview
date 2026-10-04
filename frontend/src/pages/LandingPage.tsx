@@ -84,6 +84,33 @@ const compareChecks = [
   '점수, 개선점, 개선 답변 예시 제공',
 ]
 
+// 카메라·음성 사용과 데이터 처리 안내 (docs/PLAN.md 7.1, 7.4). 사실과 다르게 바뀌지 않도록 구현을 바꾸면 이 문구도 함께 고칩니다.
+const dataNotices = [
+  {
+    icon: 'videocam',
+    title: '카메라 영상은 브라우저에서만 분석해요',
+    description:
+      '시선·자세·표정은 내 컴퓨터의 브라우저 안에서만 분석합니다. 영상은 서버로 전송하거나 저장하지 않고, 서버에는 "시선 응시 비율" 같은 요약 숫자만 보냅니다. 분석을 쓰지 않으면 이 숫자도 보내지 않아요.',
+  },
+  {
+    icon: 'mic',
+    title: '음성은 텍스트로 바꾸려고 OpenAI 로 전송돼요',
+    description:
+      '답변 음성은 텍스트로 바꾸기 위해 음성 인식 서비스(OpenAI, 해외 서버)로 전송됩니다(국외 이전). 오디오 파일은 우리 서버에 저장하지 않아요.',
+  },
+  {
+    icon: 'psychology',
+    title: '인식된 텍스트와 지표로 AI 가 피드백을 만들어요',
+    description:
+      '인식된 답변 텍스트와 말하기·자세 지표는 AI 분석을 위해 OpenAI 로 전송되고, 내 면접 기록으로 저장됩니다. 전화번호·주민등록번호·이메일·카드번호처럼 보이는 내용은 저장 전에 가리지만 완벽하지 않으니 민감한 정보는 말하지 마세요.',
+  },
+  {
+    icon: 'delete',
+    title: '기록은 언제든 삭제할 수 있어요',
+    description: '면접 기록에서 삭제하면 질문, 답변 텍스트, 지표, 리포트가 모두 지워지고 복구할 수 없습니다.',
+  },
+]
+
 // 미리보기 음성 막대 높이 (장식용)
 const waveBars = ['h-3', 'h-5', 'h-4', 'h-7', 'h-8', 'h-5', 'h-6', 'h-3', 'h-6', 'h-4', 'h-7', 'h-3', 'h-5', 'h-2']
 
@@ -332,6 +359,28 @@ export default function LandingPage() {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* 데이터 처리 안내 */}
+      <section id="privacy" className="mx-auto max-w-7xl px-6 pb-16">
+        <SectionTitle
+          eyebrow="개인정보와 데이터"
+          title="카메라와 음성은 이렇게 사용돼요"
+          description="면접을 시작하기 전에 점검 화면에서 같은 내용을 안내하고, 동의한 경우에만 시작할 수 있습니다."
+        />
+        <div className="grid gap-4 md:grid-cols-2">
+          {dataNotices.map((n) => (
+            <Card key={n.title} className="flex gap-4 p-5">
+              <div className="flex size-11 shrink-0 items-center justify-center rounded-card bg-accent text-primary">
+                <Icon name={n.icon} size={24} />
+              </div>
+              <div>
+                <h3 className="font-heading text-base font-bold">{n.title}</h3>
+                <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{n.description}</p>
+              </div>
+            </Card>
+          ))}
         </div>
       </section>
 

@@ -97,6 +97,8 @@ class InterviewAnswer(Base):
     speech_metrics: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict)
     nonverbal_metrics: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
     feedback: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
+    #: 피드백 상태: NONE(아직 만들지 않음), DONE, FAILED(만들다가 실패 - 답변은 그대로, 마무리할 때 다시 만듦)
+    feedback_status: Mapped[str] = mapped_column(String(10), default="NONE", server_default="NONE")
     score: Mapped[int | None] = mapped_column(Integer, nullable=True)
     feedback_generated_at: Mapped[datetime | None] = mapped_column(UtcDateTime(), nullable=True)
     created_at: Mapped[datetime] = mapped_column(UtcDateTime(), default=utcnow)

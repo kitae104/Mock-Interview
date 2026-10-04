@@ -1,6 +1,19 @@
 # 인터뷰AI
 
-로그인, 회원가입, 랜딩 페이지가 준비된 상태로 시작하는 프로젝트입니다. [dev-harness](https://github.com/kitae104/dev-harness) 템플릿으로 생성했습니다 (`.harness.json`).
+웹캠 모의 면접과 AI 피드백 서비스입니다. 분야·수준·채용 공고로 AI 가 면접 질문을 만들고, 웹캠 앞에서 답하면 답변 내용, 말하기(속도·침묵·군말), 시선·자세·표정을 분석한 피드백과 종합 리포트를 보여 줍니다. [dev-harness](https://github.com/kitae104/dev-harness) 템플릿으로 생성했습니다 (`.harness.json`). 설계는 `docs/PLAN.md` 가 기준입니다.
+
+| 화면 | 경로 | 내용 |
+| --- | --- | --- |
+| 랜딩 | `/` | 서비스 소개, 카메라·음성 사용과 데이터 처리 안내 |
+| 대시보드 | `/dashboard` | 최근 면접 5개, 종합 점수 추이(최근 10회), 새 모의 면접 |
+| 모의 면접 기록 | `/interviews` | 날짜·분야·수준·상태·점수, 이어서 하기 / 결과 보기 / 같은 질문으로 다시 하기 / 삭제, 페이지 이동 |
+| 새 면접 · 상세 | `/interviews/new`, `/interviews/:id` | 질문 생성(10~30초), 질문과 평가 의도 미리 보기 |
+| 장치 점검 | `/interviews/:id/check` | 안내 동의, 카메라·마이크·소리 점검, 기준 자세 측정 |
+| 면접 진행 | `/interviews/:id/run` | 질문 읽기 → 카운트다운 → 녹음, 답변은 뒤에서 업로드 |
+| 결과 | `/interviews/:id/result` | 종합 점수, 영역별 점수, 강점·개선점, 질문별 피드백과 지표 |
+| 면접 코치에게 묻기 | `/chat` | 면접 준비를 돕는 AI 대화 |
+
+**개인정보 요약**: 카메라 영상은 브라우저 안에서만 분석하고 서버로 보내지 않습니다(요약 숫자만 전송). 답변 음성은 텍스트로 바꾸려고 OpenAI 로 전송되며(국외 이전) 우리 서버에는 저장하지 않습니다. 인식된 텍스트와 지표는 AI 분석을 위해 OpenAI 로 전송되고 내 기록으로 저장되며, 면접 기록에서 언제든 삭제할 수 있습니다. 면접을 시작하려면 점검 화면에서 이 내용에 동의해야 하고, 동의 시각과 문구 버전이 면접마다 기록됩니다.
 
 ## 구성
 
@@ -21,6 +34,9 @@ make down              # = docker compose down  (DB 데이터는 유지)
 
 - `.env` 는 생성할 때 임의의 `JWT_SECRET` 으로 이미 만들어져 있습니다. **`.env.example` 로 덮어쓰지 마세요** (공개된 기본 비밀값이 됩니다). `.env` 가 없을 때만 `cp .env.example .env` 후 `JWT_SECRET` 을 바꾸세요 (`openssl rand -base64 48`).
 - `JWT_SECRET` 이 비어 있으면 `docker compose` 가 시작하지 않고 알려 줍니다.
+- **모의 면접 기능에는 AI 키가 필요합니다.** `.env` 에 `OPENAI_API_KEY` 를 넣으세요. 질문 생성·피드백·리포트(`OPENAI_MODEL`)와 음성 인식(`OPENAI_STT_MODEL`, 기본 whisper-1)이 같은 키를 씁니다. 키가 없어도 앱은 뜨지만 면접 만들기는 502 로 실패합니다. 다른 제공자는 아래 "AI 채팅" 절을 보세요.
+- 카메라·마이크는 `localhost` 또는 HTTPS 에서만 동작합니다. 데스크톱 Chrome·Edge 를 권장합니다. 시선·자세 분석 모델은 처음 사용할 때 인터넷(`cdn.jsdelivr.net`, `storage.googleapis.com`)에서 내려받습니다.
+- 처음 쓰는 순서: 회원가입 → 모의 면접 → 새 면접 만들기 → 면접 시작(장치 점검과 동의) → 질문마다 답변 → 결과 확인. 같은 질문으로 다시 연습하려면 기록에서 "다시 하기"를 누르세요.
 
 - 프론트엔드: http://localhost:3000 (nginx 가 `/api` 를 백엔드로 프록시)
 - 백엔드: http://localhost:8080 (`/api/health`, API 문서 `/api/docs`)
@@ -53,8 +69,8 @@ cd frontend && npm install && npm run dev
 ## 검증 명령
 
 ```bash
-cd backend && uv run ruff check . && uv run pytest -q   # SQLite 메모리 DB로 인증 API 테스트
-cd frontend && npm run lint && npm run build   # lint 에는 디자인 규칙 검사(직접 색 지정 금지)가 포함됩니다
+cd backend && uv run ruff check . && uv run ruff format --check . && uv run pytest -q   # SQLite 메모리 DB, 실제 AI·음성 인식은 부르지 않음
+cd frontend && npm run lint && npm run test && npm run build   # lint 에는 디자인 규칙 검사(직접 색 지정 금지)가 포함됩니다, test 는 vitest
 ```
 
 ## API
@@ -124,9 +140,9 @@ design/          # 디자인 원본 (Stitch 내보내기, 참고 이미지)
 - 액세스 토큰만 사용하며 `localStorage` 에 저장합니다. 리프레시 토큰은 포함하지 않았습니다.
 - 스키마는 Alembic 마이그레이션(`backend/migrations/`)으로 관리하고, 컨테이너가 시작할 때 `alembic upgrade head` 를 실행합니다.
 
-## AI 채팅 (`backend/app/ai/`)
+## 면접 코치에게 묻기 · AI 모듈 (`backend/app/ai/`)
 
-FastAPI 백엔드에서 LLM 을 부르는 채팅 API 와 화면(`/chat`)입니다. SDK 없이 각 제공자의 HTTP API 를 `httpx` 로 부르므로 의존성이 늘지 않고, 제공자는 환경 변수 하나(`AI_PROVIDER`)로 바꿉니다.
+FastAPI 백엔드에서 LLM 을 부르는 채팅 API 와 화면(`/chat`, 메뉴 이름은 "면접 코치에게 묻기")입니다. 기본 시스템 프롬프트는 면접 준비 도우미(면접 코치)입니다. SDK 없이 각 제공자의 HTTP API 를 `httpx` 로 부르므로 의존성이 늘지 않고, 제공자는 환경 변수 하나(`AI_PROVIDER`)로 바꿉니다.
 
 | 메서드 | 경로 | 인증 | 설명 |
 | --- | --- | --- | --- |
@@ -135,24 +151,31 @@ FastAPI 백엔드에서 LLM 을 부르는 채팅 API 와 화면(`/chat`)입니�
 
 - 설정: `.env` 에 API 키와 모델 이름을 넣으세요 (`OPENAI_API_KEY` / `ANTHROPIC_API_KEY`, Ollama 는 `make ai-model` 로 모델을 먼저 받기). 키가 없어도 앱은 뜨고 채팅 요청만 502 로 실패합니다.
 - 제공자 바꾸기: `docker-compose.yml` 의 backend `AI_PROVIDER` 를 `openai` / `anthropic` / `ollama` 중 하나로 바꾸고 해당 키·모델 변수를 추가합니다. OpenAI 호환 서버(Groq, Together, vLLM, LM Studio 등)는 `OPENAI_BASE_URL` 만 바꾸면 됩니다.
-- 시스템 프롬프트: `AI_SYSTEM_PROMPT` 환경 변수 (`app/ai/config.py`).
+- 시스템 프롬프트: 기본값은 면접 준비 도우미(예상 질문, 답변 구조, 자기소개 다듬기, 면접 태도·긴장 관리)이고 `AI_SYSTEM_PROMPT` 환경 변수로 바꿉니다 (`app/ai/config.py`).
 - 다른 AI 기능(요약, 분류, RAG 등)은 `app/ai/providers.py` 의 `ChatModelDep` 를 받아 새 라우터에서 쓰면 됩니다.
 - JSON 으로 답을 받아 검증해야 하는 기능은 `app/ai/structured.py` 의 `complete_json()` 을 씁니다 (형식 오류 시 한 번 다시 요청).
 
 ## 모의 면접 (`backend/app/interviews/`)
 
-분야·수준·질문 수(·채용 공고)로 AI 가 면접 질문과 평가 의도를 만들고, 면접을 저장·조회·삭제합니다. 전체 설계와 구현 단계는 `docs/PLAN.md` 를 따릅니다. 현재 구현은 1단계(면접 세트와 질문 생성)입니다. 모든 API 는 로그인(Bearer)이 필요하고, 다른 사용자의 면접은 404 입니다.
+분야·수준·질문 수(·채용 공고)로 AI 가 면접 질문과 평가 의도를 만들고, 면접을 저장·조회·삭제합니다. 전체 설계와 구현 단계는 `docs/PLAN.md` 를 따릅니다. 현재 구현은 1~4단계(질문 생성, 점검 화면, 비언어 분석, 음성 인식과 말하기 지표)입니다. 모든 API 는 로그인(Bearer)이 필요하고, 다른 사용자의 면접은 404 입니다.
 
 | 메서드 | 경로 | 설명 |
 | --- | --- | --- |
 | GET | `/api/interviews/config` | 입력 범위(질문 수, 생각할 시간, 공고 글자 수 등)와 기본값 |
 | POST | `/api/interviews` | `{ field, level, questionCount, prepSeconds?, jobPosting? }` → 201 면접(READY, 질문 포함). AI 가 질문을 만드느라 10~30초 걸릴 수 있음. 실패하면 502 이고 저장되지 않음 |
 | GET | `/api/interviews` | 내 면접 목록 (최신순). 쿼리 `status`, `limit`(기본 20, 최대 50), `offset` → `{ items, total }` |
+| GET | `/api/interviews/stats` | 대시보드 통계 `{ completedCount, averageScore, recent }` — 점수가 있는 끝난 면접 수, 평균(반올림), 최근 10개의 점수(오래된 것부터) |
 | GET | `/api/interviews/{id}` | 면접 상세 (질문 포함). 평가 의도는 면접 진행 중에는 null |
+| POST | `/api/interviews/{id}/retry` | 같은 질문으로 다시 하기: 질문·분야·수준·공고를 복사한 새 면접(READY)을 만들어 201 로 돌려줍니다. AI 를 부르지 않고 답변·점수는 복사하지 않음. 하루 생성 한도에는 포함(429). 남의 면접 404 |
 | DELETE | `/api/interviews/{id}` | 삭제 → 204 (질문·답변도 함께 삭제) |
+| POST | `/api/interviews/{id}/start` | 안내 동의(`consent`, `consentVersion`)와 기준 자세를 기록하고 시작(IN_PROGRESS). 동의 없음·문구 버전 불일치 400, 끝난 면접 409, 진행 중 재호출은 기준 자세만 갱신 |
+| POST | `/api/interviews/{id}/finish` | 모든 질문에 답변이 있으면 종료(COMPLETED)하고 종합 리포트(`report`, `overallScore`)를 만듭니다(수십 초). 피드백이 없거나 실패한 답변은 다시 만들고, 이미 리포트가 있으면 AI 를 부르지 않고 그대로 반환. 답변 누락·시작 전 409, AI 실패 502(같은 요청을 다시 보내면 이어서 만듦) |
+| POST | `/api/interviews/{id}/questions/{questionId}/answer` | multipart: `audio`(webm·ogg·mp4·m4a·wav, 25MB 이하), `durationMs`, `nonverbal`(JSON 문자열, 선택) → 음성 인식 + 말하기 지표(`speech.metrics`, `speech.verdicts`) 저장. 같은 질문에 다시 보내면 덮어씀(첫 저장 201, 덮어쓰기 200). 오디오는 저장하지 않음. 저장 뒤 답변별 AI 피드백(`feedback`, `score`, `feedbackStatus`)을 만들고 실패해도 답변은 유지. 시작 전·종료 후 409. 형식 오류 400, 크기 413, 음성 인식 실패 502 |
 
-- 설정: `INTERVIEW_*` 환경 변수(하루 생성 한도, 분당 AI 호출 한도 등)는 `.env.example` 에 있습니다. 질문 생성 응답이 잘리지 않도록 `AI_MAX_TOKENS` 를 4096 으로 둡니다.
+- 설정: `INTERVIEW_*` 환경 변수(하루 생성 한도, 분당 AI 호출 한도 등)와 음성 인식 모델 `OPENAI_STT_MODEL`(기본 `whisper-1`, 같은 `OPENAI_API_KEY` 사용)은 `.env.example` 에 있습니다. 질문 생성 응답이 잘리지 않도록 `AI_MAX_TOKENS` 를 4096 으로 둡니다.
 - 질문 구성표와 앞으로 추가될 판정 기준은 `app/interviews/thresholds.py` 에 모읍니다.
+- 비언어 분석(시선·자세·표정·손 움직임): 브라우저에서 `@mediapipe/tasks-vision` 으로 분석하며 영상은 서버로 가지 않습니다. 코드는 `frontend/src/features/interview/analyzer/` 이고 임계값과 모델 주소는 `config.ts` 한 곳에 있습니다. 분석 엔진(wasm)과 모델 파일은 처음 한 번 jsDelivr CDN 과 Google 저장소에서 내려받으며, 막힌 네트워크에서는 분석 없이 면접을 진행합니다.
+- 분석 확인용 화면 `/dev/analyzer` 는 `npm run dev` 에서만 열립니다 (카메라 위에 점을 그리고 값을 숫자로 보여 주며, "10초 기록"으로 요약 지표 JSON 을 확인). 계산 로직은 `npm run test`(vitest)로 검증합니다.
 - Windows 에서 로컬 테스트: `psycopg` 바이너리가 보안 정책에 막히면 `DATABASE_URL=sqlite:// uv run python -m pytest -q` 로 실행하세요 (테스트는 SQLite 만 씁니다).
 
 ## Claude Code 하네스

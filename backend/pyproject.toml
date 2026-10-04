@@ -14,6 +14,7 @@ dependencies = [
     "pydantic-settings>=2.15",
     "email-validator>=2.3",
     "httpx>=0.28",
+    "python-multipart>=0.0.32",
 ]
 
 [dependency-groups]

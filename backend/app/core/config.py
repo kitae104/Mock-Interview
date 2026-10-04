@@ -30,7 +30,7 @@ class Settings(BaseSettings):
     interview_min_questions: int = 3
     interview_max_questions: int = 10
     interview_default_questions: int = 5
-    interview_max_audio_mb: int = 10
+    interview_max_audio_mb: int = 25  # 답변 오디오 한 개의 크기 상한 (음성 인식 서비스의 파일 상한과 같음)
     interview_job_posting_max_chars: int = 4000
     interview_daily_limit: int = 20  # 사용자별 24시간 동안 만들 수 있는 면접 수
     interview_ai_rate_per_minute: int = 20  # 사용자별 분당 AI 호출 한도 (프로세스 메모리 기준)

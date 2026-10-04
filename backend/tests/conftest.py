@@ -9,6 +9,7 @@ from sqlalchemy.pool import StaticPool
 
 import app.interviews.models  # noqa: F401  (테이블 등록)
 import app.users.models  # noqa: F401  (테이블 등록)
+from app.ai.providers import Message, ModelError, get_chat_model
 from app.core.config import Settings, get_settings
 from app.core.db import Base, get_db
 from app.main import app
@@ -34,6 +35,13 @@ def db_session_factory() -> Iterator[sessionmaker[Session]]:
     engine.dispose()
 
 
+class UnavailableModel:
+    """기본 AI 모델: 테스트가 실제 AI 를 부르지 않도록 항상 실패합니다. 필요한 테스트는 가짜 모델로 바꿔 끼웁니다."""
+
+    def complete(self, system: str, messages: list[Message]) -> str:
+        raise ModelError("테스트에서는 AI 를 부르지 않습니다.")
+
+
 @pytest.fixture
 def client(db_session_factory: sessionmaker[Session]) -> Iterator[TestClient]:
     def override_get_db() -> Iterator[Session]:
@@ -42,6 +50,7 @@ def client(db_session_factory: sessionmaker[Session]) -> Iterator[TestClient]:
 
     app.dependency_overrides[get_db] = override_get_db
     app.dependency_overrides[get_settings] = test_settings
+    app.dependency_overrides[get_chat_model] = UnavailableModel
     with TestClient(app) as c:
         yield c
     app.dependency_overrides.clear()

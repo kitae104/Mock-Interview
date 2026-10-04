@@ -11,7 +11,7 @@ description: 프로젝트 전체(백엔드, 프론트엔드, 확장 서비스, C
 | --- | --- | --- |
 | backend (Spring) | `backend/gradlew` | `./gradlew test` |
 | backend (FastAPI) | `backend/pyproject.toml` | `uv sync` → `uv run ruff check .` → `uv run ruff format --check .` → `uv run pytest -q` |
-| frontend | `frontend/` | `npm ci` (node_modules 없을 때만) → `npm run lint` (디자인 규칙 포함) → `npm run build` |
+| frontend | `frontend/` | `npm ci` (node_modules 없을 때만) → `npm run lint` (디자인 규칙 포함) → `npm run test` (vitest) → `npm run build` |
 | fastapi | `fastapi/` | backend (FastAPI) 와 같음 |
 | ml | `ml/` | backend (FastAPI) 와 같음 (처음에는 PyTorch 설치로 오래 걸림) |
 | compose | `docker` 명령이 있을 때 | 루트에서 `docker compose config -q` |

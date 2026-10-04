@@ -112,3 +112,11 @@ def test_provider_http_error(monkeypatch):
     monkeypatch.setattr(httpx, "post", lambda *a, **k: httpx.Response(401, text="bad key"))
     with pytest.raises(ModelError):
         AnthropicModel(AiSettings(anthropic_api_key="key")).complete("s", [])
+
+
+def test_default_system_prompt_is_the_interview_coach(monkeypatch):
+    from app.ai.config import AiSettings
+
+    monkeypatch.delenv("AI_SYSTEM_PROMPT", raising=False)
+    prompt = AiSettings(_env_file=None).ai_system_prompt
+    assert "면접" in prompt and "도우미" in prompt

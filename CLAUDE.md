@@ -20,7 +20,7 @@ make db                                      # 로컬 개발용 DB 만 실행
 cd backend && uv run pytest -q              # 백엔드 테스트 (SQLite 메모리 DB)
 cd backend && uv run ruff check . && uv run ruff format --check .
 cd backend && uv run alembic revision --autogenerate -m "설명"   # 모델을 바꾼 뒤 마이그레이션 생성
-cd frontend && npm run lint && npm run build # 프론트엔드 린트(디자인 규칙 포함) + 타입 검사 + 빌드
+cd frontend && npm run lint && npm run test && npm run build # 프론트엔드 린트(디자인 규칙 포함) + 단위 테스트(vitest) + 타입 검사 + 빌드
 ```
 
 ## 작업 규칙

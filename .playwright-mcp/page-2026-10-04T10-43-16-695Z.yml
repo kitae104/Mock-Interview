@@ -1,0 +1,142 @@
+- generic [ref=f1e3]:
+  - banner [ref=f1e4]:
+    - generic [ref=f1e5]:
+      - link "인터뷰AI 홈" [ref=f1e6] [cursor=pointer]:
+        - /url: /
+        - generic [ref=f1e14]:
+          - generic [ref=f1e15]: 인터뷰AI
+          - generic [ref=f1e16]: AI 모의 면접 솔루션
+      - navigation [ref=f1e17]:
+        - link "대시보드" [ref=f1e23] [cursor=pointer]:
+          - /url: /dashboard
+        - link "모의 면접" [ref=f1e24] [cursor=pointer]:
+          - /url: /interviews
+        - link "AI 채팅" [ref=f1e25] [cursor=pointer]:
+          - /url: /chat
+        - button "로그아웃" [ref=f1e26]
+  - main [ref=f1e20]:
+    - generic [ref=f1e248]:
+      - generic [ref=f1e249]:
+        - list "진행 단계" [ref=f1e250]:
+          - listitem [ref=f1e251]:
+            - generic [aria-hidden] [ref=f1e252]: check_circle
+            - text: 질문 구성 완료
+          - listitem [ref=f1e253]:
+            - generic [ref=f1e254]: "2"
+            - text: 장치 점검
+          - listitem [ref=f1e255]:
+            - generic [ref=f1e256]: "3"
+            - text: 실전 모의 면접
+        - generic [ref=f1e257]: 백엔드 개발자 신입 모의 면접
+      - heading "면접 전 환경 점검" [level=1] [ref=f1e258]
+      - paragraph [ref=f1e259]: 실제 면접과 같은 환경에서 시작할 수 있도록 카메라, 마이크, 소리를 확인합니다. 영상은 이 브라우저 안에서만 쓰이고 서버로 전송되지 않습니다.
+      - generic [ref=f1e260]:
+        - generic [ref=f1e261]:
+          - generic [ref=f1e262]:
+            - generic "카메라 미리보기" [ref=f1e263]
+            - generic [ref=f1e264]:
+              - generic [ref=f1e265]: 미리보기
+              - generic [ref=f1e267]: 1280×720 · 30fps
+          - generic [ref=f1e268]:
+            - heading "기준 자세 측정" [level=2] [ref=f1e270]:
+              - generic [aria-hidden] [ref=f1e271]: accessibility_new
+              - text: 기준 자세 측정
+            - generic [ref=f1e272]:
+              - paragraph [ref=f1e273]: 편한 자세로 바르게 앉아 카메라 렌즈를 바라보세요. 3초 동안 지금의 시선과 자세를 기준으로 기록해 두고, 면접 중에는 이 기준과 비교해서 분석합니다.
+              - generic "인식 상태" [ref=f1e274]:
+                - generic [ref=f1e275]:
+                  - generic [aria-hidden] [ref=f1e276]: check_circle
+                  - text: 얼굴 인식됨
+                - generic [ref=f1e277]:
+                  - generic [aria-hidden] [ref=f1e278]: check_circle
+                  - text: 어깨 보임
+              - status [ref=f1e359]:
+                - paragraph [ref=f1e362]: 움직이지 말고 정면을 바라보세요... 3초
+          - generic [ref=f1e281]:
+            - generic [aria-hidden] [ref=f1e282]: wb_sunny
+            - generic [ref=f1e283]:
+              - paragraph [ref=f1e284]: 조명과 구도 안내
+              - paragraph [ref=f1e285]: 얼굴에 그림자가 지지 않게 밝은 곳에서, 카메라 렌즈를 바라보며 어깨까지 화면에 보이도록 앉아 주세요. 미리보기는 거울처럼 좌우가 반전되어 보이지만 분석에는 원본 영상이 쓰입니다.
+        - generic [ref=f1e286]:
+          - generic [ref=f1e287]:
+            - generic [ref=f1e288]:
+              - heading "입출력 장치 선택" [level=2] [ref=f1e289]:
+                - generic [aria-hidden] [ref=f1e290]: tune
+                - text: 입출력 장치 선택
+              - generic [ref=f1e291]: 카메라 1개 · 마이크 1개
+            - generic [ref=f1e292]:
+              - generic [ref=f1e293]:
+                - generic [ref=f1e294]: 카메라
+                - combobox "카메라" [ref=f1e296]:
+                  - option "가짜 카메라" [selected]
+              - generic [ref=f1e297]:
+                - generic [ref=f1e298]: 마이크
+                - combobox "마이크" [ref=f1e300]:
+                  - option "가짜 마이크" [selected]
+              - paragraph [ref=f1e301]: 스피커·헤드폰 출력은 운영체제(또는 브라우저)의 소리 설정을 따릅니다.
+          - generic [ref=f1e302]:
+            - heading "마이크 소리 확인" [level=2] [ref=f1e304]:
+              - generic [aria-hidden] [ref=f1e305]: graphic_eq
+              - text: 마이크 소리 확인
+            - generic [ref=f1e306]:
+              - meter "마이크 소리 크기" [ref=f1e307]
+              - generic [ref=f1e310]:
+                - status [ref=f1e311]: 좋아요. 소리가 잘 들어와요
+                - generic [ref=f1e312]: 62%
+            - paragraph [ref=f1e313]:
+              - generic [aria-hidden] [ref=f1e314]: record_voice_over
+              - text: 마이크를 향해 평소 목소리로 "안녕하세요, 잘 들리나요?" 하고 말해 보세요. 막대가 표시선을 넘으면 통과예요.
+          - generic [ref=f1e315]:
+            - heading "음성 출력 테스트" [level=2] [ref=f1e317]:
+              - generic [aria-hidden] [ref=f1e318]: hearing
+              - text: 음성 출력 테스트
+            - generic [ref=f1e319]:
+              - paragraph [ref=f1e320]:
+                - text: "\"안녕하세요. 모의 면접을 시작하겠습니다.\"를 읽어 줍니다. 소리가 들리는지 확인하세요."
+                - generic [ref=f1e321]: "목소리: Microsoft Heami - Korean (Korean)"
+              - button "테스트 재생" [ref=f1e323]:
+                - generic [aria-hidden] [ref=f1e324]: play_circle
+                - text: 테스트 재생
+              - generic [ref=f1e325] [cursor=pointer]:
+                - checkbox "소리 없이 질문을 텍스트로만 볼게요" [ref=f1e326]
+                - text: 소리 없이 질문을 텍스트로만 볼게요
+          - generic [ref=f1e327]:
+            - heading "최종 점검 체크리스트" [level=2] [ref=f1e328]
+            - list [ref=f1e329]:
+              - listitem [ref=f1e330]:
+                - generic [aria-hidden] [ref=f1e331]: check_circle
+                - generic [ref=f1e332]: 브라우저 권한 허용
+              - listitem [ref=f1e333]:
+                - generic [aria-hidden] [ref=f1e334]: check_circle
+                - generic [ref=f1e335]:
+                  - text: 카메라 화면 표시
+                  - generic [ref=f1e336]: 1280×720
+              - listitem [ref=f1e337]:
+                - generic [aria-hidden] [ref=f1e338]: check_circle
+                - generic [ref=f1e339]: 마이크 소리 감지
+              - listitem [ref=f1e340]:
+                - generic [aria-hidden] [ref=f1e341]: radio_button_unchecked
+                - generic [ref=f1e342]:
+                  - text: 기준 자세 측정
+                  - generic [ref=f1e343]: 바르게 앉아 기준 자세를 측정해 주세요
+              - listitem [ref=f1e344]:
+                - generic [aria-hidden] [ref=f1e345]: radio_button_unchecked
+                - generic [ref=f1e346]:
+                  - text: 음성 출력 확인
+                  - generic [ref=f1e347]: 테스트 재생으로 소리를 확인하세요
+      - generic [ref=f1e348]:
+        - generic [ref=f1e349]:
+          - generic [aria-hidden] [ref=f1e351]: pending
+          - generic [ref=f1e352]:
+            - paragraph [ref=f1e353]: 아직 확인이 필요한 항목이 있어요
+            - paragraph [ref=f1e354]: "남은 항목: 음성 출력, 기준 자세 측정"
+        - generic [ref=f1e355]:
+          - link "면접 상세로" [ref=f1e356] [cursor=pointer]:
+            - /url: /interviews/7
+          - button "다시 측정하기" [ref=f1e357]:
+            - generic [aria-hidden] [ref=f1e358]: refresh
+            - text: 다시 측정하기
+          - button "준비 완료" [disabled]:
+            - text: 준비 완료
+            - generic [aria-hidden]: arrow_forward
+  - contentinfo [ref=f1e22]: © 2026 인터뷰AI

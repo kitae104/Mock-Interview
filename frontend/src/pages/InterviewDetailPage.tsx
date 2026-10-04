@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { ApiError } from '../api/client.ts'
 import { interviewsApi, type InterviewDetail } from '../api/interviews.ts'
+import RetryInterviewButton from '../components/interview/RetryInterviewButton.tsx'
 import DeleteInterviewButton from '../components/interview/DeleteInterviewButton.tsx'
 import Alert from '../components/ui/Alert.tsx'
 import Badge from '../components/ui/Badge.tsx'
@@ -60,12 +61,18 @@ export default function InterviewDetailPage() {
         </div>
         <div className="flex flex-col items-end gap-2">
           {interview.status === 'COMPLETED' ? (
-            <Link to={`/interviews/new?from=${interview.id}`} className={buttonClass({ size: 'lg' })}>
-              <Icon name="replay" />
-              같은 조건으로 다시 연습
-            </Link>
+            <>
+              <Link to={`/interviews/${interview.id}/result`} className={buttonClass({ size: 'lg' })}>
+                <Icon name="assignment" />
+                결과 보기
+              </Link>
+              <RetryInterviewButton interviewId={interview.id} />
+              <Link to={`/interviews/new?from=${interview.id}`} className={buttonClass({ variant: 'ghost', size: 'sm' })}>
+                새 질문으로 다시 연습
+              </Link>
+            </>
           ) : (
-            // 카메라·마이크 점검 화면으로 갑니다. 점검이 끝나면 [준비 완료]로 진행 화면(5단계)으로 이어집니다.
+            // 카메라·마이크 점검 화면으로 갑니다. 점검이 끝나면 [준비 완료]로 진행 화면으로 이어집니다.
             <Link to={`/interviews/${interview.id}/check`} className={buttonClass({ size: 'lg' })}>
               <Icon name="videocam" />
               {interview.status === 'IN_PROGRESS' ? '이어서 시작' : '면접 시작'}

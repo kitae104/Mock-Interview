@@ -284,7 +284,7 @@ def test_config(client, auth_headers):
         "defaultQuestions": 5,
         "maxAnswerSeconds": 120,
         "maxJobPostingChars": 4000,
-        "maxAudioMb": 10,
+        "maxAudioMb": 25,
         "prepSecondsOptions": [0, 10, 30],
         "defaultPrepSeconds": 10,
         "consentVersion": "2026-10-v1",

@@ -37,7 +37,7 @@
 | `/interviews/:id/result` | `InterviewResultPage` | 로그인 | 피드백 리포트. 면접 기록에서 다시 볼 때도 이 화면 |
 | `*` | `NotFoundPage` (기존) | 공개 | 없는 면접 id(404 응답)는 이 화면 대신 목록으로 보내고 `Alert` 로 알림 |
 
-로그인이 필요한 라우트는 모두 `App.tsx` 의 `<ProtectedRoute>` 안에 둡니다. 메뉴(`Layout.tsx`)는 `대시보드 · 모의 면접(/interviews) · AI 채팅 · 로그아웃`. 새 면접은 목록 화면의 [새 면접 만들기] 버튼으로 들어갑니다.
+로그인이 필요한 라우트는 모두 `App.tsx` 의 `<ProtectedRoute>` 안에 둡니다. 메뉴(`Layout.tsx`)는 `대시보드 · 모의 면접(/interviews) · 면접 코치에게 묻기(/chat) · 로그아웃`. 새 면접은 목록 화면의 [새 면접 만들기] 버튼으로 들어갑니다.
 
 ### 1.2 화면 흐름
 
@@ -289,8 +289,8 @@ whisper 는 무음에서 "시청해 주셔서 감사합니다" 같은 문장을 
 
 | 항목 | 설정 |
 | --- | --- |
-| FaceLandmarker | `runningMode: 'VIDEO'`, `numFaces: 1`, `outputFaceBlendshapes: true`, `outputFacialTransformationMatrixes: true`. 샘플 간격 `FACE_INTERVAL_MS = 50`(약 20Hz) |
-| PoseLandmarker | `pose_landmarker_lite`, `runningMode: 'VIDEO'`, `numPoses: 1`. 샘플 간격 `POSE_INTERVAL_MS = 200`(5Hz) |
+| FaceLandmarker | `runningMode: 'VIDEO'`, `numFaces: 1`, `outputFaceBlendshapes: true`, `outputFacialTransformationMatrixes: true`. 샘플 간격 `SAMPLE_INTERVAL_MS = 100`(약 10Hz, 얼굴·포즈를 같은 주기로 한 번에 분석) |
+| PoseLandmarker | `pose_landmarker_lite`, `runningMode: 'VIDEO'`, `numPoses: 1`. 얼굴과 같은 주기(10Hz). 모델 파일 주소는 7.1 참고 |
 | 카메라 | 640×480, 사용 가능하면 GPU delegate, 실패 시 CPU |
 | 좌표 | 분석은 원본(거울 아님) 프레임 기준. 화면 표시만 CSS 로 좌우 반전 |
 | 사용 랜드마크 | Pose: 0 코, 11·12 어깨, 15·16 손목(visibility ≥ `POSE_VISIBILITY_MIN(0.5)` 일 때만) |
@@ -318,7 +318,7 @@ whisper 는 무음에서 "시청해 주셔서 감사합니다" 같은 문장을 
 - 어깨가 화면에 안 보이거나 `baseline.poseAvailable=false` 면 어깨 기울기·자세·손 지표는 모두 null. 얼굴이 안 보이면 얼굴 계열 지표 null.
 - 머리 방향 yaw/pitch/roll 은 얼굴 변환 행렬(4×4, 열 우선 16개 값)의 회전부를 표준 오일러 분해해 얻습니다. 축 방향·부호는 3단계에서 실제 카메라로 고개를 좌우·상하로 돌려 확인한 뒤 `features.ts` 주석에 고정합니다(기준값과의 차이의 절댓값만 쓰므로 부호는 응시 판정에는 영향 없음).
 - 서버가 받는 `NonverbalMetrics`: `version, analysisSeconds, sampleCoverage, faceFrames, poseFrames, faceVisibleRatio, gazeAtCameraRatio, headMotionDegPerSec, shoulderTiltDeg, postureCollapseRatio, smileRatio, blinksPerMinute, gesturesPerMinute, handMotionIndex, handsVisibleRatio, clientThresholds`. 값 범위(비율 0~1, 각도 0~180, 분당 횟수 0~300 등)를 pydantic 으로 검증하고 벗어나면 400.
-- 샘플 충족률 `sampleCoverage`: `faceFrames ÷ (녹음 시간 ÷ FACE_INTERVAL_MS)`. 탭이 숨겨지거나 PC 가 느려 샘플이 빠지면 낮아집니다(전송 JSON 에 포함, 0~1).
+- 샘플 충족률 `sampleCoverage`: `분석한 프레임 수 ÷ (녹음 시간 ÷ SAMPLE_INTERVAL_MS)`. 탭이 숨겨지거나 PC 가 느려 샘플이 빠지면 낮아집니다(전송 JSON 에 포함, 0~1).
 - 신뢰도 `reliable`: `faceVisibleRatio ≥ NONVERBAL_MIN_FACE_RATIO(0.5)` 이고 `analysisSeconds ≥ 5` 이고 `sampleCoverage ≥ NONVERBAL_MIN_COVERAGE(0.6)` 일 때만 true. false 이면 피드백·점수에서 비언어를 제외하고 화면에 "얼굴이 충분히 보이지 않아 참고하기 어렵습니다" 를 표시합니다.
 
 ### 5.3 판정 구간 (예시 기본값, 백엔드 `thresholds.py`)
@@ -434,7 +434,7 @@ whisper 는 무음에서 "시청해 주셔서 감사합니다" 같은 문장을 
 ### 7.1 데이터 흐름 원칙
 | 데이터 | 처리 |
 | --- | --- |
-| 영상·이미지·얼굴 좌표 | **서버로 보내지 않음**. 브라우저 메모리에서 분석하고 요약 숫자만 전송. `MediaRecorder` 는 오디오 트랙만 복제한 스트림(`new MediaStream(stream.getAudioTracks())`)으로 만들어 영상이 녹음에 섞이지 않게 함. MediaPipe 모델·wasm 은 같은 출처(`/mediapipe/`)에서 불러와 분석 중 외부 CDN 접속 없음 |
+| 영상·이미지·얼굴 좌표 | **서버로 보내지 않음**. 브라우저 메모리에서 분석하고 요약 숫자만 전송. `MediaRecorder` 는 오디오 트랙만 복제한 스트림(`new MediaStream(stream.getAudioTracks())`)으로 만들어 영상이 녹음에 섞이지 않게 함. MediaPipe 분석 엔진(wasm)은 jsDelivr CDN(`cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@<설치한 버전>/wasm`)에서, 모델(`.task`)은 Google 공식 `storage.googleapis.com/mediapipe-models/...` 에서 **처음 한 번 내려받습니다**(영상이 나가는 것이 아니라 파일을 받는 것. 이때 이 두 서버에 사용자의 IP 가 보임). 막힌 네트워크에서는 분석 없이 면접을 진행합니다. 주소는 `src/features/interview/analyzer/config.ts` 한 곳 |
 | 답변 오디오 | 질문마다 업로드 → 음성 인식 → **폐기**. 서버는 파일을 영구 저장하지 않음(요청 처리 중에만 존재, 업로드 임시 파일은 요청 종료 시 삭제). DB·로그에 오디오와 그 경로를 남기지 않음 |
 | 음성 인식 결과(텍스트·단어 시각), 지표, 피드백 | 본인 계정의 DB 에 저장. 면접 삭제 시 함께 삭제 |
 | 채용 공고 | 입력하면 DB 에 저장(본인만 열람), 질문·피드백 생성 시 AI 제공자에게 전송 |
@@ -474,7 +474,7 @@ whisper 는 무음에서 "시청해 주셔서 감사합니다" 같은 문장을 
 | 인가 | 다른 사용자의 면접·질문 접근, 질문 id 섞어 보내기 | 모든 조회 `interviews.user_id = 현재 사용자` + 질문이 URL 의 면접에 속하는지 확인(아니면 404). 접근 거부 테스트를 엔드포인트마다 둠 |
 | 정보 노출 | 답변 도중 평가 의도·좋은 답변 요소가 힌트가 됨 | 면접 진행 중(IN_PROGRESS)에는 서버가 응답에서 제외. 시작 전(READY)에는 상세 화면에서 미리 볼 수 있음 |
 | XSS | 답변 텍스트·공고·LLM 출력은 신뢰할 수 없는 문자열 | 화면은 모두 React 텍스트 노드로만 출력하고 `dangerouslySetInnerHTML`·마크다운→HTML 변환 금지(린트 규칙 또는 코드 리뷰 체크 항목). 서버는 응답을 JSON 으로만 반환 |
-| 브라우저 보안 헤더 | 서드파티 스크립트·데이터 유출, 카메라 권한 남용 | nginx 에 `Content-Security-Policy`(초안: `default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; connect-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'` + 글꼴 출처는 `index.html` 의 `<link>` 를 확인해 추가), `Permissions-Policy: camera=(self), microphone=(self)`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: same-origin`. 처음에는 `Content-Security-Policy-Report-Only` 로 켜서 깨지는 곳을 확인한 뒤 강제 |
+| 브라우저 보안 헤더 | 서드파티 스크립트·데이터 유출, 카메라 권한 남용 | nginx 에 `Content-Security-Policy`(초안: `default-src 'self'; script-src 'self' 'wasm-unsafe-eval' https://cdn.jsdelivr.net; connect-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'` + 글꼴 출처는 `index.html` 의 `<link>` 를 확인해 추가), `Permissions-Policy: camera=(self), microphone=(self)`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: same-origin`. 처음에는 `Content-Security-Policy-Report-Only` 로 켜서 깨지는 곳을 확인한 뒤 강제 |
 | 토큰 | 액세스 토큰이 `localStorage` 에 있어 XSS 시 탈취 가능(기존 인증 방식) | 이 기능으로 방식을 바꾸지는 않음. 위 XSS·CSP 통제로 완화하고, 면접 도중 만료(1시간)는 점검 화면의 남은 시간 확인으로 예방 |
 | 로그 | 답변 텍스트·공고가 로그·예외 메시지에 남음 | 로그에는 면접 id·크기·소요 시간·오류 종류만. 검증 오류 응답에 입력값을 되돌려 보내지 않음(필드 메시지만). 예외 로그에 요청 본문 금지 |
 | 프롬프트 주입 | 공고·답변에 "이전 지시를 무시하고…" | JSON 문자열 전달 + system 에 데이터 명시 + 출력 pydantic 검증 + 길이 제한 + LLM 에 도구 권한 없음 + 출력 문자열은 텍스트로만 표시. 점수는 서버가 계산하므로 LLM 이 점수를 조작할 수 없음(내용 4항목만 0~5 로 클램프) |
@@ -501,31 +501,38 @@ whisper 는 무음에서 "시청해 주셔서 감사합니다" 같은 문장을 
 - 프론트 추가: 토큰 만료 시각(`exp`) 기반 남은 시간 확인(`src/auth` 의 토큰 읽기 유틸 — 토큰을 직접 다루지 않는 규칙에 따라 `AuthContext` 에 `tokenExpiresAt` 노출).
 - 완료 조건: 권한 허용 후 레벨 막대·소리·카메라가 동작하고 [면접 시작] 으로 IN_PROGRESS 가 됨(기준 자세 측정은 ③에서 추가).
 
-### ③ 비언어 분석 모듈
+### ③ 비언어 분석 모듈 (프론트 구현 완료 — 백엔드 검증·판정은 보류)
+- 구현 메모(실제 구현): 분석 코드는 `src/features/interview/analyzer/` 에 있습니다 — `config.ts`(모델·wasm 주소, 주기, 모든 임계값), `types.ts`, `features.ts`(랜드마크→프레임 값, 순수 함수), `summarize.ts`(프레임 목록→기준 자세·요약 지표 JSON, 순수 함수), `landmarkers.ts`(모델을 한 번만 만들어 재사용, GPU→CPU 대체, 실패 시 `AnalyzerUnavailableError`), `NonverbalAnalyzer.ts`(`start(video)`/`stop()`, 초당 약 10회, 실패해도 화면은 계속), `measureBaseline.ts`, `useNonverbalAnalyzer.ts`, `drawOverlay.ts`. wasm·모델은 자체 호스팅(`scripts/setup-mediapipe.mjs`, `postinstall`)하지 않고 CDN 에서 받습니다(7.1). 개발 확인용 `/dev/analyzer`(개발 서버에서만 등록)와 `vitest` 단위 테스트(`npm run test`, CI 와 검증 훅에 연결)를 함께 만들었습니다. 점검 화면의 기준 자세 값은 sessionStorage 의 `interview:<id>:check` 에 저장해 진행 화면(⑤)이 씁니다. 모델을 내려받지 못하면 `analysis: 'off'` 로 저장하고 분석 없이 진행합니다. 아래 "프론트"·"백엔드" 항목 중 `?debug=1`, `scripts/setup-mediapipe.mjs`, `accumulator.ts`, `analyzer.ts`, 백엔드 `nonverbal.py`·`baseline` 검증은 위 구현으로 대체되었거나 보류입니다.
 - 프론트: `@mediapipe/tasks-vision` 의존성, `scripts/setup-mediapipe.mjs`(wasm 을 `node_modules` 에서 복사, `face_landmarker.task`·`pose_landmarker_lite.task` 다운로드 → `public/mediapipe/`, `.gitignore` 등록, `postinstall` 에 연결), `src/features/interview/constants.ts`, `features.ts`(행렬→각도, 블렌드셰이프→눈 방향·미소·깜빡임, 포즈→기울기·자세·손목 속도, 모두 순수 함수), `accumulator.ts`(프레임 → 요약 지표), `analyzer.ts`(`NonverbalAnalyzer.start(video, baseline) / stop() → NonverbalMetrics`), `InterviewCheckPage` 5단계(기준 자세 측정, 얼굴·어깨 검출 표시), `?debug=1` 일 때 실시간 지표 표시.
 - 단위 테스트: 순수 함수 검증을 위해 `vitest` 를 devDependency 로 추가하고 `npm run test` 스크립트를 만듭니다(현재 프론트에 테스트 러너가 없음). 합성 입력으로 응시·깜빡임·자세·제스처 계산을 확인.
 - 백엔드: `app/interviews/nonverbal.py`(`NonverbalMetrics` pydantic 검증 + `judge_nonverbal()` 판정), `POST /start` 의 `baseline` 스키마 검증, 판정 단위 테스트.
 - 완료 조건: 점검 화면에서 기준 자세가 측정되어 서버에 저장되고 `?debug=1` 에서 지표가 움직이는 것을 사람이 눈으로 확인(부호·임계값 보정은 이때 실제 카메라로).
 
-### ④ 음성 인식과 말하기 지표
+### ④ 음성 인식과 말하기 지표 (구현 완료)
+- 구현 메모(실제 구현, 아래 항목과 다른 점): ① 음성 인식 모듈은 `app/ai/speech.py`(`SpeechToText` 프로토콜, `OpenAISpeechToText`, `get_speech_to_text`/`SpeechToTextDep`)이고 모델은 `OPENAI_STT_MODEL`(기본 `whisper-1`)입니다. 요청은 단어 시각과 함께 구간 정보(`no_speech_prob`, 무음 판정용)를 받으려고 `timestamp_granularities[]` 를 `word`, `segment` 둘 다 보냅니다. ② 답변 업로드는 multipart `audio`·`durationMs`·`nonverbal`(JSON 문자열)이며, 형식은 파일 머리 바이트로 판별해 지원하지 않으면 **400**(PLAN 3장의 415 대신), 크기 상한은 25MB(`INTERVIEW_MAX_AUDIO_MB`, 초과 413)입니다. ③ 같은 질문에 다시 보내면 **덮어씁니다**(첫 저장 201, 덮어쓰기 200, 이전 피드백·점수는 지움). 3장의 "이미 답한 질문 409"는 적용하지 않습니다. ④ `POST /start` 가 아직 없어서 **READY 와 IN_PROGRESS 모두 답변을 받습니다**(COMPLETED 만 409). 동의 기록(7.6)은 `POST /start` 를 만드는 단계에서 이 조건을 다시 좁힙니다. ⑤ `voiceActiveRatio`·`timedOut` 폼 필드는 받지 않습니다: 무음은 서버가 인식 결과(`no_speech_prob`, 음절 수)로 판정하고, 시간 초과는 `durationMs` 가 최대 답변 시간에서 0.5초 안쪽이면 시간 초과로 봅니다. ⑥ 7.6 의 개인정보 가림(`redact.py`)과 파일 머리 바이트 검사(`audio.py`), 비언어 요약 지표 검증(`nonverbal.py`, 범위 밖이면 400)을 함께 구현했습니다. 판정(`judge_speech`)은 응답을 만들 때 계산하고 저장하지 않습니다. ⑦ 프론트는 `/dev/analyzer` 의 "녹음 테스트"(`DevRecordingTest.tsx`)로 확인합니다.
 - 백엔드: `uv add python-multipart`, `app/ai/transcribe.py`(`Transcriber` 프로토콜, `OpenAITranscriber` — `POST {OPENAI_BASE_URL}/audio/transcriptions`, `model=whisper-1`, `response_format=verbose_json`, `timestamp_granularities[]=word`, `language=ko`, `prompt`; `get_transcriber`, `TranscriberDep`; 오류는 `ModelError`), `app/interviews/speech_metrics.py`(4장 순수 함수), `thresholds.py` 의 판정 구간·군말 목록, `POST /{id}/questions/{questionId}/answer`(multipart), 판정 계산 `judge_speech()`, 설정 `STT_MODEL`, `STT_TIMEOUT_SECONDS`, `INTERVIEW_MAX_AUDIO_MB`.
 - 보안(7.6): 업로드 검증(`Content-Length` 사전 확인, `상한+1` 바이트 읽기, 머리 바이트 확인, 고정 파일 이름), `app/interviews/redact.py`(개인정보 패턴 가림 + 단위 테스트)를 저장 전·LLM 전송 전에 적용, 외부 호출 전 DB 연결 반환.
 - 프론트: `client.ts` FormData 처리, `src/features/interview/recorder.ts`(MediaRecorder: 지원 mime 선택 `audio/webm;codecs=opus` → `audio/mp4`, 최대 시간 타이머, 마이크 레벨로 `voiceActiveRatio` 계산, 시간 초과 시 자동 stop), `interviewsApi.submitAnswer(id, questionId, form)`.
 - 테스트: `tests/test_speech_metrics.py`(음절·속도·침묵·군말·무음 경계값), `tests/test_interviews.py` 의 답변 업로드(가짜 `Transcriber`: 정상 201, 잘못된 형식 415, 큰 파일 413, 비어 있는 파일 400, 중복 409, 시작 전 409, 인식 실패 502 시 저장 없음, 남의 질문 404, 무음 처리, 머리 바이트 불일치 415, `Content-Length` 초과 413, 전화번호·이메일 가림, 동시 중복 업로드가 한 건만 저장), `OpenAITranscriber` 는 `httpx.post` 를 monkeypatch 해 요청 형식만 확인.
 - 완료 조건: 실제 마이크로 녹음한 파일(수동)이 텍스트와 지표로 저장됨. 오디오는 어디에도 남지 않음을 코드 리뷰로 확인.
 
-### ⑤ 면접 진행 화면
+### ⑤ 면접 진행 화면 (구현 완료)
+- **구현 메모**: 종료 API 이름은 `POST /{id}/finish`(위 `/complete` 와 같은 역할). 질문마다 `GATE → SPEAKING(질문 읽기) → THINKING(`prepSeconds`, 0 이면 건너뜀, [바로 시작하기]) → COUNTDOWN(3·2·1) → RECORDING → 다음 질문`, 마지막 답변 뒤 `FINISHING`. 업로드는 `UploadQueue`(`features/interview/uploadQueue.ts`)가 뒤에서 한 번에 하나씩, 서버 오류·429·네트워크 문제만 최대 2회 자동 재시도(2초, 4초), 끝까지 실패한 답변은 마지막 화면의 [다시 보내기]. 시선·자세 알림(`analyzer/liveHints.ts`)은 기본 꺼짐, 답변 중에만 화면 모서리에 표시(같은 안내 12초 쿨다운). `BrowserRouter` 는 앱 안 이동을 막을 수 없어 `beforeunload` 경고 + [면접 중단] 확인으로 대신함. 이어하기는 첫 미답변 질문부터.
+- **동의 구현**: 점검 화면에 7.4 안내 + 동의 체크박스, [준비 완료]가 `POST /{id}/start`(`consent`, `consentVersion`, `nonverbalEnabled`, `baseline`)를 호출. 동의 없음·문구 버전 불일치 400, 끝난 면접 409(동의 검사보다 먼저), 진행 중 재호출은 기준 자세만 갱신. 시작 전(READY) 답변 업로드는 409. `/finish` 는 모든 질문에 답변이 있어야 하고(아니면 409) 이미 끝났으면 그대로 반환(멱등).
+- **결과 화면(임시)**: `/interviews/:id/result` — 질문별 인식 텍스트와 말하기·비언어 지표 표. 6단계에서 점수·피드백·리포트를 더함.
 - 프론트: `InterviewRunPage`(상태기계 `GATE → SPEAKING → RECORDING → UPLOADING → (다음|FINISH)`), 질문 카드·타이머·레벨 막대·카메라 미리보기 컴포넌트(`src/components/interview/`), `NonverbalAnalyzer`·`recorder`·`tts` 연결, 업로드 실패 재시도, `beforeunload`, [면접 종료], 이어하기(첫 미답변 질문부터), 마지막 후 `POST /complete`.
 - 백엔드: `POST /{id}/complete`(+ 테스트: 답변 0개 409, 이미 완료 멱등).
 - 완료 조건: 전체 흐름(점검 → 질문 N개 → 완료)이 실제 브라우저에서 동작. 질문 읽기가 끝난 뒤에만 녹음이 시작되고, 질문당 영상 데이터는 전송되지 않음(네트워크 탭에서 요청이 오디오+JSON 뿐임을 확인).
 
-### ⑥ 피드백과 결과 리포트
+### ⑥ 피드백과 결과 리포트 (구현 완료)
+- **구현 메모 (위 설계에서 달라진 점)**: ① 답변별 피드백은 별도 `/feedback` API 가 아니라 **답변 업로드(`/answer`) 끝에서** 만듭니다. 실패해도 답변은 저장되고 `feedbackStatus` 만 `FAILED`(새 컬럼 `interview_answers.feedback_status`, 마이그레이션 0003) 입니다. ② 종합 리포트는 별도 `/report` 가 아니라 **`POST /{id}/finish` 가 만듭니다**: 피드백이 없거나 실패한 답변을 다시 만들고 → 리포트 생성 → `overall_score` 저장. 이미 리포트가 있으면 AI 를 부르지 않고(멱등), AI 실패는 502 이며 면접은 이미 `COMPLETED` 라 같은 요청을 다시 보내면 비어 있는 부분만 이어서 만듭니다(결과 화면의 [다시 만들기]). ③ LLM 은 **내용(`content`)·구조성(`structure`) 0~100 만** 채점하고, 전달력(`delivery`)·비언어(`nonverbal`)는 서버가 판정에서 계산합니다(`scoring.py`). 총점 가중치는 `thresholds.py` 의 `ANSWER_WEIGHTS`(내용 50 = 질문 적합성 25 + 구체성 15 + 직무 적합성 10 을 합침, 구조성 20, 전달력 20, 비언어 10)이고 쓸 수 없는 영역은 빼고 100점으로 환산합니다. ④ LLM 에는 지표 원값 대신 `judgement.py` 가 만든 **판정 문장**("말하기 속도: 조금 빠름(분당 340음절, 기준 250~330)")을 넘깁니다. 기준 범위 문구는 `thresholds.py` 의 구간에서 계산합니다. 비언어 판정 구간(5.3)과 점수 항목 상수도 `thresholds.py` 에 추가했고, 응답의 `Verdict` 에 `reference`(기준 범위), 비언어에 `verdicts` 가 들어갑니다. ⑤ 리포트 JSON: `overallScore, summary, categoryScores, topStrengths(최대 3), topImprovements(최대 3, evidenceSeqs), practicePlan, speechSummary, nonverbalSummary, aggregates, answeredCount, questionCount, generatedAt`. 종합 점수·영역별 점수·집계는 서버가 계산합니다. ⑥ 빈 답변(`noSpeech`)은 AI 를 부르지 않고 내용·구조성 0점 + "답변 없음" 고정 피드백입니다. ⑦ 호출 한도는 답변 하나당 음성 인식 + 피드백으로 2회를 셉니다.
 - 백엔드: `prompts.py` 의 2·3번 프롬프트, `scoring.py`(내용 4항목은 LLM 점수, 전달력·비언어는 판정에서 계산하는 가중 점수), `POST /{id}/questions/{questionId}/feedback`, `POST /{id}/report`, 서버 집계, `AnswerFeedback`/`ReportDto` 스키마, 응답에 판정 포함.
 - 프론트: `InterviewResultPage`(생성 진행·재시도, 리포트, 지표 카드, 질문별 접이식), `theme.css` 의 `--success`·`--warning` 토큰과 판정 배지 UI 컴포넌트, ⑤의 답변 직후 백그라운드 피드백 호출(아래 기본값 참고).
 - 테스트: 가짜 `ChatModel` 로 정상·잘못된 JSON 후 재시도 성공·두 번 실패 502·검증 실패(점수 범위 밖은 클램프)·점수 계산(전달력·비언어는 판정 점수로 계산, 비언어 꺼짐·신뢰도 낮음·`jobFit` null 은 가중치에서 제외, 같은 입력이면 같은 점수), 멱등(이미 있으면 LLM 미호출), IN_PROGRESS 에서도 피드백 가능·noSpeech(LLM 미호출)·피드백 누락 시 리포트 409·남의 면접 404.
 - 완료 조건: 완료된 면접에서 답변별 피드백과 종합 리포트가 표시되고 `overall_score` 가 저장됨.
 
-### ⑦ 기록과 대시보드
+### ⑦ 기록과 대시보드 (구현 완료)
+- **구현 메모**: `GET /stats`(점수가 있는 끝난 면접 수·평균·최근 10개 점수 오래된 순)와 `POST /{id}/retry`(같은 질문으로 다시 하기: 질문·분야·수준·공고·생각할 시간을 복사한 새 READY 면접, AI 호출 없음, 하루 생성 한도 포함)를 추가했습니다. 기록 화면(`/interviews`)은 표(날짜·분야·수준·상태·종합 점수·동작) + 상태 필터 + 번호 페이지 이동(10개씩)이고, 동작은 상태에 따라 면접 시작/이어서 하기/결과 보기/다시 하기와 삭제 확인입니다. 대시보드는 최근 면접 5개, 점수 추이(최근 10회 막대), 통계 카드, [새 모의 면접]입니다. 랜딩에 카메라·음성 사용과 데이터 처리 안내(7.1, 7.4)를 넣었고, AI 채팅 메뉴는 "면접 코치에게 묻기"로 바꾸고 기본 시스템 프롬프트를 면접 준비 도우미로 바꿨습니다. 7.6 보안 점검(CSP 등 헤더 포함)은 이번 범위에 넣지 않았습니다.
 - 백엔드: 목록 `status` 필터·페이지네이션 마무리, `GET /stats`, 하루 한도 429 점검.
 - 프론트: `InterviewListPage` 완성(상태 배지, 점수, 이어하기, 삭제 확인), `DashboardPage`(통계, 최근 점수 막대 추이 — 차트 라이브러리 없이 CSS, 최근 면접), 빈 상태 화면, 랜딩 CTA.
 - 보안 점검: 7.6 표의 항목을 하나씩 확인(테스트가 있는 것은 통과 확인, 헤더·XSS 는 수동), CSP 를 `Report-Only` 로 켜 두고 위반이 없는 것을 확인한 뒤 강제로 전환.
@@ -536,7 +543,7 @@ whisper 는 무음에서 "시청해 주셔서 감사합니다" 같은 문장을 
 | 대상 | 변경 | 단계 |
 | --- | --- | --- |
 | `frontend/src/api/client.ts` | `Content-Type: application/json` 을 `typeof init.body === 'string'` 일 때만 자동 지정(현재는 body 가 있으면 무조건 JSON 으로 지정해 FormData 의 multipart 경계가 깨짐). FormData 는 헤더를 브라우저에 맡김. 토큰·401·에러 처리는 그대로 | ④ |
-| `frontend/nginx.conf` | `location /api/interviews { ... client_max_body_size 25m; proxy_read_timeout 300s; }`(끝에 `/` 없이 써서 `POST /api/interviews` 도 포함 — 적용됨) 추가(음성 인식·LLM 이 오래 걸림, 기본 1MB 업로드 제한 해제). 기존 `/api/ai/` 블록과 같은 `set $backend_upstream`, `proxy_set_header` 를 씀. `/api/` 일반 블록보다 위에 둠. 보안 헤더(`Permissions-Policy: camera=(self), microphone=(self)`, `X-Content-Type-Options`, `Referrer-Policy`, CSP — 7.6 의 초안, 처음엔 `Report-Only`; `add_header` 는 `location` 안에서 상위 헤더를 덮어쓰므로 각 `location` 에 같은 헤더를 반복하거나 `include` 파일로 공유), `/mediapipe/` 정적 파일 캐시(`expires 7d`), wasm MIME(`application/wasm`) 확인 | ④(업로드·시간 제한), ③(헤더·정적) |
+| `frontend/nginx.conf` | `location /api/interviews { ... client_max_body_size 25m; proxy_read_timeout 300s; }`(끝에 `/` 없이 써서 `POST /api/interviews` 도 포함 — 적용됨) 추가(음성 인식·LLM 이 오래 걸림, 기본 1MB 업로드 제한 해제). 기존 `/api/ai/` 블록과 같은 `set $backend_upstream`, `proxy_set_header` 를 씀. `/api/` 일반 블록보다 위에 둠. 보안 헤더(`Permissions-Policy: camera=(self), microphone=(self)`, `X-Content-Type-Options`, `Referrer-Policy`, CSP — 7.6 의 초안, 처음엔 `Report-Only`; `add_header` 는 `location` 안에서 상위 헤더를 덮어쓰므로 각 `location` 에 같은 헤더를 반복하거나 `include` 파일로 공유), wasm·모델을 자체 호스팅하지 않으므로 `/mediapipe/` 정적 경로와 wasm MIME 설정은 필요 없음(CSP 에는 위 두 출처를 허용) | ④(업로드·시간 제한), ③(헤더·정적) |
 | `frontend/vite.config.ts` | 개발 서버는 `/api` 전체를 프록시하므로 변경 없음. 필요하면 `server.proxy` 타임아웃 확인만 | ④ |
 | `backend/pyproject.toml`, `uv.lock` | `python-multipart` 추가(`uv add python-multipart`, 두 파일 모두 커밋) | ④ |
 | `backend/app/ai/config.py` | `ai_max_tokens` 기본값 1024 → 4096, `stt_model: str = "whisper-1"`, `stt_timeout_seconds: float = 120` | ①, ④ |
@@ -546,7 +553,7 @@ whisper 는 무음에서 "시청해 주셔서 감사합니다" 같은 문장을 
 | `backend/app/main.py` | `from app.interviews import router as interviews` 를 확장 모듈 블록(`# isort: split` 아래)에 추가하고 `app.include_router(interviews.router)` | ① |
 | `backend/migrations/env.py` | `import app.interviews.models  # noqa: F401` | ① |
 | `backend/app/common/errors.py` | 413, 415, 429 가 `ApiError` 로 올바른 형식으로 나가는지 확인(필요 시 `field_message` 에 새 검증 메시지 추가) | ① |
-| `frontend/package.json` | `@mediapipe/tasks-vision`, devDependency `vitest`, scripts `test`, `postinstall`(`setup-mediapipe.mjs`). `frontend/Dockerfile` 빌드 중에도 `npm ci` 의 postinstall 이 모델을 내려받으므로 빌드 환경에서 `storage.googleapis.com` 접근이 가능해야 함 | ③ |
+| `frontend/package.json` | `@mediapipe/tasks-vision`(정확한 버전 고정, wasm 주소가 이 버전을 따라감), devDependency `vitest`, scripts `test`. 모델은 사용자 브라우저가 실행 시점에 CDN 에서 받으므로 Docker 빌드에는 영향이 없음 | ③ |
 | `frontend/src/styles/theme.css`, `src/index.css` | `--success`, `--warning`(+foreground) 토큰, `@theme inline` 연결 | ⑥ |
 | `frontend/src/App.tsx`, `components/Layout.tsx`, `pages/DashboardPage.tsx`, `pages/LandingPage.tsx`, `config/site.ts` | 라우트·메뉴·CTA·서비스 소개 문구를 모의 면접에 맞게 수정 | ①, ⑦ |
 | `.github/workflows/ci.yml` | 프론트 `npm run test` 단계 추가(③에서 vitest 도입 후) | ③ |
@@ -569,11 +576,11 @@ whisper 는 무음에서 "시청해 주셔서 감사합니다" 같은 문장을 
 **기술**
 9. 음성 인식은 요청 안에서 동기 처리(질문당 5~15초 예상), 답변별 피드백·종합 리포트도 요청 단위로 나눠 호출(프론트가 순서대로 호출). 별도 작업 큐는 이번 범위에서 제외(오래 걸리는 작업은 큐로 분리하라는 `ai.md` 권고는 사용 규모가 커지면 적용).
 10. 답변 직후 프론트가 백그라운드로 답변별 피드백을 미리 요청(실패해도 면접 진행에 영향 없음)하고, 결과 화면은 비어 있는 것만 채움.
-11. 음성 인식·LLM 호출은 `httpx` 동기 호출(`app/ai` 기존 방식과 동일), 음성 인식은 `ChatModel` 이 아니라 별도 `Transcriber` 프로토콜로 분리(`app/ai/transcribe.py`).
+11. 음성 인식·LLM 호출은 `httpx` 동기 호출(`app/ai` 기존 방식과 동일), 음성 인식은 `ChatModel` 이 아니라 별도 `SpeechToText` 프로토콜(`app/ai/speech.py`)로 분리(`app/ai/transcribe.py`).
 12. LLM 은 `complete(system, messages)` 에 temperature 를 넘기지 못하므로 제공자 기본값을 사용. 점수 계산은 서버 상수 가중치로 처리해 결과 변동을 줄임. (필요하면 `ChatModel` 확장을 별도로 제안)
 13. JSON 컬럼은 SQLAlchemy 기본 `JSON`(PostgreSQL JSONB 최적화 없음), 판정 라벨은 저장하지 않고 응답 시 계산.
 14. 오디오 형식: Chrome·Edge `audio/webm;codecs=opus`, Safari `audio/mp4`. 허용 목록은 webm·mp4·ogg·wav·mpeg·m4a, 상한 10MB(nginx 12MB).
-15. MediaPipe 모델·wasm 은 저장소에 커밋하지 않고 `npm install`(postinstall)에서 내려받아 `public/mediapipe/` 에 두며 같은 출처에서 서비스. 분석은 메인 스레드에서 샘플링(Face 20Hz, Pose 5Hz)하고, 성능 문제가 생기면 Web Worker 로 옮김.
+15. MediaPipe wasm 은 jsDelivr CDN, 모델은 Google 공식 저장소에서 사용자가 처음 쓸 때 내려받음(자체 호스팅하지 않음, 주소는 `analyzer/config.ts`). 분석은 메인 스레드에서 초당 약 10회(얼굴·포즈 같은 주기)로 하고, 성능 문제가 생기면 Web Worker 로 옮김. 10Hz 라서 눈 깜빡임(100~300ms)은 일부 놓칠 수 있음.
 16. 손 제스처는 HandLandmarker 없이 PoseLandmarker 의 손목으로 추정(웹캠에 손이 안 나오면 "측정 불가").
 17. 프론트 테스트 러너로 `vitest` 를 도입(순수 함수 단위 테스트용).
 18. 모든 판정 구간·가중치(`4.4`, `5.3`, `6.2`)는 예시 초기값이며 실제 사용 데이터를 보고 조정. 판정 라벨은 백엔드 한 곳(`thresholds.py`), 프레임 측정 기준은 프론트 한 곳(`constants.ts`).

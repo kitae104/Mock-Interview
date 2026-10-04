@@ -37,7 +37,7 @@ export default function Layout() {
                   모의 면접
                 </NavLink>
                 <NavLink to="/chat" className={navClass}>
-                  AI 채팅
+                  면접 코치에게 묻기
                 </NavLink>
                 <Button variant="outline" size="sm" onClick={handleLogout}>
                   로그아웃

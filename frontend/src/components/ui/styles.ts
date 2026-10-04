@@ -50,7 +50,7 @@ export function inputClass(invalid = false, className?: string) {
 
 export const linkClass = 'font-medium text-primary hover:underline'
 
-export type BadgeVariant = 'muted' | 'accent' | 'outline' | 'success' | 'warning'
+export type BadgeVariant = 'muted' | 'accent' | 'outline' | 'success' | 'warning' | 'danger'
 
 const badgeVariants: Record<BadgeVariant, string> = {
   muted: 'bg-muted text-muted-foreground',
@@ -58,6 +58,7 @@ const badgeVariants: Record<BadgeVariant, string> = {
   outline: 'border border-border bg-card text-muted-foreground',
   success: 'bg-success/10 text-success',
   warning: 'bg-warning/10 text-warning',
+  danger: 'bg-destructive/10 text-destructive',
 }
 
 // 알약 모양 라벨(태그, 상태 표시). <Badge> 로 쓰거나 다른 요소에 badgeClass() 를 붙입니다.

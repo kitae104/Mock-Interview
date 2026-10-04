@@ -1,0 +1,125 @@
+- generic [ref=f1e3]:
+  - banner [ref=f1e4]:
+    - generic [ref=f1e5]:
+      - link "인터뷰AI 홈" [ref=f1e6] [cursor=pointer]:
+        - /url: /
+        - generic [ref=f1e14]:
+          - generic [ref=f1e15]: 인터뷰AI
+          - generic [ref=f1e16]: AI 모의 면접 솔루션
+      - navigation [ref=f1e17]:
+        - link "대시보드" [ref=f1e23] [cursor=pointer]:
+          - /url: /dashboard
+        - link "모의 면접" [ref=f1e24] [cursor=pointer]:
+          - /url: /interviews
+        - link "AI 채팅" [ref=f1e25] [cursor=pointer]:
+          - /url: /chat
+        - button "로그아웃" [ref=f1e26]
+  - main [ref=f1e20]:
+    - generic [ref=f1e136]:
+      - generic [ref=f1e137]:
+        - generic [aria-hidden] [ref=f1e138]: build
+        - text: 개발용 화면
+      - heading "비언어 분석 확인" [level=1] [ref=f1e139]
+      - paragraph [ref=f1e140]: 카메라 영상에서 시선·자세·표정·손 움직임이 어떻게 읽히는지 숫자로 확인합니다. 개발 서버에서만 보이며, 영상은 이 브라우저 안에서만 분석됩니다.
+      - generic [ref=f1e141]:
+        - generic [ref=f1e142]:
+          - generic [ref=f1e143]:
+            - generic "카메라 미리보기" [ref=f1e144]
+            - generic [ref=f1e145]:
+              - generic [ref=f1e146]: 미리보기
+              - generic [ref=f1e148]: 1280×720 · 30fps
+          - generic [ref=f1e149]:
+            - generic [ref=f1e150]:
+              - generic [ref=f1e151]: 분석 중
+              - generic [ref=f1e152]: 프레임당 129ms
+              - generic [ref=f1e153]:
+                - generic [ref=f1e154]: 얼굴 윤곽
+                - generic [ref=f1e156]: 어깨
+                - generic [ref=f1e158]: 손목
+            - generic [ref=f1e160]:
+              - button "현재 자세를 기준으로 (3초)" [ref=f1e161]:
+                - generic [aria-hidden] [ref=f1e162]: accessibility_new
+                - text: 현재 자세를 기준으로 (3초)
+              - button "10초 기록" [ref=f1e163]:
+                - generic [aria-hidden] [ref=f1e164]: fiber_manual_record
+                - text: 10초 기록
+              - button "기준 지우기" [ref=f1e227]
+            - paragraph [ref=f1e228]: 기준 자세 측정 완료 (프레임 29개 중 얼굴 29개, 어깨 29개)
+        - generic [ref=f1e165]:
+          - generic [ref=f1e166]:
+            - heading "실시간 값" [level=2] [ref=f1e167]
+            - generic [ref=f1e168]:
+              - generic [ref=f1e169]:
+                - term [ref=f1e170]: 얼굴 보임
+                - definition [ref=f1e171]: 예
+              - generic [ref=f1e172]:
+                - term [ref=f1e173]:
+                  - text: 응시 여부
+                  - generic [ref=f1e174]: (기준 대비)
+                - definition [ref=f1e175]: 카메라를 봄
+              - generic [ref=f1e176]:
+                - term [ref=f1e177]:
+                  - text: 머리 yaw
+                  - generic [ref=f1e229]: (기준 1.9°)
+                - definition [ref=f1e178]: 1.9°
+              - generic [ref=f1e179]:
+                - term [ref=f1e180]:
+                  - text: 머리 pitch
+                  - generic [ref=f1e230]: (기준 4.8°)
+                - definition [ref=f1e181]: 4.8°
+              - generic [ref=f1e182]:
+                - term [ref=f1e183]: 머리 roll
+                - definition [ref=f1e184]: 0.3°
+              - generic [ref=f1e185]:
+                - term [ref=f1e186]:
+                  - text: 눈 방향 좌우(h)
+                  - generic [ref=f1e187]: (±0.35)
+                - definition [ref=f1e188]: "-0.09"
+              - generic [ref=f1e189]:
+                - term [ref=f1e190]:
+                  - text: 눈 방향 상하(v)
+                  - generic [ref=f1e191]: (±0.35)
+                - definition [ref=f1e192]: "-0.04"
+              - generic [ref=f1e193]:
+                - term [ref=f1e194]:
+                  - text: 미소
+                  - generic [ref=f1e195]: (기준 +0.35)
+                - definition [ref=f1e196]: "0.93"
+              - generic [ref=f1e197]:
+                - term [ref=f1e198]:
+                  - text: 눈 감김
+                  - generic [ref=f1e199]: (깜빡임 0.5↑)
+                - definition [ref=f1e200]: "0.22"
+              - generic [ref=f1e201]:
+                - term [ref=f1e202]: 어깨 보임
+                - definition [ref=f1e203]: 예
+              - generic [ref=f1e204]:
+                - term [ref=f1e205]:
+                  - text: 어깨 기울기
+                  - generic [ref=f1e231]: (기준 -2.7°)
+                - definition [ref=f1e206]: "-2.2°"
+              - generic [ref=f1e207]:
+                - term [ref=f1e208]:
+                  - text: 어깨 폭
+                  - generic [ref=f1e232]: (기준 0.383)
+                - definition [ref=f1e209]: "0.387"
+              - generic [ref=f1e210]:
+                - term [ref=f1e211]:
+                  - text: 코-어깨 높이
+                  - generic [ref=f1e233]: (기준 0.55)
+                - definition [ref=f1e212]: "0.54"
+              - generic [ref=f1e213]:
+                - term [ref=f1e214]: 자세 무너짐
+                - definition [ref=f1e215]: 아니오
+              - generic [ref=f1e216]:
+                - term [ref=f1e217]: 손목 보임
+                - definition [ref=f1e218]: 왼오
+              - generic [ref=f1e219]:
+                - term [ref=f1e220]:
+                  - text: 손 움직임
+                  - generic [ref=f1e221]: (제스처 0.6↑)
+                - definition [ref=f1e222]: 2.21 어깨폭/초
+          - generic [ref=f1e234]:
+            - heading "기준 자세" [level=2] [ref=f1e235]
+            - generic [ref=f1e236]: "{ \"yawDeg\": 1.853622595032706, \"pitchDeg\": 4.797404044505138, \"eyeH\": -0.08963083103299141, \"eyeV\": -0.03688400238752365, \"smile\": 0.933635801076889, \"poseAvailable\": true, \"shoulderTiltDeg\": -2.733578385521355, \"shoulderWidth\": 0.3832258072464072, \"shoulderMidY\": 0.4320842921733856, \"neckRatio\": 0.546046088514597 }"
+  - contentinfo [ref=f1e22]: © 2026 인터뷰AI

@@ -1,4 +1,4 @@
-import { useEffect, useRef, type ReactNode } from 'react'
+import { useEffect, useRef, type ReactNode, type RefObject } from 'react'
 import type { VideoSettings } from '../../features/interview/useMediaStream.ts'
 import { cn } from '../../lib/cn.ts'
 import Badge from '../ui/Badge.tsx'
@@ -11,26 +11,34 @@ interface Props {
   settings?: VideoSettings | null
   /** 거울처럼 좌우 반전해서 보여 줍니다 (화면 표시만. 분석에는 원본 영상을 씁니다) */
   mirrored?: boolean
+  /** <video> 요소를 밖에서 쓰고 싶을 때 (표정·자세 분석기에 넘길 때) */
+  videoRef?: RefObject<HTMLVideoElement | null>
+  /** 가로 ÷ 세로. 영상 위에 좌표를 그릴 때 영상의 실제 비율로 맞춥니다. 기본 16:9 */
+  aspect?: number
   /** 영상 위에 겹쳐 놓을 내용 */
   children?: ReactNode
   className?: string
 }
 
-export default function CameraPreview({ stream, loading, settings, mirrored = true, children, className }: Props) {
-  const videoRef = useRef<HTMLVideoElement>(null)
+export default function CameraPreview({ stream, loading, settings, mirrored = true, videoRef, aspect = 16 / 9, children, className }: Props) {
+  const ownRef = useRef<HTMLVideoElement>(null)
+  const ref = videoRef ?? ownRef
 
   useEffect(() => {
-    const video = videoRef.current
+    const video = ref.current
     if (!video) return
     video.srcObject = stream
     if (stream) void video.play().catch(() => {})
-  }, [stream])
+  }, [stream, ref])
 
   return (
-    <div className={cn('relative aspect-video w-full overflow-hidden rounded-card bg-inverse text-inverse-foreground shadow-card', className)}>
+    <div
+      className={cn('relative w-full overflow-hidden rounded-card bg-inverse text-inverse-foreground shadow-card', className)}
+      style={{ aspectRatio: aspect }}
+    >
       {/* muted: 내 목소리가 스피커로 다시 나오지 않게 합니다. */}
       <video
-        ref={videoRef}
+        ref={ref}
         autoPlay
         muted
         playsInline

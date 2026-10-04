@@ -12,7 +12,7 @@ interface Message {
   text: string
 }
 
-// AI 채팅 화면 본문 (POST /api/ai/chat). React 는 pages/ChatPage.tsx, Next 는 app/(protected)/chat/page.tsx 가 감쌉니다.
+// 면접 코치에게 묻기 화면 본문 (POST /api/ai/chat). React 는 pages/ChatPage.tsx, Next 는 app/(protected)/chat/page.tsx 가 감쌉니다.
 export default function ChatPanel() {
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
@@ -51,13 +51,22 @@ export default function ChatPanel() {
   return (
     <div className="mx-auto flex h-[calc(100vh-8rem)] max-w-3xl flex-col px-4 py-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">AI 채팅</h1>
+        <h1 className="text-2xl font-bold">면접 코치에게 묻기</h1>
         <Button variant="outline" size="sm" onClick={handleReset}>
           새 대화
         </Button>
       </div>
       <div className={cn(cardClass, 'mt-6 flex-1 space-y-3 overflow-y-auto p-4')}>
-        {messages.length === 0 && <p className="text-sm text-muted-foreground">무엇이든 물어보세요.</p>}
+        {messages.length === 0 && (
+          <div className="space-y-1 text-sm text-muted-foreground">
+            <p>면접 준비에 대해 무엇이든 물어보세요. 예를 들어 이런 질문을 해 볼 수 있어요.</p>
+            <ul className="list-disc pl-5">
+              <li>자기소개를 1분 안에 말하려면 어떻게 구성하면 좋을까요?</li>
+              <li>STAR 구조로 프로젝트 경험을 설명하는 방법을 알려 주세요.</li>
+              <li>면접에서 긴장해서 말이 빨라지는데 어떻게 연습하면 될까요?</li>
+            </ul>
+          </div>
+        )}
         {messages.map((m, i) => (
           <div key={i} className={m.role === 'user' ? 'flex justify-end' : 'flex justify-start'}>
             <p
@@ -79,7 +88,7 @@ export default function ChatPanel() {
           className="flex-1"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="메시지를 입력하세요"
+          placeholder="면접 준비에 대해 물어보세요"
         />
         <Button type="submit" disabled={sending || !input.trim()}>
           보내기

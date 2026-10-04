@@ -179,11 +179,17 @@ export default function InterviewNewPage() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl px-6 py-12">
-      <Badge variant="accent" className="mb-3">
-        <Icon name="auto_awesome" size={16} />
-        AI 맞춤 질문
-      </Badge>
+    <div className="mx-auto max-w-5xl px-6 py-12">
+      <div className="mb-3 flex flex-wrap items-center gap-3">
+        <Badge variant="accent">
+          <Icon name="auto_awesome" size={16} />
+          AI 맞춤 질문
+        </Badge>
+        <span className="flex items-center gap-1.5 font-mono text-xs text-muted-foreground">
+          <span aria-hidden="true" className="size-1.5 rounded-full bg-primary" />
+          STEP 01 / 03
+        </span>
+      </div>
       <h1 className="font-heading text-3xl font-bold tracking-tight">새 모의 면접 설정</h1>
       <p className="mt-2 max-w-2xl text-muted-foreground">
         지원하려는 분야와 채용 공고를 입력하면 AI 가 맞춤 면접 질문과 평가 의도를 만들어 드립니다.
@@ -207,6 +213,7 @@ export default function InterviewNewPage() {
                   onChange={(e) => setField(e.target.value)}
                   error={fieldErrors.field}
                 />
+                <p className="text-xs text-muted-foreground">자주 찾는 직무</p>
                 <div className="flex flex-wrap gap-2" aria-label="자주 쓰는 분야">
                   {FIELD_PRESETS.map((preset) => (
                     <button
@@ -313,6 +320,24 @@ export default function InterviewNewPage() {
           </Card>
         )}
       </div>
+
+      {!submitting && (
+        <ul className="mt-6 grid gap-4 md:grid-cols-3" aria-label="면접 연습 안내">
+          {[
+            { icon: 'videocam', title: '영상은 브라우저에서만', description: '시선·자세 분석은 내 컴퓨터 안에서 이뤄지고 영상은 서버로 전송되지 않아요.' },
+            { icon: 'query_stats', title: '내용·말하기·자세 평가', description: '답변 구조와 구체성, 말하기 속도·침묵·군말, 시선·자세를 함께 살펴봅니다.' },
+            { icon: 'lock', title: '오디오는 저장하지 않아요', description: '음성은 텍스트로 바꾼 뒤 버리고, 기록은 언제든 삭제할 수 있어요.' },
+          ].map((n) => (
+            <li key={n.title} className="rounded-card bg-card p-4 shadow-card">
+              <p className="flex items-center gap-2 font-heading text-sm font-bold">
+                <Icon name={n.icon} size={20} className="text-primary" />
+                {n.title}
+              </p>
+              <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">{n.description}</p>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   )
 }

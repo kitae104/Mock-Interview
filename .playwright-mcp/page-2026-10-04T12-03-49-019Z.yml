@@ -1,0 +1,28 @@
+- generic [ref=f1e3]:
+  - banner [ref=f1e4]:
+    - generic [ref=f1e5]:
+      - link "인터뷰AI 홈" [ref=f1e6] [cursor=pointer]:
+        - /url: /
+        - generic [ref=f1e14]:
+          - generic [ref=f1e15]: 인터뷰AI
+          - generic [ref=f1e16]: AI 모의 면접 솔루션
+      - navigation [ref=f1e17]:
+        - link "대시보드" [ref=f1e23] [cursor=pointer]:
+          - /url: /dashboard
+        - link "모의 면접" [ref=f1e24] [cursor=pointer]:
+          - /url: /interviews
+        - link "AI 채팅" [ref=f1e25] [cursor=pointer]:
+          - /url: /chat
+        - button "로그아웃" [ref=f1e26]
+  - main [ref=f1e20]:
+    - generic [ref=f1e27]:
+      - heading "안녕하세요, 화면 점검님" [level=1] [ref=f1e28]
+      - paragraph [ref=f1e29]: 로그인에 성공했습니다. 이 페이지부터 서비스 기능을 추가하세요.
+      - generic [ref=f1e31]:
+        - term [ref=f1e32]: 이메일
+        - definition [ref=f1e33]: ui-check@example.com
+        - term [ref=f1e34]: 권한
+        - definition [ref=f1e35]: USER
+        - term [ref=f1e36]: 가입일
+        - definition [ref=f1e37]: 2026. 10. 4.
+  - contentinfo [ref=f1e22]: © 2026 인터뷰AI
