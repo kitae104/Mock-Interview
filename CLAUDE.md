@@ -33,6 +33,7 @@ cd frontend && npm run lint && npm run build # 프론트엔드 린트(디자인 
 6. **비밀값은 `.env` 에만 둡니다.** `.env` 는 읽거나 커밋하지 않습니다. 새 설정은 `.env.example`, `docker-compose.yml`, 백엔드 설정 파일(기본값 포함)에 함께 추가합니다.
 7. **Docker 이름 규칙을 지킵니다.** 새 서비스의 `container_name`, `image`, 볼륨·네트워크 `name` 은 `${COMPOSE_PROJECT_NAME}-` 로 시작하고, 포트는 `127.0.0.1:${XXX_PORT:-기본값}` 으로 엽니다. 같은 Docker 에 다른 프로젝트가 함께 돌아갑니다.
 8. **되돌리기 어려운 명령은 먼저 묻습니다.** `make clean`, `docker compose down -v`, `git push`, DB 데이터 삭제.
+9. **기능 설계는 `docs/PLAN.md` 를 따릅니다.** 화면 문구, 기능 범위, 구현 선택을 정할 때도 항상 PLAN.md 를 기준으로 삼고, 디자인 시안(`design/`)의 예시 내용이 PLAN.md 와 다르면 PLAN.md 를 따릅니다.
 
 ## 확장 모듈
 

@@ -7,6 +7,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
+import app.interviews.models  # noqa: F401  (테이블 등록)
 import app.users.models  # noqa: F401  (테이블 등록)
 from app.core.config import Settings, get_settings
 from app.core.db import Base, get_db

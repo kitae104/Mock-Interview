@@ -2,6 +2,7 @@ import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext.tsx'
 import { site } from '../config/site.ts'
 import { cn } from '../lib/cn.ts'
+import Logo from './Logo.tsx'
 import Button from './ui/Button.tsx'
 import { buttonClass } from './ui/styles.ts'
 
@@ -23,14 +24,17 @@ export default function Layout() {
     <div className="flex min-h-screen flex-col bg-background text-foreground">
       <header className="border-b border-border bg-card">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
-          <Link to="/" className="font-heading text-lg font-bold text-primary">
-            {site.name}
+          <Link to="/" aria-label={`${site.name} 홈`}>
+            <Logo />
           </Link>
           <nav className="flex items-center gap-6">
             {user ? (
               <>
                 <NavLink to="/dashboard" className={navClass}>
                   대시보드
+                </NavLink>
+                <NavLink to="/interviews" className={navClass}>
+                  모의 면접
                 </NavLink>
                 <NavLink to="/chat" className={navClass}>
                   AI 채팅

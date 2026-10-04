@@ -20,10 +20,12 @@ SERVER_ERROR_MESSAGE = "서버 오류가 발생했습니다. 잠시 후 다시 �
 class ApiError(Exception):
     """사용자에게 보여줄 한국어 메시지와 상태 코드를 가진 예외. 예: raise ApiError(404, "게시글을 찾을 수 없습니다.")"""
 
-    def __init__(self, status: int, message: str) -> None:
+    def __init__(self, status: int, message: str, errors: dict[str, str] | None = None) -> None:
         super().__init__(message)
         self.status = status
         self.message = message
+        # 필드별 메시지 (예: {"questionCount": "질문 수는 3~10개여야 합니다."}). 검증을 서비스에서 할 때 씁니다.
+        self.errors = errors
 
 
 def error_body(status: int, message: str, errors: dict[str, str] | None = None) -> dict[str, Any]:
@@ -116,7 +118,7 @@ def register_error_handlers(app: FastAPI) -> None:
 
     @app.exception_handler(ApiError)
     async def api_error(_: Request, exc: ApiError) -> JSONResponse:
-        return error_response(exc.status, exc.message)
+        return error_response(exc.status, exc.message, exc.errors)
 
     @app.exception_handler(StarletteHTTPException)
     async def http_error(_: Request, exc: StarletteHTTPException) -> JSONResponse:

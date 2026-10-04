@@ -20,7 +20,8 @@ class AiSettings(BaseSettings):
     # 사용자별로 기억할 최근 메시지 수 (질문과 답 각각 1개)
     ai_history_size: int = 20
     ai_timeout_seconds: float = 120
-    ai_max_tokens: int = 1024
+    # 질문 10개 생성이나 긴 피드백(JSON)은 한국어로 3천 토큰 안팎이라 넉넉하게 둡니다.
+    ai_max_tokens: int = 4096
 
     # OpenAI 호환 API (OpenAI, Groq, Together, vLLM, LM Studio 등은 base_url 만 바꾸면 됩니다)
     openai_api_key: str = ""

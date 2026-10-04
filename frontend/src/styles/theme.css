@@ -8,55 +8,74 @@
  * 컴포넌트에서는 Tailwind 클래스로 씁니다: bg-primary, text-muted-foreground, border-border,
  * rounded-card, rounded-control, shadow-card, font-heading.
  * 값은 oklch, hex, rgb 무엇이든 됩니다.
+ *
+ * 현재 값의 출처: design/stitch/design-system/DESIGN.md ("Calm Horizon AI") 와 각 화면 code.html 의 tailwind.config.
  */
 
 :root {
-  /* 바탕과 글자 */
-  --background: oklch(0.984 0.003 247.858);
-  --foreground: oklch(0.208 0.042 265.755);
+  /* 바탕과 글자 (surface / on-surface) */
+  --background: #f8f9ff;
+  --foreground: #0b1c30;
 
   /* 카드, 폼 같은 표면 */
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.208 0.042 265.755);
+  --card: #ffffff;
+  --card-foreground: #0b1c30;
 
-  /* 주 색 (버튼, 링크, 강조) */
-  --primary: oklch(0.511 0.262 276.966);
-  --primary-foreground: oklch(0.985 0 0);
+  /* 주 색 (버튼, 링크, 강조). Stitch 의 secondary "Precision Indigo" */
+  --primary: #0051d5;
+  --primary-foreground: #ffffff;
 
-  /* 보조 버튼, 옅은 배경 */
-  --secondary: oklch(0.968 0.007 247.896);
-  --secondary-foreground: oklch(0.208 0.042 265.755);
+  /* 보조 버튼, 옅은 배경 (surface-container) */
+  --secondary: #e5eeff;
+  --secondary-foreground: #0b1c30;
 
   /* 덜 중요한 글자와 배경 (설명, 빈 상태) */
-  --muted: oklch(0.968 0.007 247.896);
-  --muted-foreground: oklch(0.446 0.043 257.281);
+  --muted: #eff4ff;
+  --muted-foreground: #45464d;
 
-  /* 선택·활성 표시 */
-  --accent: oklch(0.962 0.018 272.314);
-  --accent-foreground: oklch(0.457 0.24 277.023);
+  /* 선택·활성 표시 (secondary-fixed) */
+  --accent: #dbe1ff;
+  --accent-foreground: #003ea8;
 
   /* 오류, 삭제 */
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.985 0 0);
+  --destructive: #ba1a1a;
+  --destructive-foreground: #ffffff;
+
+  /* 성공 (좋음 판정, 완료 표시): DESIGN.md 의 Calibrated Mint Emerald 를 글자로 읽히도록 어둡게 */
+  --success: #047857;
+  --success-foreground: #ffffff;
+
+  /* 주의 (보통·경고 판정): DESIGN.md 의 Amber 를 글자로 읽히도록 어둡게 */
+  --warning: #b45309;
+  --warning-foreground: #ffffff;
+
+  /* 어두운 강조 패널 (하단 CTA 같은 곳). Stitch 의 primary-container */
+  --inverse: #131b2e;
+  --inverse-foreground: #ffffff;
 
   /* 선 */
-  --border: oklch(0.929 0.013 255.508);
-  --input: oklch(0.869 0.022 252.894);
-  --ring: oklch(0.585 0.233 277.117);
+  --border: #e2e8f0;
+  --input: #cbd5e1;
+  --ring: #316bf3;
 
-  /* 글꼴. 웹 글꼴을 쓰려면 글꼴 파일이나 <link> 를 추가하고 이름을 앞에 넣으세요 (design/README.md). */
-  --font-body: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
-  --font-display: var(--font-body);
+  /* 글꼴. 제목은 Plus Jakarta Sans, 본문은 Inter, 한글은 Pretendard 로 받치고 숫자·시간은 JetBrains Mono.
+     글꼴 <link> 는 frontend/index.html 에 있습니다. */
+  --font-body: 'Inter', 'Pretendard Variable', Pretendard, ui-sans-serif, system-ui, -apple-system, 'Segoe UI',
+    'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  --font-display: 'Plus Jakarta Sans', 'Pretendard Variable', Pretendard, ui-sans-serif, system-ui, -apple-system,
+    'Segoe UI', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  --font-data: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, 'Malgun Gothic', monospace;
 
   /* 모서리: 카드·패널(--radius), 버튼·입력칸(--control-radius) */
   --radius: 0.75rem;
-  --control-radius: 0.375rem;
+  --control-radius: 0.5rem;
 
-  /* 카드 그림자 */
-  --card-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  /* 카드 그림자 (DESIGN.md 의 Layer 1) */
+  --card-shadow: 0 4px 6px -1px rgb(15 23 42 / 0.04), 0 2px 4px -2px rgb(15 23 42 / 0.04);
 }
 
-/* 어두운 테마: <html class="dark"> 일 때 적용됩니다. 쓰지 않으면 지워도 됩니다. */
+/* 어두운 테마: <html class="dark"> 일 때 적용됩니다. 쓰지 않으면 지워도 됩니다.
+   Stitch 시안에 다크 값이 없어 기존 값을 그대로 두고, 새로 만든 success·warning 만 추가했습니다. */
 .dark {
   --background: oklch(0.129 0.042 264.695);
   --foreground: oklch(0.984 0.003 247.858);
@@ -72,6 +91,12 @@
   --accent-foreground: oklch(0.785 0.115 274.713);
   --destructive: oklch(0.704 0.191 22.216);
   --destructive-foreground: oklch(0.129 0.042 264.695);
+  --success: #34d399;
+  --success-foreground: #022c22;
+  --warning: #fbbf24;
+  --warning-foreground: #451a03;
+  --inverse: oklch(0.279 0.041 260.031);
+  --inverse-foreground: oklch(0.984 0.003 247.858);
   --border: oklch(0.279 0.041 260.031);
   --input: oklch(0.372 0.044 257.287);
   --ring: oklch(0.673 0.182 276.935);

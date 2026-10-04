@@ -4,6 +4,7 @@ from alembic import context
 from sqlalchemy import create_engine, pool
 
 # 모델 모듈을 모두 import 해야 autogenerate 가 테이블을 찾습니다. 새 도메인을 만들면 여기에 추가하세요.
+import app.interviews.models  # noqa: F401
 import app.users.models  # noqa: F401
 from app.core.config import get_settings
 from app.core.db import Base

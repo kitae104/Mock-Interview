@@ -1,4 +1,4 @@
-# Mock Interview
+# 인터뷰AI
 
 로그인, 회원가입, 랜딩 페이지가 준비된 상태로 시작하는 프로젝트입니다. [dev-harness](https://github.com/kitae104/dev-harness) 템플릿으로 생성했습니다 (`.harness.json`).
 
@@ -77,7 +77,9 @@ backend/
 │   ├── core/        # config(환경 변수), db(세션), security(비밀번호, JWT, 현재 사용자)
 │   ├── common/      # ApiError·에러 형식, 공용 스키마, 검증 메시지
 │   ├── auth/        # 회원가입·로그인
-│   └── users/       # User 모델, /api/users/me
+│   ├── users/       # User 모델, /api/users/me
+│   ├── ai/          # AI 채팅, ChatModel, JSON 응답 검증(structured.py)
+│   └── interviews/  # 모의 면접 (모델, 질문 생성 프롬프트, 구성표, 호출 한도)
 ├── migrations/      # Alembic 마이그레이션
 └── tests/
 
@@ -135,6 +137,23 @@ FastAPI 백엔드에서 LLM 을 부르는 채팅 API 와 화면(`/chat`)입니�
 - 제공자 바꾸기: `docker-compose.yml` 의 backend `AI_PROVIDER` 를 `openai` / `anthropic` / `ollama` 중 하나로 바꾸고 해당 키·모델 변수를 추가합니다. OpenAI 호환 서버(Groq, Together, vLLM, LM Studio 등)는 `OPENAI_BASE_URL` 만 바꾸면 됩니다.
 - 시스템 프롬프트: `AI_SYSTEM_PROMPT` 환경 변수 (`app/ai/config.py`).
 - 다른 AI 기능(요약, 분류, RAG 등)은 `app/ai/providers.py` 의 `ChatModelDep` 를 받아 새 라우터에서 쓰면 됩니다.
+- JSON 으로 답을 받아 검증해야 하는 기능은 `app/ai/structured.py` 의 `complete_json()` 을 씁니다 (형식 오류 시 한 번 다시 요청).
+
+## 모의 면접 (`backend/app/interviews/`)
+
+분야·수준·질문 수(·채용 공고)로 AI 가 면접 질문과 평가 의도를 만들고, 면접을 저장·조회·삭제합니다. 전체 설계와 구현 단계는 `docs/PLAN.md` 를 따릅니다. 현재 구현은 1단계(면접 세트와 질문 생성)입니다. 모든 API 는 로그인(Bearer)이 필요하고, 다른 사용자의 면접은 404 입니다.
+
+| 메서드 | 경로 | 설명 |
+| --- | --- | --- |
+| GET | `/api/interviews/config` | 입력 범위(질문 수, 생각할 시간, 공고 글자 수 등)와 기본값 |
+| POST | `/api/interviews` | `{ field, level, questionCount, prepSeconds?, jobPosting? }` → 201 면접(READY, 질문 포함). AI 가 질문을 만드느라 10~30초 걸릴 수 있음. 실패하면 502 이고 저장되지 않음 |
+| GET | `/api/interviews` | 내 면접 목록 (최신순). 쿼리 `status`, `limit`(기본 20, 최대 50), `offset` → `{ items, total }` |
+| GET | `/api/interviews/{id}` | 면접 상세 (질문 포함). 평가 의도는 면접 진행 중에는 null |
+| DELETE | `/api/interviews/{id}` | 삭제 → 204 (질문·답변도 함께 삭제) |
+
+- 설정: `INTERVIEW_*` 환경 변수(하루 생성 한도, 분당 AI 호출 한도 등)는 `.env.example` 에 있습니다. 질문 생성 응답이 잘리지 않도록 `AI_MAX_TOKENS` 를 4096 으로 둡니다.
+- 질문 구성표와 앞으로 추가될 판정 기준은 `app/interviews/thresholds.py` 에 모읍니다.
+- Windows 에서 로컬 테스트: `psycopg` 바이너리가 보안 정책에 막히면 `DATABASE_URL=sqlite:// uv run python -m pytest -q` 로 실행하세요 (테스트는 SQLite 만 씁니다).
 
 ## Claude Code 하네스
 

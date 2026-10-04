@@ -1,0 +1,77 @@
+- generic [ref=f6e3]:
+  - banner [ref=f6e4]:
+    - generic [ref=f6e5]:
+      - link "인터뷰AI 홈" [ref=f6e6] [cursor=pointer]:
+        - /url: /
+        - generic [ref=f6e14]:
+          - generic [ref=f6e15]: 인터뷰AI
+          - generic [ref=f6e16]: AI 모의 면접 솔루션
+      - navigation [ref=f6e17]:
+        - link "대시보드" [ref=f6e23] [cursor=pointer]:
+          - /url: /dashboard
+        - link "모의 면접" [ref=f6e24] [cursor=pointer]:
+          - /url: /interviews
+        - link "AI 채팅" [ref=f6e25] [cursor=pointer]:
+          - /url: /chat
+        - button "로그아웃" [ref=f6e26]
+  - main [ref=f6e20]:
+    - generic [ref=f6e27]:
+      - generic [ref=f6e28]:
+        - generic [aria-hidden] [ref=f6e29]: auto_awesome
+        - text: AI 맞춤 질문
+      - heading "새 모의 면접 설정" [level=1] [ref=f6e30]
+      - paragraph [ref=f6e31]: 지원하려는 분야와 채용 공고를 입력하면 AI 가 맞춤 면접 질문과 평가 의도를 만들어 드립니다.
+      - generic [ref=f6e34]:
+        - generic [ref=f6e35]:
+          - heading "면접 분야 및 포지션" [level=2] [ref=f6e36]
+          - generic [ref=f6e38]:
+            - generic [ref=f6e39]: 분야
+            - textbox "분야" [ref=f6e40]:
+              - /placeholder: "예: 프론트엔드 개발자, 데이터 엔지니어, B2B 프로덕트 매니저"
+          - generic "자주 쓰는 분야" [ref=f6e41]:
+            - button "프론트엔드 개발자" [ref=f6e42]
+            - button "백엔드 개발자" [ref=f6e43]
+            - button "데이터 분석가" [ref=f6e44]
+            - button "마케팅" [ref=f6e45]
+            - button "간호사" [ref=f6e46]
+            - button "공기업 행정" [ref=f6e47]
+        - generic [ref=f6e48]:
+          - generic [ref=f6e49]:
+            - heading "지원 수준" [level=2] [ref=f6e50]
+            - radiogroup "지원 수준" [ref=f6e52]:
+              - radio "신입" [checked] [ref=f6e53]
+              - radio "경력" [ref=f6e54]
+            - paragraph [ref=f6e55]: 수준에 따라 질문의 초점이 달라집니다. 신입은 학습 태도와 경험, 경력은 역할과 성과 중심입니다.
+          - generic [ref=f6e56]:
+            - heading "생각할 시간" [level=2] [ref=f6e57]
+            - radiogroup "생각할 시간" [ref=f6e59]:
+              - radio "없음" [ref=f6e60]
+              - radio "10초" [checked] [ref=f6e61]
+              - radio "30초" [ref=f6e62]
+            - paragraph [ref=f6e63]: 질문을 들은 뒤 답변을 녹음하기 전에 정리할 시간입니다.
+        - generic [ref=f6e64]:
+          - heading "면접 질문 수" [level=2] [ref=f6e65]
+          - generic [ref=f6e67]:
+            - slider "면접 질문 수" [ref=f6e68] [cursor=pointer]: "5"
+            - generic [ref=f6e69]: 5문항
+          - paragraph [ref=f6e70]: 3~10문항 중에서 고르세요. 질문 읽기, 생각할 시간, 답변(평균 약 90초)을 합쳐 예상 소요 시간은 약 10분입니다. 답변은 질문마다 최대 120초입니다.
+        - generic [ref=f6e71]:
+          - heading "채용 공고 (선택)" [level=2] [ref=f6e72]
+          - generic [ref=f6e74]:
+            - generic [ref=f6e75]:
+              - generic [ref=f6e76]: 채용 공고 내용
+              - generic [ref=f6e77]: 0 / 4,000자
+            - textbox "채용 공고 내용" [ref=f6e78]:
+              - /placeholder: 채용 공고의 담당 업무, 자격 요건, 우대 사항을 붙여넣어 주세요. 공고를 자세히 입력할수록 질문이 공고에 가까워집니다.
+          - paragraph [ref=f6e79]:
+            - generic [aria-hidden] [ref=f6e80]: info
+            - text: 공고 내용은 질문 생성을 위해 AI 서비스 제공자에게 전송됩니다. 기밀 정보나 개인정보는 넣지 마세요.
+        - generic [ref=f6e81]:
+          - link "면접 목록으로" [ref=f6e82] [cursor=pointer]:
+            - /url: /interviews
+            - generic [aria-hidden] [ref=f6e83]: chevron_left
+            - text: 면접 목록으로
+          - button "맞춤 질문 만들기" [disabled]:
+            - text: 맞춤 질문 만들기
+            - generic [aria-hidden]: arrow_forward
+  - contentinfo [ref=f6e22]: © 2026 인터뷰AI

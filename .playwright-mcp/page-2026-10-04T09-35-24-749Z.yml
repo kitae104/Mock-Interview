@@ -1,0 +1,224 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - link "Mock Interview" [ref=e6] [cursor=pointer]:
+        - /url: /
+      - navigation [ref=e7]:
+        - link "로그인" [ref=e8] [cursor=pointer]:
+          - /url: /login
+        - link "회원가입" [ref=e9] [cursor=pointer]:
+          - /url: /signup
+  - main [ref=e10]:
+    - generic [ref=e11]:
+      - generic [ref=e13]:
+        - generic [ref=e14]:
+          - generic [ref=e15]:
+            - generic [aria-hidden] [ref=e16]: videocam
+            - text: 브라우저에서 바로 시작
+          - heading "웹캠 하나로 완성하는 실전 AI 모의 면접" [level=1] [ref=e17]: 웹캠 하나로 완성하는실전 AI 모의 면접
+          - paragraph [ref=e18]: 분야와 채용 공고를 입력하면 AI 가 면접 질문을 만들고, 웹캠 면접이 끝나면 답변 내용·말하기·자세를 분석한 피드백 리포트를 보여 줍니다.
+          - generic [ref=e19]:
+            - link "시작하기" [ref=e20] [cursor=pointer]:
+              - /url: /signup
+              - text: 시작하기
+              - generic [aria-hidden] [ref=e21]: arrow_forward
+            - link "서비스 둘러보기" [ref=e22] [cursor=pointer]:
+              - /url: "#features"
+              - generic [aria-hidden] [ref=e23]: play_circle
+              - text: 서비스 둘러보기
+          - paragraph [ref=e24]:
+            - generic [aria-hidden] [ref=e25]: check_circle
+            - text: 별도 프로그램 설치 없이 웹 브라우저에서 진행합니다
+          - generic [ref=e26]:
+            - generic [ref=e27]:
+              - generic [aria-hidden] [ref=e28]: videocam_off
+              - paragraph [ref=e29]: 영상은 전송하지 않아요
+              - paragraph [ref=e30]: 카메라 영상은 이 브라우저 안에서만 분석합니다.
+            - generic [ref=e31]:
+              - generic [aria-hidden] [ref=e32]: mic_off
+              - paragraph [ref=e33]: 음성은 보관하지 않아요
+              - paragraph [ref=e34]: 답변 음성은 텍스트로 바꾼 뒤 저장하지 않습니다.
+            - generic [ref=e35]:
+              - generic [aria-hidden] [ref=e36]: delete
+              - paragraph [ref=e37]: 기록은 직접 관리해요
+              - paragraph [ref=e38]: 지난 면접을 다시 보고 언제든 삭제할 수 있습니다.
+        - generic [ref=e40]:
+          - generic [ref=e41]:
+            - generic [ref=e42]: 면접 화면 예시
+            - generic [ref=e47]: 녹음 중
+          - generic [ref=e50]:
+            - generic [aria-hidden] [ref=e51]: videocam
+            - generic [ref=e52]: 내 카메라 화면이 여기에 표시됩니다
+          - generic [ref=e53]:
+            - generic [ref=e55]:
+              - generic [aria-hidden] [ref=e56]: mic
+              - text: 음성 레벨
+            - generic [ref=e72]:
+              - generic [ref=e73]:
+                - generic [aria-hidden] [ref=e74]: psychology
+                - text: AI 피드백
+              - paragraph [ref=e75]: 답변이 끝나면 내용, 말하기, 자세에 대한 피드백이 이곳에 표시됩니다.
+      - generic [ref=e77]:
+        - generic [ref=e78]:
+          - generic [aria-hidden] [ref=e80]: edit_note
+          - generic [ref=e81]:
+            - paragraph [ref=e82]: 맞춤 질문 생성
+            - paragraph [ref=e83]: 분야·수준·채용 공고를 반영
+        - generic [ref=e84]:
+          - generic [aria-hidden] [ref=e86]: psychology
+          - generic [ref=e87]:
+            - paragraph [ref=e88]: 답변 내용 분석
+            - paragraph [ref=e89]: 질문 의도에 맞는지 AI 가 평가
+        - generic [ref=e90]:
+          - generic [aria-hidden] [ref=e92]: monitoring
+          - generic [ref=e93]:
+            - paragraph [ref=e94]: 말하기·자세 지표
+            - paragraph [ref=e95]: 속도, 침묵, 시선, 자세를 수치로
+        - generic [ref=e96]:
+          - generic [aria-hidden] [ref=e98]: assignment
+          - generic [ref=e99]:
+            - paragraph [ref=e100]: 종합 리포트
+            - paragraph [ref=e101]: 면접이 끝나면 바로 확인
+      - generic [ref=e102]:
+        - generic [ref=e103]:
+          - generic [ref=e104]: 분석 항목
+          - heading "단순 텍스트 피드백을 넘어선 네 가지 분석" [level=2] [ref=e105]: 단순 텍스트 피드백을 넘어선네 가지 분석
+          - paragraph [ref=e106]: 웹캠과 마이크만으로 답변의 내용과 전달 방식을 함께 살펴봅니다.
+        - generic [ref=e107]:
+          - generic [ref=e108]:
+            - generic [ref=e109]:
+              - generic [aria-hidden] [ref=e111]: graphic_eq
+              - generic [ref=e112]: 분석 01
+              - heading "말하기 분석" [level=3] [ref=e113]
+              - paragraph [ref=e114]: 답변을 텍스트로 바꿔 말하기 속도, 침묵, 군말, 첫 발화까지 걸린 시간을 계산합니다.
+            - generic [ref=e115]:
+              - generic [ref=e116]: 분당 음절 수
+              - generic [ref=e117]: 2초 이상 침묵
+              - generic [ref=e118]: 군말 횟수
+              - generic [ref=e119]: 첫 발화 시간
+          - generic [ref=e120]:
+            - generic [ref=e121]:
+              - generic [aria-hidden] [ref=e123]: visibility
+              - generic [ref=e124]: 분석 02
+              - heading "시선·자세" [level=3] [ref=e125]
+              - paragraph [ref=e126]: 카메라 응시, 머리 흔들림, 어깨 기울기, 기준 자세와 비교한 자세 변화를 브라우저에서 추정합니다.
+            - generic [ref=e127]:
+              - generic [ref=e128]: 카메라 응시
+              - generic [ref=e129]: 머리 흔들림
+              - generic [ref=e130]: 어깨 기울기
+              - generic [ref=e131]: 자세 변화
+          - generic [ref=e132]:
+            - generic [ref=e133]:
+              - generic [aria-hidden] [ref=e135]: mood
+              - generic [ref=e136]: 분석 03
+              - heading "표정·제스처" [level=3] [ref=e137]
+              - paragraph [ref=e138]: 미소, 눈 깜빡임, 손 움직임을 참고값으로 보여 줍니다. 점수 비중은 작고 분석은 끌 수 있습니다.
+            - generic [ref=e139]:
+              - generic [ref=e140]: 미소
+              - generic [ref=e141]: 눈 깜빡임
+              - generic [ref=e142]: 손 제스처
+          - generic [ref=e143]:
+            - generic [ref=e144]:
+              - generic [aria-hidden] [ref=e146]: schema
+              - generic [ref=e147]: 분석 04
+              - heading "답변 내용 피드백" [level=3] [ref=e148]
+              - paragraph [ref=e149]: 질문 의도에 맞는지, 구조(STAR 등)와 구체성이 있는지 살펴보고 개선 답변 예시를 제안합니다.
+            - generic [ref=e150]:
+              - generic [ref=e151]: 질문 적합성
+              - generic [ref=e152]: 구조
+              - generic [ref=e153]: 구체성
+              - generic [ref=e154]: 직무 적합성
+        - paragraph [ref=e155]: 표정·시선·자세 지표는 카메라 영상으로 추정한 참고값이며 조명, 카메라 위치, 개인 차이에 따라 정확하지 않을 수 있습니다.
+      - generic [ref=e157]:
+        - generic [ref=e158]:
+          - generic [ref=e159]: 이용 방법
+          - heading "세 단계로 끝나는 면접 연습" [level=2] [ref=e160]
+          - paragraph [ref=e161]: 복잡한 설정 없이 분야만 정하면 면접 환경이 준비됩니다.
+        - generic [ref=e162]:
+          - generic [ref=e163]:
+            - generic [ref=e164]:
+              - generic [ref=e165]: "01"
+              - generic [ref=e166]: 단계 1
+            - heading "분야·공고 입력" [level=3] [ref=e167]
+            - paragraph [ref=e168]: 지원 분야와 수준, 질문 수를 고르고 채용 공고가 있다면 붙여 넣으세요.
+            - generic [ref=e169]:
+              - generic [aria-hidden] [ref=e170]: description
+              - generic [ref=e171]: 채용 공고는 선택 입력
+          - generic [ref=e172]:
+            - generic [ref=e173]:
+              - generic [ref=e174]: "02"
+              - generic [ref=e175]: 단계 2
+            - heading "면접 응시" [level=3] [ref=e176]
+            - paragraph [ref=e177]: 카메라·마이크를 점검한 뒤, 질문을 듣고 생각할 시간을 가진 다음 답변을 녹음합니다.
+            - generic [ref=e178]:
+              - generic [aria-hidden] [ref=e179]: radio_button_checked
+              - generic [ref=e180]: 질문마다 답변 시간 제한
+          - generic [ref=e181]:
+            - generic [ref=e182]:
+              - generic [ref=e183]: "03"
+              - generic [ref=e184]: 단계 3
+            - heading "리포트 확인" [level=3] [ref=e185]
+            - paragraph [ref=e186]: 답변별 피드백과 종합 리포트를 보고, 지난 면접과 비교해 보세요.
+            - generic [ref=e187]:
+              - generic [aria-hidden] [ref=e188]: download_done
+              - generic [ref=e189]: 면접 기록에서 다시 보기
+      - generic [ref=e192]:
+        - generic [ref=e193]:
+          - generic [ref=e194]: 비교
+          - heading "면접 스터디와 Mock Interview 비교" [level=2] [ref=e195]: 면접 스터디와Mock Interview 비교
+          - paragraph [ref=e196]: 애매한 감상 대신 지표와 근거가 있는 개선 방향을 받아 보세요.
+          - list [ref=e197]:
+            - listitem [ref=e198]:
+              - generic [aria-hidden] [ref=e199]: check
+              - generic [ref=e200]: 답변을 텍스트로 변환하고 군말 횟수를 계산
+            - listitem [ref=e201]:
+              - generic [aria-hidden] [ref=e202]: check
+              - generic [ref=e203]: 채용 공고를 반영한 질문과 직무 적합성 피드백
+            - listitem [ref=e204]:
+              - generic [aria-hidden] [ref=e205]: check
+              - generic [ref=e206]: 점수, 개선점, 개선 답변 예시 제공
+        - table [ref=e209]:
+          - rowgroup [ref=e210]:
+            - row [ref=e211]:
+              - columnheader "평가 항목" [ref=e212]
+              - columnheader "일반 면접 스터디" [ref=e213]
+              - columnheader "Mock Interview" [ref=e214]
+          - rowgroup [ref=e215]:
+            - row [ref=e216]:
+              - cell "피드백 기준" [ref=e217]
+              - cell "사람마다 다른 주관적 감상" [ref=e218]
+              - cell "같은 기준으로 계산한 지표와 평가" [ref=e219]
+            - row [ref=e220]:
+              - cell "시간·장소" [ref=e221]
+              - cell "일정 조율과 장소 필요" [ref=e222]
+              - cell "웹캠이 있는 브라우저에서 언제든" [ref=e223]
+            - row [ref=e224]:
+              - cell "질문" [ref=e225]
+              - cell "인터넷에 공개된 기출 위주" [ref=e226]
+              - cell "분야·수준·채용 공고를 반영해 생성" [ref=e227]
+            - row [ref=e228]:
+              - cell "기록" [ref=e229]
+              - cell "수기 메모, 분실 위험" [ref=e230]
+              - cell "면접 기록으로 저장하고 다시 보기" [ref=e231]
+      - generic [ref=e233]:
+        - generic [ref=e234]: 지금 시작하기
+        - heading "다음 면접, 미리 연습해 보세요." [level=2] [ref=e235]: 다음 면접,미리 연습해 보세요.
+        - paragraph [ref=e236]: 웹캠과 마이크만 있으면 바로 시작할 수 있습니다. 첫 면접으로 내 답변과 말하기 습관을 확인해 보세요.
+        - generic [ref=e237]:
+          - link "모의 면접 시작하기" [ref=e238] [cursor=pointer]:
+            - /url: /signup
+            - text: 모의 면접 시작하기
+            - generic [aria-hidden] [ref=e239]: videocam
+          - link "로그인" [ref=e240] [cursor=pointer]:
+            - /url: /login
+        - list [ref=e241]:
+          - listitem [ref=e242]:
+            - generic [aria-hidden] [ref=e243]: check
+            - text: 별도 설치 불필요
+          - listitem [ref=e244]:
+            - generic [aria-hidden] [ref=e245]: check
+            - text: 데스크톱 Chrome·Edge 권장
+          - listitem [ref=e246]:
+            - generic [aria-hidden] [ref=e247]: check
+            - text: 영상은 서버로 전송되지 않음
+  - contentinfo [ref=e248]: © 2026 Mock Interview

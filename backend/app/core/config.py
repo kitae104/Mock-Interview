@@ -25,6 +25,19 @@ class Settings(BaseSettings):
     jwt_access_token_validity_seconds: int = 3600
     cors_allowed_origins: str = "http://localhost:5173,http://localhost:3000"
 
+    # 모의 면접 (docs/PLAN.md 9장). 판정 기준은 app/interviews/thresholds.py, 여기에는 운영 한도만 둡니다.
+    interview_max_answer_seconds: int = 120
+    interview_min_questions: int = 3
+    interview_max_questions: int = 10
+    interview_default_questions: int = 5
+    interview_max_audio_mb: int = 10
+    interview_job_posting_max_chars: int = 4000
+    interview_daily_limit: int = 20  # 사용자별 24시간 동안 만들 수 있는 면접 수
+    interview_ai_rate_per_minute: int = 20  # 사용자별 분당 AI 호출 한도 (프로세스 메모리 기준)
+    interview_prep_seconds_options: str = "0,10,30"
+    interview_default_prep_seconds: int = 10
+    interview_consent_version: str = "2026-10-v1"
+
     @field_validator("jwt_secret")
     @classmethod
     def secret_must_be_long_enough(cls, value: str) -> str:
@@ -42,6 +55,10 @@ class Settings(BaseSettings):
     @property
     def cors_origins(self) -> list[str]:
         return [o.strip() for o in self.cors_allowed_origins.split(",") if o.strip()]
+
+    @property
+    def interview_prep_options(self) -> list[int]:
+        return [int(v) for v in self.interview_prep_seconds_options.split(",") if v.strip()]
 
 
 @lru_cache

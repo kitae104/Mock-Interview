@@ -1,0 +1,19 @@
+- generic [ref=f6e3]:
+  - banner [ref=f6e4]:
+    - generic [ref=f6e5]:
+      - link "인터뷰AI 홈" [ref=f6e6] [cursor=pointer]:
+        - /url: /
+        - generic [ref=f6e14]:
+          - generic [ref=f6e15]: 인터뷰AI
+          - generic [ref=f6e16]: AI 모의 면접 솔루션
+      - navigation [ref=f6e17]:
+        - link "대시보드" [ref=f6e23] [cursor=pointer]:
+          - /url: /dashboard
+        - link "모의 면접" [ref=f6e24] [cursor=pointer]:
+          - /url: /interviews
+        - link "AI 채팅" [ref=f6e25] [cursor=pointer]:
+          - /url: /chat
+        - button "로그아웃" [ref=f6e26]
+  - main [ref=f6e20]:
+    - paragraph [ref=f6e86]: 불러오는 중...
+  - contentinfo [ref=f6e22]: © 2026 인터뷰AI

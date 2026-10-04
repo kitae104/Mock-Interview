@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+
+<html lang="ko"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Plus+Jakarta+Sans:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"surface":"#f8f9ff","on-error-container":"#93000a","surface-bright":"#f8f9ff","on-secondary-container":"#fefcff","tertiary":"#000000","on-tertiary-container":"#009668","error":"#ba1a1a","tertiary-container":"#002113","inverse-surface":"#213145","surface-dim":"#cbdbf5","secondary-container":"#316bf3","primary-fixed":"#dae2fd","on-secondary-fixed":"#00174b","on-surface":"#0b1c30","on-error":"#ffffff","secondary":"#0051d5","secondary-fixed":"#dbe1ff","on-tertiary-fixed-variant":"#005236","primary-fixed-dim":"#bec6e0","surface-container-lowest":"#ffffff","on-tertiary-fixed":"#002113","surface-tint":"#565e74","surface-variant":"#d3e4fe","background":"#f8f9ff","tertiary-fixed":"#6ffbbe","secondary-fixed-dim":"#b4c5ff","on-tertiary":"#ffffff","error-container":"#ffdad6","surface-container-highest":"#d3e4fe","primary":"#000000","surface-container-low":"#eff4ff","on-secondary":"#ffffff","on-primary":"#ffffff","on-surface-variant":"#45464d","on-primary-fixed-variant":"#3f465c","inverse-on-surface":"#eaf1ff","outline":"#76777d","on-secondary-fixed-variant":"#003ea8","primary-container":"#131b2e","outline-variant":"#c6c6cd","surface-container-high":"#dce9ff","inverse-primary":"#bec6e0","on-background":"#0b1c30","on-primary-container":"#7c839b","surface-container":"#e5eeff","on-primary-fixed":"#131b2e","tertiary-fixed-dim":"#4edea3"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"space-xs":"0.25rem","space-lg":"1.5rem","space-sm":"0.5rem","space-xl":"2rem","space-md":"1rem","gutter":"1.5rem","margin":"2rem"},"fontFamily":{"data-mono":["JetBrains Mono"],"display-lg":["Plus Jakarta Sans"],"headline-xl":["Plus Jakarta Sans"],"headline-md":["Plus Jakarta Sans"],"label-lg":["Inter"],"headline-lg":["Plus Jakarta Sans"],"data-mono-lg":["JetBrains Mono"],"headline-sm":["Plus Jakarta Sans"],"label-md":["Inter"],"body-lg":["Inter"],"body-md":["Inter"],"body-sm":["Inter"]},"fontSize":{"data-mono":["12px",{"lineHeight":"16px","letterSpacing":"-0.01em","fontWeight":"500"}],"display-lg":["40px",{"lineHeight":"52px","letterSpacing":"-0.02em","fontWeight":"700"}],"headline-xl":["32px",{"lineHeight":"40px","letterSpacing":"-0.02em","fontWeight":"700"}],"headline-md":["20px",{"lineHeight":"28px","letterSpacing":"-0.01em","fontWeight":"600"}],"label-lg":["14px",{"lineHeight":"20px","letterSpacing":"-0.005em","fontWeight":"500"}],"headline-lg":["24px",{"lineHeight":"32px","letterSpacing":"-0.015em","fontWeight":"600"}],"data-mono-lg":["18px",{"lineHeight":"24px","letterSpacing":"-0.02em","fontWeight":"600"}],"headline-sm":["16px",{"lineHeight":"24px","letterSpacing":"-0.005em","fontWeight":"600"}],"label-md":["12px",{"lineHeight":"16px","letterSpacing":"0.01em","fontWeight":"500"}],"body-lg":["16px",{"lineHeight":"26px","letterSpacing":"-0.01em","fontWeight":"400"}],"body-md":["14px",{"lineHeight":"22px","letterSpacing":"-0.005em","fontWeight":"400"}],"body-sm":["13px",{"lineHeight":"18px","letterSpacing":"0em","fontWeight":"400"}]}}}}</script></head><body class="bg-background font-body-md text-on-surface antialiased"><header class="fixed top-0 left-0 right-0 z-50 bg-surface-container-lowest shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 max-w-7xl mx-auto px-space-lg flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-xl"><div class="flex items-center gap-space-sm"><span class="font-headline-md text-headline-md tracking-tight text-on-surface font-bold">인터뷰AI</span></div><nav class="hidden xl:flex items-center gap-space-lg" data-active-classes="text-secondary font-headline-sm"><a aria-current="page" class="transition-colors py-space-xs text-secondary font-headline-sm" data-path="landing" href="#">서비스 소개</a><a class="font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors py-space-xs" data-path="dashboard" href="#">대시보드</a><a class="font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors py-space-xs" data-path="interview-new" href="#">새 면접 생성</a><a class="font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors py-space-xs" data-path="interview-history" href="#">면접 기록 목록</a></nav></div><div class="flex items-center gap-space-md"><div class="hidden sm:flex items-center gap-space-xs bg-surface-container-low px-space-md py-space-xs rounded-full"><span class="w-2 h-2 rounded-full bg-secondary"></span><span class="font-label-md text-label-md text-secondary font-medium">실시간 AI 코칭 이용권 3회 남음</span></div><button class="p-space-xs text-on-surface-variant hover:text-on-surface transition-colors rounded-lg" type="button"><span class="material-symbols-outlined text-[22px]">notifications</span></button><div class="flex items-center gap-space-sm pl-space-xs"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1XX1rR20fscYfpSeQgkzUXAtEhjAzaO3-ne2mI_XIgr-eaCR_oAE00dBhbNpdwwTJ6P1hQa5N5CpJwru15T4Y_c0iEn7qNpFFOssOLbxENAgAJoHsTUrpnq9uLWl9eMJkZriXIRmrV4c2fYSg-fa_z4HgEJYHJQu31k6FwmGQfyAMqGy7DKGcI22bHK-2xG8L5XOMBDZYwRAUA2fHIYKByAj7xJjQNrI9nIu2IAPv4Hl-Zgfeks9uDpKBU"/><span class="hidden md:inline-block font-label-md text-label-md text-on-surface font-medium">김민준 지원자</span></div></div></div></header><main class="w-full pt-16 min-h-screen bg-background"><div class="flex flex-col w-full">
+<!-- Top Notification Pill Banner -->
+<section class="w-full max-w-7xl mx-auto px-space-lg pt-space-xl pb-space-sm flex justify-center">
+<div class="inline-flex items-center gap-space-sm bg-surface-container-high px-space-md py-space-xs rounded-full shadow-sm hover:shadow transition-shadow">
+<span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+<span class="font-data-mono text-data-mono text-on-surface-variant">2025 상반기 공채 대비</span>
+<span class="font-label-md text-label-md text-secondary font-semibold">대기업·IT 직군 최신 기출 4,200문항 업데이트</span>
+<span class="material-symbols-outlined text-[16px] text-secondary">arrow_forward</span>
+</div>
+</section>
+<!-- Hero Section -->
+<section class="w-full max-w-7xl mx-auto px-space-lg py-space-xl relative overflow-hidden">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-center">
+<!-- Left Column: Copy & Actions -->
+<div class="lg:col-span-6 flex flex-col gap-space-md z-10">
+<div class="inline-flex items-center gap-space-xs bg-surface-container px-space-sm py-1 rounded-md w-fit">
+<span class="material-symbols-outlined text-[18px] text-secondary">videocam</span>
+<span class="font-label-md text-label-md text-on-surface font-semibold tracking-wide uppercase">Browser-Native Precision AI</span>
+</div>
+<h1 class="font-display-lg text-display-lg text-on-surface font-bold tracking-tight">
+          웹캠 하나로 완성하는<br/>
+<span class="text-secondary">실전 AI 모의 면접</span>
+</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-xl">
+          실제 면접관처럼 질문하고 말하기·자세·표정·답변 내용을 정밀 AI가 분석하여 합격 피드백을 제공합니다.
+        </p>
+<!-- CTA Buttons -->
+<div class="flex flex-wrap items-center gap-space-md pt-space-sm">
+<a class="inline-flex items-center justify-center gap-space-xs px-space-lg py-3 rounded-lg bg-primary text-on-primary font-headline-sm text-headline-sm hover:bg-on-surface-variant shadow-md hover:shadow-lg transition-all duration-200" href="#">
+<span>지금 무료로 시작하기</span>
+<span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</a>
+<a class="inline-flex items-center justify-center gap-space-xs px-space-lg py-3 rounded-lg bg-surface-container-low text-on-surface font-headline-sm text-headline-sm hover:bg-surface-container shadow-sm transition-all duration-200" href="#features">
+<span class="material-symbols-outlined text-[20px] text-secondary">play_circle</span>
+<span>서비스 둘러보기</span>
+</a>
+</div>
+<!-- Subtext Micro-trust -->
+<div class="flex items-center gap-space-xs pt-space-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px] text-on-tertiary-container">check_circle</span>
+<span class="font-body-sm text-body-sm font-medium">별도 프로그램 설치 없이 웹 브라우저에서 즉시 응시 가능</span>
+</div>
+<!-- Quick Live Metrics Badge Strip -->
+<div class="grid grid-cols-3 gap-space-md pt-space-md max-w-lg">
+<div class="bg-surface-container-lowest p-space-sm rounded-lg shadow-sm">
+<span class="font-data-mono-lg text-data-mono-lg text-secondary block font-bold">184,290+</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">누적 모의 면접</span>
+</div>
+<div class="bg-surface-container-lowest p-space-sm rounded-lg shadow-sm">
+<span class="font-data-mono-lg text-data-mono-lg text-secondary block font-bold">94.8%</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">실전 체감 유사도</span>
+</div>
+<div class="bg-surface-container-lowest p-space-sm rounded-lg shadow-sm">
+<span class="font-data-mono-lg text-data-mono-lg text-secondary block font-bold">0.3초</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">초저지연 AI 피드백</span>
+</div>
+</div>
+</div>
+<!-- Right Column: Interactive Video & Analysis Showcase Mockup -->
+<div class="lg:col-span-6 relative">
+<!-- Floating Ambient Background Blur -->
+<div class="absolute -top-12 -right-12 w-80 h-80 bg-secondary/10 rounded-full blur-3xl -z-10 pointer-events-none"></div>
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-xl flex flex-col gap-space-md">
+<!-- Mockup Top Window Bar -->
+<div class="flex items-center justify-between pb-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="w-3 h-3 rounded-full bg-error"></span>
+<span class="w-3 h-3 rounded-full bg-surface-variant"></span>
+<span class="w-3 h-3 rounded-full bg-secondary-fixed"></span>
+<span class="ml-space-sm font-data-mono text-data-mono text-on-surface-variant">LIVE SESSION #2025-0814</span>
+</div>
+<div class="flex items-center gap-space-xs bg-surface-container-low px-space-sm py-1 rounded-full">
+<span class="w-2 h-2 rounded-full bg-error animate-ping"></span>
+<span class="font-label-md text-label-md text-error font-bold">REC 03:42</span>
+</div>
+</div>
+<!-- Video Canvas Simulation -->
+<div class="relative w-full aspect-video rounded-lg overflow-hidden bg-surface-container-highest">
+<img class="w-full h-full object-cover" data-alt="A confident young Korean job candidate in crisp business professional attire speaking naturally into a high-definition webcam during a modern tech company interview. Soft directional daylight and subtle blurred office background with high-end tech workspace ambience." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAWLYeLgH617X465fR9TZKYZ4nXfeckmvParMMtxORYHK9odQYA2pkKfrKD-5ZAuR-2cJQqpQ9cehc1ehdqKIXiIxXUr8eOg171PJrdj7TadO3TYOn02XjIorc0DZBV8FFe5_qG2-uzuGiAKM_lhF-ZiSW1DdUrBsHCfl4oYBLLEVdCpI1JIAkrBIK5nwsIjsRoINHGZ9Y2n95LagjnQI_v-WqvC8Rk7Wti40olbEcLhopyYCN4QoTD"/>
+<!-- Real-time Webcam Face Tracking Box Overlay -->
+<div class="absolute top-[18%] left-[28%] w-[44%] h-[60%] border-2 border-dashed border-secondary/80 rounded-xl pointer-events-none flex flex-col justify-between p-2">
+<div class="flex justify-between items-start">
+<span class="bg-secondary text-on-secondary font-data-mono text-data-mono px-1.5 py-0.5 rounded shadow">FACE LOC #01</span>
+<span class="bg-surface-container-lowest/90 text-on-surface font-data-mono text-data-mono px-1.5 py-0.5 rounded shadow">X:142 Y:88</span>
+</div>
+<div class="flex justify-between items-end">
+<span class="bg-surface-container-lowest/90 text-secondary font-label-md text-label-md px-1.5 py-0.5 rounded shadow font-semibold">정면 응시율 96%</span>
+<span class="bg-tertiary-fixed text-on-tertiary-fixed font-data-mono text-data-mono px-1.5 py-0.5 rounded shadow">안면 안정도 우수</span>
+</div>
+</div>
+<!-- Pose Alignment Tag -->
+<div class="absolute bottom-3 left-3 bg-inverse-surface/85 backdrop-blur text-inverse-on-surface px-space-sm py-1 rounded-md flex items-center gap-1.5 shadow">
+<span class="material-symbols-outlined text-[16px] text-tertiary-fixed">accessibility_new</span>
+<span class="font-label-md text-label-md font-medium">자세 밸런스: 정상 수평 (오차 ±0.8°)</span>
+</div>
+<!-- Real-time Emotion Metric Tag -->
+<div class="absolute top-3 right-3 bg-inverse-surface/85 backdrop-blur text-inverse-on-surface px-space-sm py-1 rounded-md flex items-center gap-1.5 shadow">
+<span class="material-symbols-outlined text-[16px] text-secondary-fixed">sentiment_satisfied</span>
+<span class="font-label-md text-label-md font-medium">자신감 지수 92점</span>
+</div>
+</div>
+<!-- Bottom Audio & AI Real-Time Coaching Overlay Row -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-space-sm pt-space-xs">
+<!-- Audio Waveform Monitor Module -->
+<div class="md:col-span-5 bg-surface-container-low p-space-sm rounded-lg flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface-variant font-medium flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-secondary">mic</span>
+                  음성 WPM 트래커
+                </span>
+<span class="font-data-mono text-data-mono text-secondary font-bold">132 WPM (적정)</span>
+</div>
+<!-- Waveform SVG Bars Simulation -->
+<div class="h-8 flex items-end gap-1 px-1 py-1">
+<span class="w-1.5 bg-secondary-container rounded-full h-3"></span>
+<span class="w-1.5 bg-secondary rounded-full h-5"></span>
+<span class="w-1.5 bg-secondary-container rounded-full h-4"></span>
+<span class="w-1.5 bg-secondary rounded-full h-7"></span>
+<span class="w-1.5 bg-secondary rounded-full h-8 animate-pulse"></span>
+<span class="w-1.5 bg-secondary-container rounded-full h-5"></span>
+<span class="w-1.5 bg-secondary rounded-full h-6"></span>
+<span class="w-1.5 bg-secondary-container rounded-full h-3"></span>
+<span class="w-1.5 bg-secondary rounded-full h-6"></span>
+<span class="w-1.5 bg-secondary-container rounded-full h-4"></span>
+<span class="w-1.5 bg-secondary rounded-full h-7"></span>
+<span class="w-1.5 bg-secondary-container rounded-full h-3"></span>
+<span class="w-1.5 bg-secondary rounded-full h-5"></span>
+<span class="w-1.5 bg-secondary-container rounded-full h-2"></span>
+</div>
+</div>
+<!-- Dynamic AI Coaching Suggestion Card -->
+<div class="md:col-span-7 bg-surface-container-high p-space-sm rounded-lg flex flex-col justify-center">
+<div class="flex items-center gap-1.5 text-secondary font-label-md text-label-md font-bold mb-1">
+<span class="material-symbols-outlined text-[18px]">psychology</span>
+<span>실시간 AI 코칭</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface leading-tight">
+                "STAR 기법 중 <span class="font-bold text-secondary">Result(성과 수치)</span>가 누락되었습니다. 런칭 후 MAU나 전환율 증가 지표를 덧붙여보세요."
+              </p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Key Highlights Strip -->
+<section class="w-full bg-surface-container-lowest shadow-sm py-space-lg my-space-lg">
+<div class="max-w-7xl mx-auto px-space-lg">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-space-lg items-center">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[24px]">verified</span>
+</div>
+<div>
+<span class="font-headline-sm text-headline-sm text-on-surface block">삼성·네카라쿠배</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">직무별 평가표 100% 매칭</span>
+</div>
+</div>
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[24px]">speed</span>
+</div>
+<div>
+<span class="font-headline-sm text-headline-sm text-on-surface block">종료 후 즉시 발급</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">5페이지 심층 역량 진단지</span>
+</div>
+</div>
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[24px]">lock</span>
+</div>
+<div>
+<span class="font-headline-sm text-headline-sm text-on-surface block">완전 암호화 보안</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">응시 영상 자동 폐기 원칙</span>
+</div>
+</div>
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[24px]">record_voice_over</span>
+</div>
+<div>
+<span class="font-headline-sm text-headline-sm text-on-surface block">STT 음성 복원</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">추임새·말버릇 자동 교정</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Feature Grid: 4 Key Analysis Pillars -->
+<section class="w-full max-w-7xl mx-auto px-space-lg py-space-xl" id="features">
+<div class="text-center max-w-3xl mx-auto mb-space-xl">
+<div class="inline-flex items-center gap-space-xs bg-surface-container-high px-space-sm py-1 rounded-full mb-space-sm">
+<span class="font-data-mono text-data-mono text-secondary font-bold">4-DIMENSIONAL AUDIT</span>
+</div>
+<h2 class="font-headline-xl text-headline-xl text-on-surface font-bold">
+        단순 텍스트 피드백을 넘어선<br/>
+        4대 정밀 분석 엔진
+      </h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant mt-space-sm">
+        인사담당관이 채용 면접장에서 가장 눈여겨보는 핵심 지표를 웹캠과 마이크만으로 실시간 수치화합니다.
+      </p>
+</div>
+<!-- Bento Grid Container -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-space-lg">
+<!-- Card 1: WPM & Speech Tempo -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
+<div>
+<div class="w-12 h-12 rounded-xl bg-surface-container-high flex items-center justify-center text-secondary mb-space-md">
+<span class="material-symbols-outlined text-[28px]">graphic_eq</span>
+</div>
+<span class="font-data-mono text-data-mono text-secondary block mb-1">PILLAR 01</span>
+<h3 class="font-headline-md text-headline-md text-on-surface font-bold mb-space-xs">
+            말하기 속도 &amp; WPM 분석
+          </h3>
+<p class="font-body-md text-body-md text-on-surface-variant">
+            긴장했을 때 급격히 빨라지거나 느려지는 발화 템포를 실시간으로 탐지하여 면접관이 가장 편안하게 듣는 120~140 WPM 템포를 유도합니다.
+          </p>
+</div>
+<div class="mt-space-lg bg-surface-container-low p-space-sm rounded-lg">
+<div class="flex justify-between items-center mb-1">
+<span class="font-label-md text-label-md text-on-surface-variant">현재 분당 단어수</span>
+<span class="font-data-mono text-data-mono font-bold text-on-surface">128 WPM</span>
+</div>
+<!-- Bar gauge -->
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden flex">
+<div class="bg-surface-variant w-[25%] h-full"></div>
+<div class="bg-secondary w-[50%] h-full"></div>
+<div class="bg-surface-variant w-[25%] h-full"></div>
+</div>
+<div class="flex justify-between text-[10px] text-on-surface-variant mt-1 font-data-mono">
+<span>느림(100)</span>
+<span class="text-secondary font-bold">최적구간</span>
+<span>빠름(160)</span>
+</div>
+</div>
+</div>
+<!-- Card 2: Eye Contact & Posture -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
+<div>
+<div class="w-12 h-12 rounded-xl bg-surface-container-high flex items-center justify-center text-secondary mb-space-md">
+<span class="material-symbols-outlined text-[28px]">visibility</span>
+</div>
+<span class="font-data-mono text-data-mono text-secondary block mb-1">PILLAR 02</span>
+<h3 class="font-headline-md text-headline-md text-on-surface font-bold mb-space-xs">
+            시선 &amp; 자세 모니터링
+          </h3>
+<p class="font-body-md text-body-md text-on-surface-variant">
+            웹캠 렌즈 정면 응시율과 머리 흔들림, 좌우 턱 기울임을 안면 키포인트 트래킹으로 추적해 불안해 보이는 시선 이탈을 방지합니다.
+          </p>
+</div>
+<div class="mt-space-lg bg-surface-container-low p-space-sm rounded-lg flex items-center gap-space-md">
+<!-- Circular Score SVG -->
+<div class="relative w-14 h-14 flex items-center justify-center">
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 36 36">
+<path class="text-surface-container-high" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3.5"></path>
+<path class="text-secondary" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="96, 100" stroke-linecap="round" stroke-width="3.5"></path>
+</svg>
+<span class="absolute font-data-mono text-data-mono font-bold text-on-surface">96%</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-semibold">카메라 렌즈 응시율</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">평균 이탈 횟수: 1회 미만</span>
+</div>
+</div>
+</div>
+<!-- Card 3: Facial Expression & Non-verbal -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
+<div>
+<div class="w-12 h-12 rounded-xl bg-surface-container-high flex items-center justify-center text-secondary mb-space-md">
+<span class="material-symbols-outlined text-[28px]">mood</span>
+</div>
+<span class="font-data-mono text-data-mono text-secondary block mb-1">PILLAR 03</span>
+<h3 class="font-headline-md text-headline-md text-on-surface font-bold mb-space-xs">
+            표정 &amp; 비언어적 태도
+          </h3>
+<p class="font-body-md text-body-md text-on-surface-variant">
+            답변 도중 발생하는 미세 당황 표정, 찡그림, 미소 빈도를 1,000만 개 표정 데이터셋 기반 딥러닝으로 판독하여 호감도를 극대화합니다.
+          </p>
+</div>
+<div class="mt-space-lg bg-surface-container-low p-space-sm rounded-lg">
+<div class="flex justify-between items-center mb-1">
+<span class="font-label-md text-label-md text-on-surface-variant">감정 분포도</span>
+<span class="font-data-mono text-data-mono text-on-tertiary-container font-semibold">자신감 78%</span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden flex">
+<div class="bg-secondary h-full" style="width: 78%;"></div>
+<div class="bg-surface-variant h-full" style="width: 16%;"></div>
+<div class="bg-error-container h-full" style="width: 6%;"></div>
+</div>
+<div class="flex justify-between text-[10px] text-on-surface-variant mt-1 font-data-mono">
+<span>신뢰 78%</span>
+<span>중립 16%</span>
+<span>긴장 6%</span>
+</div>
+</div>
+</div>
+<!-- Card 4: STAR Answer Structure -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
+<div>
+<div class="w-12 h-12 rounded-xl bg-surface-container-high flex items-center justify-center text-secondary mb-space-md">
+<span class="material-symbols-outlined text-[28px]">schema</span>
+</div>
+<span class="font-data-mono text-data-mono text-secondary block mb-1">PILLAR 04</span>
+<h3 class="font-headline-md text-headline-md text-on-surface font-bold mb-space-xs">
+            STAR 답변 구조화 피드백
+          </h3>
+<p class="font-body-md text-body-md text-on-surface-variant">
+            상황(S)-과제(T)-행동(A)-결과(R) 프레임워크 준수 여부와 직무 필수 핵심 키워드가 논리적으로 전달되었는지 심층 채점합니다.
+          </p>
+</div>
+<div class="mt-space-lg bg-surface-container-low p-space-sm rounded-lg flex flex-col gap-1">
+<div class="flex items-center justify-between text-label-md">
+<span class="font-data-mono font-bold text-secondary">STAR SCORE</span>
+<span class="font-data-mono font-bold text-on-surface">4.8 / 5.0</span>
+</div>
+<div class="flex gap-1 mt-1">
+<span class="flex-1 text-center py-0.5 rounded bg-surface-container-high font-data-mono text-[10px] text-on-surface font-bold">S: 100%</span>
+<span class="flex-1 text-center py-0.5 rounded bg-surface-container-high font-data-mono text-[10px] text-on-surface font-bold">T: 95%</span>
+<span class="flex-1 text-center py-0.5 rounded bg-surface-container-high font-data-mono text-[10px] text-on-surface font-bold">A: 98%</span>
+<span class="flex-1 text-center py-0.5 rounded bg-secondary text-on-secondary font-data-mono text-[10px] font-bold">R: 88%</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- How it Works: 3-Step Timeline -->
+<section class="w-full bg-surface-container-low py-space-xl">
+<div class="max-w-7xl mx-auto px-space-lg">
+<div class="text-center max-w-2xl mx-auto mb-space-xl">
+<span class="font-data-mono text-data-mono text-secondary font-bold">SIMPLE 3-STEP PROCESS</span>
+<h2 class="font-headline-xl text-headline-xl text-on-surface font-bold mt-1">
+          합격까지 가장 빠른 3단계 여정
+        </h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2">
+          복잡한 세팅 없이 1분 만에 채용공고 맞춤 면접 환경이 완성됩니다.
+        </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-lg relative">
+<!-- Step 1 -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col relative z-10">
+<div class="flex items-center justify-between mb-space-md">
+<span class="w-10 h-10 rounded-full bg-surface-container-high text-secondary flex items-center justify-center font-data-mono-lg text-data-mono-lg font-bold">
+              01
+            </span>
+<span class="font-data-mono text-data-mono text-on-surface-variant">STEP 1</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface font-bold mb-space-xs">
+            채용공고 &amp; 직무 입력
+          </h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-space-md">
+            지원하고자 하는 기업의 채용 공고 URL이나 자기소개서, 지원 직무를 붙여넣으세요.
+          </p>
+<div class="mt-auto bg-surface-container-low p-space-sm rounded-lg flex items-center gap-space-xs text-on-surface-variant font-data-mono text-data-mono">
+<span class="material-symbols-outlined text-[18px] text-secondary">description</span>
+<span class="truncate">네이버 웹플랫폼 프론트엔드 공채.pdf</span>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col relative z-10">
+<div class="flex items-center justify-between mb-space-md">
+<span class="w-10 h-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center font-data-mono-lg text-data-mono-lg font-bold">
+              02
+            </span>
+<span class="font-data-mono text-data-mono text-secondary font-bold">LIVE STAGE</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface font-bold mb-space-xs">
+            실시간 AI 면접 응시
+          </h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-space-md">
+            생성된 지원자 맞춤 압박 질문과 꼬리 질문에 웹캠을 켜고 실전처럼 구술 답변합니다.
+          </p>
+<div class="mt-auto bg-surface-container-low p-space-sm rounded-lg flex items-center gap-space-xs text-on-surface-variant font-data-mono text-data-mono">
+<span class="material-symbols-outlined text-[18px] text-error">radio_button_checked</span>
+<span>실시간 심층 꼬리질문 5문항 생성</span>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col relative z-10">
+<div class="flex items-center justify-between mb-space-md">
+<span class="w-10 h-10 rounded-full bg-surface-container-high text-secondary flex items-center justify-center font-data-mono-lg text-data-mono-lg font-bold">
+              03
+            </span>
+<span class="font-data-mono text-data-mono text-on-surface-variant">STEP 3</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface font-bold mb-space-xs">
+            정밀 분석 리포트 수령
+          </h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-space-md">
+            면접 종료 즉시 WPM 그래프, 표정 타임라인, 모범 모의답안이 포함된 리포트를 수령합니다.
+          </p>
+<div class="mt-auto bg-surface-container-low p-space-sm rounded-lg flex items-center gap-space-xs text-on-surface-variant font-data-mono text-data-mono">
+<span class="material-symbols-outlined text-[18px] text-on-tertiary-container">download_done</span>
+<span>합격 예측 스코어: 상위 3.2%</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Interactive Comparison Table Preview Section -->
+<section class="w-full max-w-7xl mx-auto px-space-lg py-space-xl">
+<div class="bg-surface-container-lowest rounded-xl shadow-md p-space-lg md:p-space-xl">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-center">
+<div class="lg:col-span-5 flex flex-col gap-space-sm">
+<span class="font-data-mono text-data-mono text-secondary font-bold">DIAGNOSTIC ACCURACY</span>
+<h2 class="font-headline-xl text-headline-xl text-on-surface font-bold">
+            기존 면접 스터디 vs<br/>인터뷰AI 정밀 분석
+          </h2>
+<p class="font-body-md text-body-md text-on-surface-variant">
+            주관적이고 애매한 스터디원들의 피드백 대신, 데이터와 수치 기반의 객관적인 개선 지침을 제공합니다.
+          </p>
+<div class="pt-space-sm">
+<div class="flex items-center gap-space-sm mb-space-xs">
+<span class="material-symbols-outlined text-[20px] text-secondary">check</span>
+<span class="font-body-md text-body-md text-on-surface">모의 답변 자동 텍스트 변환 및 불필요 추임새(어, 음) 카운팅</span>
+</div>
+<div class="flex items-center gap-space-sm mb-space-xs">
+<span class="material-symbols-outlined text-[20px] text-secondary">check</span>
+<span class="font-body-md text-body-md text-on-surface">직무별 빈출 핵심 키워드 매칭률 자동 산출</span>
+</div>
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[20px] text-secondary">check</span>
+<span class="font-body-md text-body-md text-on-surface">실제 면접관 기준 합격/불합격 판정 시뮬레이션</span>
+</div>
+</div>
+</div>
+<div class="lg:col-span-7 bg-surface-container-low rounded-xl p-space-md">
+<div class="overflow-x-auto">
+<table class="w-full text-left font-body-sm text-body-sm">
+<thead>
+<tr class="text-on-surface-variant font-label-md">
+<th class="pb-space-sm font-semibold">평가 항목</th>
+<th class="pb-space-sm font-semibold">일반 면접 스터디</th>
+<th class="pb-space-sm font-semibold text-secondary">인터뷰AI</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container-high">
+<tr>
+<td class="py-3 font-medium text-on-surface">피드백 객관성</td>
+<td class="py-3 text-on-surface-variant">스터디원 주관적 감상 중심</td>
+<td class="py-3 text-secondary font-bold">초당 30프레임 데이터 정량 채점</td>
+</tr>
+<tr>
+<td class="py-3 font-medium text-on-surface">일정 조율 &amp; 장소</td>
+<td class="py-3 text-on-surface-variant">스터디룸 대여 및 일정 조율 필요</td>
+<td class="py-3 text-secondary font-bold">24시간 365일 언제든 브라우저 실행</td>
+</tr>
+<tr>
+<td class="py-3 font-medium text-on-surface">질문 퀄리티</td>
+<td class="py-3 text-on-surface-variant">인터넷 공개 기출 복사</td>
+<td class="py-3 text-secondary font-bold">제출 자기소개서 기반 맞춤 꼬리질문</td>
+</tr>
+<tr>
+<td class="py-3 font-medium text-on-surface">리포트 보존</td>
+<td class="py-3 text-on-surface-variant">수기 메모 분실 위험</td>
+<td class="py-3 text-secondary font-bold">회차별 역량 성장 추이 영구 누적</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Social Proof & Testimonials -->
+<section class="w-full max-w-7xl mx-auto px-space-lg py-space-xl">
+<div class="text-center max-w-2xl mx-auto mb-space-xl">
+<div class="inline-flex items-center gap-space-xs bg-surface-container px-space-sm py-1 rounded-full mb-space-xs">
+<span class="material-symbols-outlined text-[16px] text-secondary">stars</span>
+<span class="font-data-mono text-data-mono text-secondary font-bold">PROVEN RESULTS</span>
+</div>
+<h2 class="font-headline-xl text-headline-xl text-on-surface font-bold">
+        18만+ 회의 응시가 증명하는<br/>합격생들의 생생한 후기
+      </h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2">
+        원하는 기업의 최종 면접 합격 통보를 받은 실제 사용자들의 이야기입니다.
+      </p>
+</div>
+<!-- Review Cards Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-lg">
+<!-- Testimonial 1 -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-space-sm">
+<span class="bg-surface-container-high text-secondary px-space-sm py-0.5 rounded font-label-md text-label-md font-bold">네이버 개발 직군 합격</span>
+<div class="flex text-secondary">
+<span class="material-symbols-outlined text-[18px]">star</span>
+<span class="material-symbols-outlined text-[18px]">star</span>
+<span class="material-symbols-outlined text-[18px]">star</span>
+<span class="material-symbols-outlined text-[18px]">star</span>
+<span class="material-symbols-outlined text-[18px]">star</span>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface mb-space-md leading-relaxed">
+            "기술 면접에서 제가 말할 때 말이 빨라지고 시선이 천장을 쳐다보는 습관이 있는 줄 몰랐습니다. WPM 그래프와 시선 응시 경고 리포트를 보며 3일간 교정한 끝에 최종 합격했습니다."
+          </p>
+</div>
+<div class="flex items-center gap-space-sm pt-space-sm">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="Close-up professional portrait of a successful young software developer smiling, modern workspace lighting, professional headshot." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB11XE6lCrR2kljUB7veLXNjU-GOBYOIuNZxIji4v8pSO3VgqMM8krNa1t7M06Yh5680MkbfxNuX1xl_vfj7H4O8IiblVYsaoHWQlTF5TpXW8vajOXXXCeeUkRZn8OBf2heS8M7y8iFv1DZLI_N_pkENDvrifbG_ul3r04ZPAiL5pJMR-Y1Yr-xAkP6YaXQ1SzgXieitzd5SkW084XsjWLTf1fhFgDBHmszgl1Me9Rw4-hfqJrjc0AI"/>
+<div>
+<span class="font-label-lg text-label-lg text-on-surface font-semibold block">이*훈 님</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">모의면접 14회 응시 후 최종합격</span>
+</div>
+</div>
+</div>
+<!-- Testimonial 2 -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-space-sm">
+<span class="bg-surface-container-high text-secondary px-space-sm py-0.5 rounded font-label-md text-label-md font-bold">카카오 서비스 기획 합격</span>
+<div class="flex text-secondary">
+<span class="material-symbols-outlined text-[18px]">star</span>
+<span class="material-symbols-outlined text-[18px]">star</span>
+<span class="material-symbols-outlined text-[18px]">star</span>
+<span class="material-symbols-outlined text-[18px]">star</span>
+<span class="material-symbols-outlined text-[18px]">star</span>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface mb-space-md leading-relaxed">
+            "STAR 답변 분석 기능이 결정적이었습니다. 제 답변에서 'Action'만 장황하고 'Result'에 정량 지표가 부족하다는 AI 피드백을 받고 답변 골격을 완전히 리빌딩했습니다."
+          </p>
+</div>
+<div class="flex items-center gap-space-sm pt-space-sm">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="Professional headshot portrait of a confident female product planner in business casual setting, subtle smile, crisp studio portrait." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAm0V6nC5bLwVcipbc5Pc88fjDLuLMNzMsWIR1w1BNw4pQ2rsyyf4BfQ4fDKxU3qmFStAbDt3m-ga30-hyieCUTOtbfbeltjrmoBEs_U6qQr_kxdpTa8rkRYiIrHkqJgKLIcsCP359rpgMGpyvErd0UzavYvMbvjsG8w97r5KrcnoHZKoDlZ-TqKN4zvvRNisBn8D4n8D6fXWhlVKTlGECacRfjdD8wN6dacxROrgJi1o1xwiUtmMPM"/>
+<div>
+<span class="font-label-lg text-label-lg text-on-surface font-semibold block">박*서 님</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">모의면접 8회 응시 후 최종합격</span>
+</div>
+</div>
+</div>
+<!-- Testimonial 3 -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-space-sm">
+<span class="bg-surface-container-high text-secondary px-space-sm py-0.5 rounded font-label-md text-label-md font-bold">토스 프로덕트 직군 합격</span>
+<div class="flex text-secondary">
+<span class="material-symbols-outlined text-[18px]">star</span>
+<span class="material-symbols-outlined text-[18px]">star</span>
+<span class="material-symbols-outlined text-[18px]">star</span>
+<span class="material-symbols-outlined text-[18px]">star</span>
+<span class="material-symbols-outlined text-[18px]">star</span>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface mb-space-md leading-relaxed">
+            "실제 면접관의 압박 질문보다 인터뷰AI의 날카로운 꼬리 질문이 더 어려웠을 정도였습니다. 덕분에 실제 면접장에서는 긴장감 전혀 없이 여유롭게 합격했습니다."
+          </p>
+</div>
+<div class="flex items-center gap-space-sm pt-space-sm">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="Portrait photo of an energetic Korean young male professional in a modern tech company office with natural ambient lighting, polite confident expression." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7yNfeLv0tq7stA-RVrvbk_2JFtWieRwPNhOUKXeE3kLXAVJumDhuavh76DCVQK2nTZnx4Ryhwa5Ajoox7hLcsZDN4Ev0qfOEvVfmjNPGH64Wmux1U7vTs2yCpSJnvr9HrucGkUW1ajLBJHNBaBEUYvgzRCAZnWVuSjx_ttwHoFSBsUUtZqgMkrloqpQj7ZokBAjit3S_3BH4bWsghDdamsWmyJoYO4VAjVdMrQ-bla-hzDz6ZZNvv"/>
+<div>
+<span class="font-label-lg text-label-lg text-on-surface font-semibold block">최*우 님</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">모의면접 21회 응시 후 최종합격</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Bottom CTA Banner -->
+<section class="w-full max-w-7xl mx-auto px-space-lg pb-space-xl">
+<div class="bg-primary-container text-on-primary rounded-xl p-space-lg md:p-space-xl shadow-xl relative overflow-hidden flex flex-col items-center text-center">
+<!-- Ambient Glow Behind CTA -->
+<div class="absolute -top-24 -left-24 w-96 h-96 bg-secondary/20 rounded-full blur-3xl pointer-events-none"></div>
+<div class="absolute -bottom-24 -right-24 w-96 h-96 bg-secondary/15 rounded-full blur-3xl pointer-events-none"></div>
+<span class="font-data-mono text-data-mono text-secondary-fixed mb-space-xs tracking-wider uppercase font-bold">START YOUR INTERVIEW TODAY</span>
+<h2 class="font-headline-xl text-headline-xl md:text-display-lg text-on-primary font-bold max-w-2xl leading-tight">
+        목표 기업 합격,<br/>
+        다음 주인공은 당신입니다.
+      </h2>
+<p class="font-body-lg text-body-lg text-on-primary-container max-w-xl mt-space-sm mb-space-lg">
+        웹캠만 켜면 지금 바로 시작할 수 있습니다. 1회 무료 체험으로 나의 실전 면접 준비도를 즉시 진단해보세요.
+      </p>
+<div class="flex flex-col sm:flex-row items-center gap-space-md z-10 w-full sm:w-auto">
+<a class="w-full sm:w-auto inline-flex items-center justify-center gap-space-xs px-space-xl py-3.5 rounded-lg bg-secondary text-on-secondary font-headline-sm text-headline-sm hover:bg-secondary-container shadow-lg hover:shadow-xl transition-all" href="#">
+<span>무료로 모의 면접 시작하기</span>
+<span class="material-symbols-outlined text-[20px]">videocam</span>
+</a>
+<a class="w-full sm:w-auto inline-flex items-center justify-center gap-space-xs px-space-lg py-3.5 rounded-lg bg-surface-container-high/20 text-on-primary font-headline-sm text-headline-sm hover:bg-surface-container-high/30 transition-all" href="#">
+<span>기업 제휴 및 단체 이용 문의</span>
+<span class="material-symbols-outlined text-[20px]">business</span>
+</a>
+</div>
+<div class="flex flex-wrap items-center justify-center gap-space-lg mt-space-lg text-on-primary-container text-body-sm">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-tertiary-fixed">check</span>
+          신용카드 등록 불필요
+        </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-tertiary-fixed">check</span>
+          3분 내 첫 리포트 확인
+        </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-tertiary-fixed">check</span>
+          Chrome, Safari, Edge 전 브라우저 완벽 호환
+        </span>
+</div>
+</div>
+</section>
+<!-- Interactive Demo Micro-script for dynamic feel -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Periodic pulse animation effect for live waveform bars
+      const bars = document.querySelectorAll('.animate-pulse');
+      setInterval(() => {
+        bars.forEach(bar => {
+          bar.style.opacity = (Math.random() * 0.5 + 0.5).toString();
+        });
+      }, 800);
+    });
+  </script>
+</div></main><footer class="w-full bg-surface-container-lowest shadow-[0_-1px_6px_rgba(0,0,0,0.02)]"><div class="max-w-7xl mx-auto px-space-lg py-space-lg flex flex-col md:flex-row items-center justify-between gap-space-md"><div class="flex items-center gap-space-md"><span class="font-headline-sm text-headline-sm text-on-surface font-bold">인터뷰AI</span><span class="font-body-sm text-body-sm text-on-surface-variant">© 2025 InterviewAI Inc. All rights reserved.</span></div><div class="flex items-center gap-space-lg"><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" href="#">이용약관</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" href="#">개인정보처리방침</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" href="#">고객지원 센터</a></div></div></footer></body></html>
