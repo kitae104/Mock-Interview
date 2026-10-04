@@ -1,0 +1,17 @@
+{
+  "generator": "dev-harness",
+  "template": "s-r",
+  "stack": {
+    "backend": "fastapi",
+    "frontend": "react"
+  },
+  "addons": [
+    "llm"
+  ],
+  "options": {
+    "aiProvider": "openai"
+  },
+  "name": "mock-interview",
+  "createdAt": "2026-10-04",
+  "harnessCommit": "0c2dea9"
+}

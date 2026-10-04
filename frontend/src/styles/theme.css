@@ -1,0 +1,78 @@
+/*
+ * 디자인 토큰 — 화면의 색, 글꼴, 모서리, 그림자는 모두 여기서 정합니다.
+ *
+ * 디자인을 바꿀 때는 이 파일의 값만 고치면 전체 화면에 반영됩니다.
+ * Google Stitch, tweakcn 등에서 가져온 디자인을 적용하는 방법: design/README.md, /apply-design 스킬.
+ *
+ * 이름은 shadcn/ui 와 같은 규칙(background, primary, muted ...)을 씁니다.
+ * 컴포넌트에서는 Tailwind 클래스로 씁니다: bg-primary, text-muted-foreground, border-border,
+ * rounded-card, rounded-control, shadow-card, font-heading.
+ * 값은 oklch, hex, rgb 무엇이든 됩니다.
+ */
+
+:root {
+  /* 바탕과 글자 */
+  --background: oklch(0.984 0.003 247.858);
+  --foreground: oklch(0.208 0.042 265.755);
+
+  /* 카드, 폼 같은 표면 */
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.208 0.042 265.755);
+
+  /* 주 색 (버튼, 링크, 강조) */
+  --primary: oklch(0.511 0.262 276.966);
+  --primary-foreground: oklch(0.985 0 0);
+
+  /* 보조 버튼, 옅은 배경 */
+  --secondary: oklch(0.968 0.007 247.896);
+  --secondary-foreground: oklch(0.208 0.042 265.755);
+
+  /* 덜 중요한 글자와 배경 (설명, 빈 상태) */
+  --muted: oklch(0.968 0.007 247.896);
+  --muted-foreground: oklch(0.446 0.043 257.281);
+
+  /* 선택·활성 표시 */
+  --accent: oklch(0.962 0.018 272.314);
+  --accent-foreground: oklch(0.457 0.24 277.023);
+
+  /* 오류, 삭제 */
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.985 0 0);
+
+  /* 선 */
+  --border: oklch(0.929 0.013 255.508);
+  --input: oklch(0.869 0.022 252.894);
+  --ring: oklch(0.585 0.233 277.117);
+
+  /* 글꼴. 웹 글꼴을 쓰려면 글꼴 파일이나 <link> 를 추가하고 이름을 앞에 넣으세요 (design/README.md). */
+  --font-body: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  --font-display: var(--font-body);
+
+  /* 모서리: 카드·패널(--radius), 버튼·입력칸(--control-radius) */
+  --radius: 0.75rem;
+  --control-radius: 0.375rem;
+
+  /* 카드 그림자 */
+  --card-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+}
+
+/* 어두운 테마: <html class="dark"> 일 때 적용됩니다. 쓰지 않으면 지워도 됩니다. */
+.dark {
+  --background: oklch(0.129 0.042 264.695);
+  --foreground: oklch(0.984 0.003 247.858);
+  --card: oklch(0.208 0.042 265.755);
+  --card-foreground: oklch(0.984 0.003 247.858);
+  --primary: oklch(0.673 0.182 276.935);
+  --primary-foreground: oklch(0.129 0.042 264.695);
+  --secondary: oklch(0.279 0.041 260.031);
+  --secondary-foreground: oklch(0.984 0.003 247.858);
+  --muted: oklch(0.279 0.041 260.031);
+  --muted-foreground: oklch(0.704 0.04 256.788);
+  --accent: oklch(0.279 0.041 260.031);
+  --accent-foreground: oklch(0.785 0.115 274.713);
+  --destructive: oklch(0.704 0.191 22.216);
+  --destructive-foreground: oklch(0.129 0.042 264.695);
+  --border: oklch(0.279 0.041 260.031);
+  --input: oklch(0.372 0.044 257.287);
+  --ring: oklch(0.673 0.182 276.935);
+}

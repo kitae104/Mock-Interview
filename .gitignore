@@ -1,0 +1,26 @@
+# env
+.env
+.env.*
+!.env.example
+
+# backend (FastAPI)
+backend/.venv/
+backend/**/__pycache__/
+backend/.pytest_cache/
+backend/.ruff_cache/
+
+# frontend
+frontend/node_modules/
+frontend/dist/
+
+# IDE / OS
+.idea/
+*.iml
+.vscode/*
+!.vscode/extensions.json
+.DS_Store
+*.log
+
+# Claude Code (개인 설정, 훅 캐시)
+.claude/settings.local.json
+.claude/.verify-cache/

@@ -1,0 +1,8 @@
+# 줄바꿈 통일: 리눅스 컨테이너에서 실행되는 스크립트(gradlew 등)가 Windows 에서 받아도 깨지지 않도록
+* text=auto eol=lf
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+*.jar binary
+*.png binary
+*.ico binary
