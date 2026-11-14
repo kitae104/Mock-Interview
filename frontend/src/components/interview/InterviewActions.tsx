@@ -10,11 +10,12 @@ export default function InterviewActions({ item }: { item: Pick<InterviewSummary
   if (item.status === 'COMPLETED') {
     return (
       <>
-        <Link to={`/interviews/${item.id}/result`} className={buttonClass({ size: 'sm' })}>
+        {/* 목록 줄마다 주 버튼이 생기지 않도록 끝난 면접의 동작은 outline/ghost 로 둡니다 */}
+        <Link to={`/interviews/${item.id}/result`} className={buttonClass({ variant: 'outline', size: 'sm' })}>
           <Icon name="assignment" size={18} />
           결과 보기
         </Link>
-        <RetryInterviewButton interviewId={item.id} size="sm" label="다시 하기" />
+        <RetryInterviewButton interviewId={item.id} variant="ghost" size="sm" label="다시 하기" />
       </>
     )
   }

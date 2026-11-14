@@ -51,10 +51,41 @@
     background-color: var(--background);
     color: var(--foreground);
     font-family: var(--font-body);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  /* 한국어는 어절 단위로 줄을 바꾸고, 띄어쓰기 없는 긴 영문·주소만 필요할 때 끊습니다 */
+  body,
+  input,
+  textarea,
+  button,
+  select {
+    word-break: keep-all;
+    overflow-wrap: anywhere;
   }
   h1,
   h2,
   h3 {
     font-family: var(--font-display);
+    line-height: 1.35;
+    text-wrap: balance;
+  }
+  /* 키보드로 이동할 때만 보이는 공통 포커스 표시. 컴포넌트가 따로 정하지 않아도 모든 링크·버튼에 적용됩니다 */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+  /* 점수·시간 같은 숫자는 자릿수 폭을 맞춰 흔들리지 않게 합니다 */
+  .font-mono,
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 }
