@@ -7,9 +7,9 @@ import MediaFailurePanel from '../components/interview/MediaFailurePanel.tsx'
 import Alert from '../components/ui/Alert.tsx'
 import Badge from '../components/ui/Badge.tsx'
 import Button from '../components/ui/Button.tsx'
-import Card from '../components/ui/Card.tsx'
 import Icon from '../components/ui/Icon.tsx'
-import { buttonClass } from '../components/ui/styles.ts'
+import PageHeader from '../components/ui/PageHeader.tsx'
+import { badgeClass, buttonClass, cardClass, listClass, textStyles } from '../components/ui/styles.ts'
 import { HintTracker, type Hint } from '../features/interview/analyzer/liveHints.ts'
 import { useNonverbalAnalyzer } from '../features/interview/analyzer/useNonverbalAnalyzer.ts'
 import { loadCheckPrefs } from '../features/interview/checkPrefs.ts'
@@ -17,6 +17,7 @@ import { useInterviewRun, type RecordedAnswer } from '../features/interview/useI
 import { useKoreanVoice } from '../features/interview/useKoreanVoice.ts'
 import { useMediaStream } from '../features/interview/useMediaStream.ts'
 import { UploadQueue } from '../features/interview/uploadQueue.ts'
+import { cn } from '../lib/cn.ts'
 import { categoryLabel } from '../lib/interviewLabels.ts'
 
 const HINTS_KEY = 'interview:liveHints'
@@ -215,7 +216,7 @@ function RunScreen({ interview, prefs }: { interview: InterviewDetail; prefs: Pr
 
   if (mediaFailed) {
     return (
-      <div className="mx-auto max-w-3xl px-6 py-10">
+      <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
         <MediaFailurePanel failure={media.failure!} onRetry={() => void media.retry()} retrying={false} />
         <Link to={`/interviews/${id}`} className={buttonClass({ variant: 'ghost' }, 'mt-4')}>
           면접 상세로
@@ -226,16 +227,15 @@ function RunScreen({ interview, prefs }: { interview: InterviewDetail; prefs: Pr
 
   if (run.phase === 'finishing') {
     return (
-      <div className="mx-auto max-w-2xl px-6 py-12">
-        <Card className="p-6">
-          <h1 className="font-heading text-xl font-bold">수고하셨어요! 답변을 정리하고 있어요</h1>
-          <p className="mt-1 text-sm text-muted-foreground">답변을 모두 보내면 결과 화면으로 이동해요. 이 화면을 닫지 말아 주세요.</p>
-          <ul className="mt-4 space-y-2" aria-label="답변 전송 상태">
+      <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6 sm:py-12">
+        <PageHeader title="수고하셨어요! 답변을 정리하고 있어요" description="답변을 모두 보내면 결과 화면으로 이동해요. 이 화면을 닫지 말아 주세요." />
+        <div className="mt-6">
+          <ul className={listClass} aria-label="답변 전송 상태">
             {interview.questions.map((q) => {
               const upload = uploads.find((u) => u.questionId === q.id)
               const done = q.answer !== null || upload?.status === 'done'
               return (
-                <li key={q.id} className="flex items-center justify-between gap-3 rounded-control bg-muted px-3 py-2 text-sm">
+                <li key={q.id} className="flex items-center justify-between gap-3 px-4 py-3 text-sm">
                   <span className="min-w-0 truncate">
                     {q.seq}. {q.text}
                   </span>
@@ -265,7 +265,8 @@ function RunScreen({ interview, prefs }: { interview: InterviewDetail; prefs: Pr
           )}
           {pending.length > 0 && <p role="status" className="mt-4 text-sm text-muted-foreground">전송이 끝나길 기다리는 중...</p>}
           {finishing && (
-            <p role="status" className="mt-4 text-sm text-muted-foreground">
+            <p role="status" className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
+              <Icon name="progress_activity" size={18} className="animate-spin" />
               AI 가 피드백과 종합 리포트를 만드는 중이에요. 최대 1분 정도 걸려요...
             </p>
           )}
@@ -286,111 +287,115 @@ function RunScreen({ interview, prefs }: { interview: InterviewDetail; prefs: Pr
               </Link>
             </div>
           )}
-        </Card>
+        </div>
       </div>
     )
   }
 
   const question = run.question
+  const progressRatio = run.total > 0 ? Math.min(run.index + (run.phase === 'gate' ? 0 : 1), run.total) / run.total : 0
   return (
-    <div className="mx-auto max-w-6xl px-6 py-8">
+    <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-8">
+      {/* 진행 막대: 몇 번째 질문인지 숫자와 함께 보여 줍니다 */}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <Badge variant="outline">
+        <div className="flex min-w-0 flex-wrap items-center gap-2">
+          <span className="text-sm font-medium">
             질문 <span className="font-mono">{progress}</span>
-          </Badge>
+          </span>
           {question && <Badge variant="accent">{categoryLabel[question.category]}</Badge>}
           {uploads.length > 0 && (pending.length > 0 || failed.length > 0) && (
-            <span role="status" className="text-xs text-muted-foreground">
+            <span role="status" className={cn('text-xs', failed.length > 0 ? 'text-destructive' : 'text-muted-foreground')}>
               {failed.length > 0 ? `전송 실패 ${failed.length}건 (마지막에 다시 보낼 수 있어요)` : '이전 답변을 보내는 중...'}
             </span>
           )}
         </div>
         <div className="flex items-center gap-2">
           {recording && (
-            <span className="flex items-center gap-2 rounded-full bg-destructive/10 px-3 py-1 text-sm font-medium text-destructive">
-              <span className="size-2.5 animate-pulse rounded-full bg-destructive" aria-hidden />
+            <span role="timer" aria-label="남은 답변 시간" className={badgeClass('danger', 'h-8 px-3 text-sm')}>
+              <span className="size-2 animate-pulse rounded-full bg-destructive" aria-hidden />
               녹음 중 <span className="font-mono">{formatClock(remainingSeconds)}</span>
             </span>
           )}
-          {!confirmStop ? (
+          {!confirmStop && (
             <Button variant="ghost" size="sm" onClick={() => setConfirmStop(true)}>
-              <Icon name="close" />
+              <Icon name="close" size={18} />
               면접 중단
             </Button>
-          ) : (
-            <span className="flex items-center gap-2 text-sm" role="alertdialog" aria-label="면접 중단 확인">
-              {notStored > 0 || recording ? (
-                <span>
-                  아직 서버에 저장되지 않은 답변이 {notStored + (recording ? 1 : 0)}개 있어요
-                  {recording && notStored > 0 && ' (녹음 중인 답변 포함)'}
-                  {recording && notStored === 0 && ' (지금 녹음 중인 답변)'}. 지금 나가면 그 답변은 사라지고, 이어서 할 때 다시 답해야 해요.
-                </span>
-              ) : (
-                <span>정말 중단할까요? 답한 질문은 저장돼 있고, 이어서 하기로 남은 질문부터 다시 할 수 있어요.</span>
-              )}
-              <Button size="sm" variant="outline" onClick={() => { setConfirmStop(false); setStopAfterUpload(false) }}>
-                계속하기
-              </Button>
-              {pending.length > 0 && !recording && (
-                <Button size="sm" variant="secondary" disabled={stopAfterUpload} onClick={() => setStopAfterUpload(true)}>
-                  {stopAfterUpload ? '전송 끝나길 기다리는 중...' : '전송 후 나가기'}
-                </Button>
-              )}
-              <Button size="sm" variant="destructive" onClick={stop}>
-                {notStored > 0 || recording ? '바로 나가기' : '중단하기'}
-              </Button>
-            </span>
           )}
         </div>
       </div>
+      <div
+        className="mt-3 h-1 overflow-hidden rounded-full bg-muted"
+        role="progressbar"
+        aria-label="면접 진행"
+        aria-valuemin={0}
+        aria-valuemax={run.total}
+        aria-valuenow={Math.round(progressRatio * run.total)}
+      >
+        <div className="h-full rounded-full bg-primary transition-[width]" style={{ width: `${progressRatio * 100}%` }} />
+      </div>
 
-      <div className="mt-5 grid gap-6 lg:grid-cols-12">
-        <div className="lg:col-span-8">
-          <CameraPreview stream={media.stream} loading={media.status !== 'ready'} videoRef={videoRef} settings={media.videoSettings}>
-            {hintsOn && hint && (
-              <div
-                role="status"
-                className="absolute right-3 top-3 flex items-center gap-1.5 rounded-control bg-inverse/70 px-3 py-1.5 text-sm text-inverse-foreground"
-              >
-                <Icon name="lightbulb" size={18} />
-                {hint.message}
-              </div>
-            )}
-            {run.phase === 'countdown' && (
-              <div className="absolute inset-0 flex items-center justify-center bg-inverse/40" aria-live="assertive">
-                <span className="font-heading text-8xl font-bold text-inverse-foreground">{run.countdown}</span>
-              </div>
-            )}
-          </CameraPreview>
-        </div>
-
-        <div className="space-y-4 lg:col-span-4">
-          <Card className="p-5">
-            {run.phase === 'gate' ? (
+      {confirmStop && (
+        <div role="alertdialog" aria-label="면접 중단 확인" className={cn(cardClass, 'mt-4 border-destructive/40 p-4 sm:p-5')}>
+          <p className="text-sm">
+            {notStored > 0 || recording ? (
               <>
-                <h1 className="font-heading text-lg font-bold">준비되면 시작해 주세요</h1>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  질문이 나오고, 다 읽은 뒤 3초 카운트다운이 끝나면 녹음이 시작돼요. 답변을 마치면 &quot;답변 완료&quot;를 눌러 주세요.
-                  {run.index > 0 && ` (${run.index + 1}번째 질문부터 이어서 진행해요.)`}
-                </p>
-                {run.error && (
-                  <div className="mt-3">
-                    <Alert>{run.error}</Alert>
-                  </div>
-                )}
-                <Button className="mt-4" size="lg" onClick={run.begin} disabled={media.status !== 'ready'}>
-                  <Icon name="play_arrow" />
-                  {run.index > 0 ? '이어서 시작' : '면접 시작'}
-                </Button>
+                아직 서버에 저장되지 않은 답변이 {notStored + (recording ? 1 : 0)}개 있어요
+                {recording && notStored > 0 && ' (녹음 중인 답변 포함)'}
+                {recording && notStored === 0 && ' (지금 녹음 중인 답변)'}. 지금 나가면 그 답변은 사라지고, 이어서 할 때 다시 답해야 해요.
               </>
             ) : (
-              <>
-                <p className="text-xs font-medium text-muted-foreground">질문 {run.index + 1}</p>
-                <p className="mt-1 text-lg font-semibold leading-relaxed" aria-live="polite">
-                  {question?.text}
-                </p>
-                <p role="status" className="mt-3 text-sm text-muted-foreground">
+              '정말 중단할까요? 답한 질문은 저장돼 있고, 이어서 하기로 남은 질문부터 다시 할 수 있어요.'
+            )}
+          </p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <Button size="sm" variant="outline" onClick={() => { setConfirmStop(false); setStopAfterUpload(false) }}>
+              계속하기
+            </Button>
+            {pending.length > 0 && !recording && (
+              <Button size="sm" variant="secondary" disabled={stopAfterUpload} onClick={() => setStopAfterUpload(true)}>
+                {stopAfterUpload ? '전송 끝나길 기다리는 중...' : '전송 후 나가기'}
+              </Button>
+            )}
+            <Button size="sm" variant="destructive" onClick={stop}>
+              {notStored > 0 || recording ? '바로 나가기' : '중단하기'}
+            </Button>
+          </div>
+        </div>
+      )}
+
+      <div className="mt-6 grid gap-6 lg:grid-cols-12">
+        {/* 질문 영역: 화면에서 가장 먼저, 가장 크게 읽히도록 왼쪽(좁은 화면에서는 맨 위)에 둡니다 */}
+        <section aria-label="질문" className={cn(cardClass, 'flex flex-col p-5 sm:p-7 lg:col-span-7')}>
+          {run.phase === 'gate' ? (
+            <>
+              <p className={textStyles.eyebrow}>{run.index > 0 ? `${run.index + 1}번째 질문부터 이어서 진행해요` : '면접 준비'}</p>
+              <h1 className={cn(textStyles.question, 'mt-2')}>준비되면 시작해 주세요</h1>
+              <p className={cn(textStyles.body, 'mt-3 text-muted-foreground')}>
+                질문이 나오고, 다 읽은 뒤 3초 카운트다운이 끝나면 녹음이 시작돼요. 답변을 마치면 &quot;답변 완료&quot;를 눌러 주세요.
+              </p>
+              {run.error && (
+                <div className="mt-4">
+                  <Alert>{run.error}</Alert>
+                </div>
+              )}
+              <div className="mt-6">
+                <Button size="lg" onClick={run.begin} disabled={media.status !== 'ready'}>
+                  <Icon name="play_arrow" size={20} />
+                  {run.index > 0 ? '이어서 시작' : '면접 시작'}
+                </Button>
+                {media.status !== 'ready' && <p className={cn(textStyles.caption, 'mt-2')}>카메라와 마이크가 준비되면 시작할 수 있어요.</p>}
+              </div>
+            </>
+          ) : (
+            <>
+              <p className={textStyles.eyebrow}>질문 {run.index + 1}</p>
+              <h1 className={cn(textStyles.question, 'mt-2')} aria-live="polite">
+                {question?.text}
+              </h1>
+              <p role="status" className="mt-5 flex items-center gap-2 text-sm text-muted-foreground">
+                {recording && <span aria-hidden className="size-2 shrink-0 animate-pulse rounded-full bg-destructive" />}
+                <span>
                   {run.phase === 'speaking' && (speechOn && koreanVoice.voice && !run.speechFailed ? '질문을 읽어 드리고 있어요...' : '질문을 확인해 주세요...')}
                   {run.phase === 'thinking' && (
                     <>
@@ -399,58 +404,80 @@ function RunScreen({ interview, prefs }: { interview: InterviewDetail; prefs: Pr
                   )}
                   {run.phase === 'countdown' && '곧 녹음이 시작돼요. 준비해 주세요.'}
                   {recording && '답변하고 있어요. 다 말씀하셨다면 "답변 완료"를 눌러 주세요.'}
-                </p>
-                {run.speechFailed && <p className="mt-1 text-xs text-muted-foreground">소리를 재생하지 못해 텍스트로 진행하고 있어요.</p>}
-                {run.error && (
-                  <div className="mt-3">
-                    <Alert>{run.error}</Alert>
-                  </div>
-                )}
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {recording ? (
-                    <Button size="lg" onClick={run.finishAnswer}>
-                      <Icon name="check_circle" />
-                      {run.isLast ? '답변 완료 (마지막 질문)' : '답변 완료'}
-                    </Button>
-                  ) : (
-                    <>
-                      {run.phase === 'thinking' && (
-                        <Button variant="secondary" onClick={run.skipThinking}>
-                          바로 시작하기
-                        </Button>
-                      )}
-                      {run.canReplay && (
-                        <Button variant="outline" onClick={run.replay}>
-                          <Icon name="replay" />
-                          질문 다시 듣기
-                        </Button>
-                      )}
-                    </>
-                  )}
+                </span>
+              </p>
+              {run.speechFailed && <p className={cn(textStyles.caption, 'mt-1')}>소리를 재생하지 못해 텍스트로 진행하고 있어요.</p>}
+              {run.error && (
+                <div className="mt-4">
+                  <Alert>{run.error}</Alert>
                 </div>
-              </>
+              )}
+              <div className="mt-6 flex flex-wrap gap-2 lg:mt-auto lg:pt-6">
+                {recording ? (
+                  <Button size="lg" onClick={run.finishAnswer}>
+                    <Icon name="check" size={20} />
+                    {run.isLast ? '답변 완료 (마지막 질문)' : '답변 완료'}
+                  </Button>
+                ) : (
+                  <>
+                    {run.phase === 'thinking' && (
+                      <Button size="lg" variant="secondary" onClick={run.skipThinking}>
+                        바로 시작하기
+                      </Button>
+                    )}
+                    {run.canReplay && (
+                      <Button size="lg" variant="outline" onClick={run.replay}>
+                        <Icon name="replay" size={18} />
+                        질문 다시 듣기
+                      </Button>
+                    )}
+                  </>
+                )}
+              </div>
+            </>
+          )}
+        </section>
+
+        {/* 카메라: 내 모습을 확인하는 보조 화면 */}
+        <div className="space-y-3 lg:col-span-5">
+          <CameraPreview stream={media.stream} loading={media.status !== 'ready'} videoRef={videoRef} settings={media.videoSettings}>
+            {hintsOn && hint && (
+              <div
+                role="status"
+                className="absolute inset-x-3 bottom-3 flex items-center gap-1.5 rounded-control bg-inverse/80 px-3 py-2 text-sm text-inverse-foreground"
+              >
+                <Icon name="lightbulb" size={18} />
+                {hint.message}
+              </div>
             )}
-          </Card>
+            {run.phase === 'countdown' && (
+              <div className="absolute inset-0 flex items-center justify-center bg-inverse/40" aria-live="assertive">
+                <span className="font-mono text-7xl font-semibold text-inverse-foreground">{run.countdown}</span>
+              </div>
+            )}
+          </CameraPreview>
 
           {baseline && (
-            <label className="flex cursor-pointer items-start gap-2 rounded-card bg-card p-4 text-sm shadow-card">
+            <label className={cn(cardClass, 'flex cursor-pointer items-start gap-3 p-4 text-sm')}>
               <input
                 type="checkbox"
                 name="liveHints"
                 checked={hintsOn}
                 onChange={(e) => setHintsOn(e.target.checked)}
-                className="mt-0.5 size-4 accent-primary"
+                className="mt-0.5 size-4 shrink-0 accent-primary"
               />
               <span>
                 <span className="font-medium">시선·자세 알림</span>
-                <span className="block text-xs text-muted-foreground">
-                  답변 중에 시선이 벗어나거나 자세가 흐트러지면 화면 모서리에 짧게 알려 줘요. 기본은 꺼져 있어요(긴장 방지).
+                <span className="mt-0.5 block text-xs text-muted-foreground">
+                  답변 중에 시선이 벗어나거나 자세가 흐트러지면 화면 아래에 짧게 알려 줘요. 기본은 꺼져 있어요(긴장 방지).
                 </span>
               </span>
             </label>
           )}
           {baseline && analysis.status === 'unavailable' && (
-            <Alert>표정·자세 분석을 쓸 수 없어 분석 없이 진행해요. 답변과 말하기 분석은 그대로 받을 수 있어요.</Alert>
+            <p role="status" className={cn(cardClass, 'p-4 text-sm text-muted-foreground')}>
+              표정·자세 분석을 쓸 수 없어 분석 없이 진행해요. 답변과 말하기 분석은 그대로 받을 수 있어요.
+            </p>
           )}
         </div>
       </div>
