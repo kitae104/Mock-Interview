@@ -30,9 +30,12 @@
 Windows 에서는 PowerShell 스크립트 하나로 DB·백엔드·프론트엔드를 한 번에 실행하고 멈출 수 있습니다 (Docker Desktop 이 꺼져 있으면 시작을 시도하고, 백엔드가 준비될 때까지 기다린 뒤 주소를 알려 줍니다).
 
 ```powershell
-.un.ps1            # 빌드하고 실행
-.un.ps1 --stop     # 중지 (컨테이너만 내리고 DB 데이터는 유지)
-# 실행 정책 오류가 나면: powershell -NoProfile -ExecutionPolicy Bypass -File .un.ps1
+.
+un.ps1            # 빌드하고 실행
+.
+un.ps1 --stop     # 중지 (컨테이너만 내리고 DB 데이터는 유지)
+# 실행 정책 오류가 나면: powershell -NoProfile -ExecutionPolicy Bypass -File .
+un.ps1
 ```
 
 아래는 같은 일을 하는 `make` 명령입니다.
@@ -181,6 +184,16 @@ FastAPI 백엔드에서 LLM 을 부르는 채팅 API 와 화면(`/chat`, 메뉴 
 | POST | `/api/interviews/{id}/start` | 안내 동의(`consent`, `consentVersion`)와 기준 자세를 기록하고 시작(IN_PROGRESS). 동의 없음·문구 버전 불일치 400, 끝난 면접 409, 진행 중 재호출은 기준 자세만 갱신 |
 | POST | `/api/interviews/{id}/finish` | 모든 질문에 답변이 있으면 종료(COMPLETED)하고 종합 리포트(`report`, `overallScore`)를 만듭니다(수십 초). 피드백이 없거나 실패한 답변은 다시 만들고, 이미 리포트가 있으면 AI 를 부르지 않고 그대로 반환. 답변 누락·시작 전 409, AI 실패 502(같은 요청을 다시 보내면 이어서 만듦) |
 | POST | `/api/interviews/{id}/questions/{questionId}/answer` | multipart: `audio`(webm·ogg·mp4·m4a·wav, 25MB 이하), `durationMs`, `nonverbal`(JSON 문자열, 선택) → 음성 인식 + 말하기 지표(`speech.metrics`, `speech.verdicts`) 저장. 같은 질문에 다시 보내면 덮어씀(첫 저장 201, 덮어쓰기 200). 오디오는 저장하지 않음. 저장 뒤 답변별 AI 피드백(`feedback`, `score`, `feedbackStatus`)을 만들고 실패해도 답변은 유지. 시작 전·종료 후 409. 형식 오류 400, 크기 413, 음성 인식 실패 502 |
+| GET·POST | `/api/resumes` | 내 이력서 목록(최근 수정 순, `reviewScore` 포함) / 만들기 `{ title, targetRole, content }` → 201 |
+| GET·PUT·DELETE | `/api/resumes/{id}` | 이력서 조회·수정·삭제(204). 남의 이력서는 404 |
+| POST | `/api/resumes/{id}/review` | 저장된 내용 기준 AI 첨삭(점수, 강점, 고칠 점, 다듬은 요약, 빠진 키워드). 결과 저장. 실패 502 |
+| GET·POST | `/api/cover-letters` | 내 자기소개서 목록 / 만들기 `{ title, company, targetRole, jobPosting?, items[{question, answer, charLimit?}] }` |
+| GET·PUT·DELETE | `/api/cover-letters/{id}` | 자기소개서 조회·수정·삭제 |
+| POST | `/api/cover-letters/{id}/draft` | `{ itemIndex, notes }` → `{ draft }` 문항 하나의 AI 초안(저장하지 않음) |
+| POST | `/api/cover-letters/{id}/review` | 답변이 있는 문항별 AI 첨삭. 결과 저장 |
+| GET·POST | `/api/portfolios` | 내 프로젝트 목록(대표 먼저) / 등록 |
+| GET·PUT·DELETE | `/api/portfolios/{id}` | 프로젝트 조회·수정·삭제 |
+| POST | `/api/portfolios/{id}/assist` | AI 다듬기(설명, 이력서용 한 줄 성과, 예상 면접 질문, 보완점). 결과 저장 |
 
 - 설정: `INTERVIEW_*` 환경 변수(하루 생성 한도, 분당 AI 호출 한도 등)와 음성 인식 모델 `OPENAI_STT_MODEL`(기본 `whisper-1`, 같은 `OPENAI_API_KEY` 사용)은 `.env.example` 에 있습니다. 질문 생성 응답이 잘리지 않도록 `AI_MAX_TOKENS` 를 4096 으로 둡니다.
 - 질문 구성표와 앞으로 추가될 판정 기준은 `app/interviews/thresholds.py` 에 모읍니다.

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" font-family="Pretendard, 'Noto Sans KR', sans-serif">
+<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#eff4ff"/><stop offset="1" stop-color="#dbe1ff"/></linearGradient></defs>
+<rect width="1280" height="720" fill="url(#bg)"/>
+<rect x="40" y="40" width="1200" height="640" rx="28" fill="#ffffff" stroke="#c7d2fe" stroke-width="2"/>
+<rect x="40" y="40" width="1200" height="64" rx="28" fill="#f8f9ff"/>
+<circle cx="84" cy="72" r="9" fill="#ba1a1a"/><circle cx="112" cy="72" r="9" fill="#cbd5e1"/><circle cx="140" cy="72" r="9" fill="#dbe1ff"/>
+<text x="170" y="80" font-size="22" fill="#475569">질문 듣기</text>
+<rect x="1056" y="56" width="160" height="34" rx="17" fill="#0051d5"/><text x="1136" y="80" font-size="18" fill="#ffffff" text-anchor="middle">예시 이미지</text>
+
+<text x="640" y="200" font-size="26" fill="#0051d5" text-anchor="middle">질문 2 / 5 · 기술 기초</text>
+<text x="640" y="300" font-size="44" font-weight="700" fill="#0b1c30" text-anchor="middle">REST API 를 설계할 때</text>
+<text x="640" y="364" font-size="44" font-weight="700" fill="#0b1c30" text-anchor="middle">가장 중요하게 보는 기준은 무엇인가요?</text>
+<g fill="#0051d5"><rect x="500" y="460.0" width="12" height="20" rx="6"/><rect x="522" y="450.0" width="12" height="40" rx="6"/><rect x="544" y="440.0" width="12" height="60" rx="6"/><rect x="566" y="455.0" width="12" height="30" rx="6"/><rect x="588" y="435.0" width="12" height="70" rx="6"/><rect x="610" y="425.0" width="12" height="90" rx="6"/><rect x="632" y="445.0" width="12" height="50" rx="6"/><rect x="654" y="430.0" width="12" height="80" rx="6"/><rect x="676" y="450.0" width="12" height="40" rx="6"/><rect x="698" y="440.0" width="12" height="60" rx="6"/><rect x="720" y="458.0" width="12" height="24" rx="6"/><rect x="742" y="445.0" width="12" height="50" rx="6"/><rect x="764" y="455.0" width="12" height="30" rx="6"/></g>
+<text x="640" y="580" font-size="24" fill="#475569" text-anchor="middle">🔊 질문을 읽고 있어요 · [읽기 건너뛰기]</text>
+</svg>

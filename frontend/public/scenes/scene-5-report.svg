@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" font-family="Pretendard, 'Noto Sans KR', sans-serif">
+<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#eff4ff"/><stop offset="1" stop-color="#dbe1ff"/></linearGradient></defs>
+<rect width="1280" height="720" fill="url(#bg)"/>
+<rect x="40" y="40" width="1200" height="640" rx="28" fill="#ffffff" stroke="#c7d2fe" stroke-width="2"/>
+<rect x="40" y="40" width="1200" height="64" rx="28" fill="#f8f9ff"/>
+<circle cx="84" cy="72" r="9" fill="#ba1a1a"/><circle cx="112" cy="72" r="9" fill="#cbd5e1"/><circle cx="140" cy="72" r="9" fill="#dbe1ff"/>
+<text x="170" y="80" font-size="22" fill="#475569">피드백 리포트</text>
+<rect x="1056" y="56" width="160" height="34" rx="17" fill="#047857"/><text x="1136" y="80" font-size="18" fill="#ffffff" text-anchor="middle">예시 이미지</text>
+
+<circle cx="260" cy="330" r="120" fill="none" stroke="#dbe1ff" stroke-width="24"/>
+<circle cx="260" cy="330" r="120" fill="none" stroke="#047857" stroke-width="24" stroke-dasharray="590 754" transform="rotate(-90 260 330)" stroke-linecap="round"/>
+<text x="260" y="350" font-size="64" font-weight="700" fill="#0b1c30" text-anchor="middle">78</text><text x="260" y="520" font-size="24" fill="#475569" text-anchor="middle">총점 · 답변 5/5</text>
+<g font-size="24" fill="#0b1c30">
+<text x="470" y="170" font-weight="700">강점</text><rect x="470" y="186" width="700" height="18" rx="9" fill="#dbe1ff"/><rect x="470" y="186" width="560" height="18" rx="9" fill="#047857"/>
+<text x="470" y="260" font-weight="700">개선점</text><rect x="470" y="276" width="700" height="18" rx="9" fill="#dbe1ff"/><rect x="470" y="276" width="320" height="18" rx="9" fill="#b45309"/>
+<rect x="470" y="340" width="220" height="130" rx="18" fill="#eff4ff"/><text x="490" y="384" font-size="20" fill="#475569">분당 음절</text><text x="490" y="440" font-size="40" font-weight="700">312</text>
+<rect x="710" y="340" width="220" height="130" rx="18" fill="#eff4ff"/><text x="730" y="384" font-size="20" fill="#475569">분당 군말</text><text x="730" y="440" font-size="40" font-weight="700">2.1</text>
+<rect x="950" y="340" width="220" height="130" rx="18" fill="#eff4ff"/><text x="970" y="384" font-size="20" fill="#475569">카메라 응시</text><text x="970" y="440" font-size="40" font-weight="700">84%</text>
+<rect x="470" y="500" width="700" height="130" rx="18" fill="#f8f9ff" stroke="#dbe1ff" stroke-width="2"/><text x="494" y="548" font-size="22" font-weight="700" fill="#0051d5">다음 연습 과제</text><text x="494" y="596" font-size="22" fill="#475569">결론을 먼저 말하고 프로젝트 성과를 숫자로 설명해 보세요.</text></g>
+</svg>

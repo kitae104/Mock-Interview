@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" font-family="Pretendard, 'Noto Sans KR', sans-serif">
+<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#eff4ff"/><stop offset="1" stop-color="#dbe1ff"/></linearGradient></defs>
+<rect width="1280" height="720" fill="url(#bg)"/>
+<rect x="40" y="40" width="1200" height="640" rx="28" fill="#ffffff" stroke="#c7d2fe" stroke-width="2"/>
+<rect x="40" y="40" width="1200" height="64" rx="28" fill="#f8f9ff"/>
+<circle cx="84" cy="72" r="9" fill="#ba1a1a"/><circle cx="112" cy="72" r="9" fill="#cbd5e1"/><circle cx="140" cy="72" r="9" fill="#dbe1ff"/>
+<text x="170" y="80" font-size="22" fill="#475569">생각할 시간</text>
+<rect x="1056" y="56" width="160" height="34" rx="17" fill="#0051d5"/><text x="1136" y="80" font-size="18" fill="#ffffff" text-anchor="middle">예시 이미지</text>
+
+<circle cx="640" cy="360" r="170" fill="none" stroke="#dbe1ff" stroke-width="26"/>
+<circle cx="640" cy="360" r="170" fill="none" stroke="#0051d5" stroke-width="26" stroke-dasharray="640 1068" transform="rotate(-90 640 360)" stroke-linecap="round"/>
+<text x="640" y="380" font-size="96" font-weight="700" fill="#0b1c30" text-anchor="middle">07</text>
+<text x="640" y="430" font-size="24" fill="#475569" text-anchor="middle">초 남음</text>
+<text x="640" y="610" font-size="26" fill="#475569" text-anchor="middle">답변을 정리해 보세요 · [바로 답변 시작]</text>
+</svg>

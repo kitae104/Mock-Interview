@@ -12,7 +12,10 @@ from app.users import router as users
 # 확장 모듈 라우터 import. 위 블록과 따로 정렬되도록 isort: split 으로 나눕니다.
 # isort: split
 from app.ai import router as ai
+from app.cover_letters import router as cover_letters
 from app.interviews import router as interviews
+from app.portfolios import router as portfolios
+from app.resumes import router as resumes
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s - %(message)s")
 
@@ -38,3 +41,6 @@ app.include_router(auth.router)
 app.include_router(users.router)
 app.include_router(ai.router)
 app.include_router(interviews.router)
+app.include_router(resumes.router)
+app.include_router(cover_letters.router)
+app.include_router(portfolios.router)
