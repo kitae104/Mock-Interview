@@ -26,7 +26,17 @@ const FALLBACK_CONFIG: InterviewConfig = {
   consentVersion: '',
 }
 
-const FIELD_PRESETS = ['프론트엔드 개발자', '백엔드 개발자', '데이터 분석가', '마케팅', '간호사', '공기업 행정']
+// 이 서비스는 컴퓨터·IT·소프트웨어 직무를 중심으로 합니다 (docs/PLAN.md 0장).
+const FIELD_PRESETS = [
+  '프론트엔드 개발자',
+  '백엔드 개발자',
+  '모바일 앱 개발자',
+  '데이터 엔지니어',
+  'AI/ML 엔지니어',
+  'DevOps 엔지니어',
+  'QA 엔지니어',
+  '보안 엔지니어',
+]
 
 // 질문 하나를 읽어 주는 데 걸리는 시간(초)과 평균 답변 시간(초). 예상 소요 시간 계산용.
 const READ_SECONDS = 15

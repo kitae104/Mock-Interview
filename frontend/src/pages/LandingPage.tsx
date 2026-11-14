@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext.tsx'
+import InterviewSceneShowcase from '../components/InterviewSceneShowcase.tsx'
 import Badge from '../components/ui/Badge.tsx'
 import Card from '../components/ui/Card.tsx'
 import Icon from '../components/ui/Icon.tsx'
-import { buttonClass, cardClass } from '../components/ui/styles.ts'
+import { buttonClass, cardClass, linkClass } from '../components/ui/styles.ts'
 import { site } from '../config/site.ts'
 import { cn } from '../lib/cn.ts'
 
@@ -111,9 +112,6 @@ const dataNotices = [
   },
 ]
 
-// 미리보기 음성 막대 높이 (장식용)
-const waveBars = ['h-3', 'h-5', 'h-4', 'h-7', 'h-8', 'h-5', 'h-6', 'h-3', 'h-6', 'h-4', 'h-7', 'h-3', 'h-5', 'h-2']
-
 function SectionTitle({ eyebrow, title, description }: { eyebrow: string; title: React.ReactNode; description?: string }) {
   return (
     <div className="mx-auto mb-12 max-w-3xl text-center">
@@ -166,6 +164,15 @@ export default function LandingPage() {
               <Icon name="check_circle" size={18} className="text-success" />
               별도 프로그램 설치 없이 웹 브라우저에서 진행합니다
             </p>
+            <p className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
+              <span className="text-muted-foreground">처음이신가요?</span>
+              <Link to="/guide" className={linkClass}>
+                IT 면접 준비 가이드
+              </Link>
+              <Link to="/how-to" className={linkClass}>
+                사이트 이용 가이드
+              </Link>
+            </p>
             <div className="grid max-w-lg gap-3 pt-4 sm:grid-cols-3">
               {principles.map((p) => (
                 <div key={p.title} className={cn(cardClass, 'p-3')}>
@@ -177,52 +184,10 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* 면접 화면 미리보기 자리표시. 실제 화면 캡처가 생기면 이 카드 안을 이미지로 바꾸세요. */}
+          {/* 면접 화면 예시: 장면별 슬라이드 (지금은 자리표시 이미지) */}
           <div className="relative lg:col-span-6">
             <div className="pointer-events-none absolute -right-12 -top-12 -z-10 size-80 rounded-full bg-primary/10 blur-3xl" />
-            <div className={cn(cardClass, 'flex flex-col gap-4 p-4 shadow-xl')}>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5">
-                  <span className="size-3 rounded-full bg-destructive" />
-                  <span className="size-3 rounded-full bg-muted" />
-                  <span className="size-3 rounded-full bg-accent" />
-                  <span className="ml-2 font-mono text-xs text-muted-foreground">면접 화면 예시</span>
-                </div>
-                <Badge variant="muted" className="gap-1.5">
-                  <span className="size-2 animate-pulse rounded-full bg-destructive" />
-                  녹음 중
-                </Badge>
-              </div>
-              <div className="relative flex aspect-video items-center justify-center overflow-hidden rounded-control bg-muted">
-                <div className="pointer-events-none absolute inset-x-[28%] bottom-0 top-[16%] rounded-card border-2 border-dashed border-primary/60" />
-                <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                  <Icon name="videocam" size={40} />
-                  <span className="text-sm">내 카메라 화면이 여기에 표시됩니다</span>
-                </div>
-              </div>
-              <div className="grid gap-3 md:grid-cols-12">
-                <div className="flex flex-col justify-between gap-2 rounded-control bg-muted p-3 md:col-span-5">
-                  <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground">
-                    <Icon name="mic" size={16} className="text-primary" />
-                    음성 레벨
-                  </span>
-                  <div className="flex h-8 items-end gap-1" aria-hidden="true">
-                    {waveBars.map((h, i) => (
-                      <span key={i} className={cn('w-1.5 rounded-full bg-primary', h, i % 2 === 0 && 'bg-primary/50')} />
-                    ))}
-                  </div>
-                </div>
-                <div className="flex flex-col justify-center rounded-control bg-accent p-3 md:col-span-7">
-                  <span className="mb-1 flex items-center gap-1.5 text-xs font-bold text-accent-foreground">
-                    <Icon name="psychology" size={18} />
-                    AI 피드백
-                  </span>
-                  <p className="text-sm leading-snug text-card-foreground">
-                    답변이 끝나면 내용, 말하기, 자세에 대한 피드백이 이곳에 표시됩니다.
-                  </p>
-                </div>
-              </div>
-            </div>
+            <InterviewSceneShowcase />
           </div>
         </div>
       </section>

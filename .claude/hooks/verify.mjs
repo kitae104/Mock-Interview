@@ -5,6 +5,8 @@
 // 실패하면 exit 2 로 끝내기를 막고 실패 내용을 Claude 에게 돌려줍니다.
 // 같은 변경으로 이미 통과했다면 다시 돌리지 않습니다 (.claude/.verify-cache).
 // 끄기: HARNESS_VERIFY=off 환경 변수.
+// Windows 애플리케이션 제어 정책이 로컬 pytest(또는 파이썬 확장 DLL)를 막으면, 같은 테스트를
+// 이 프로젝트의 backend 이미지로 띄운 Docker 컨테이너에서 대신 돌립니다 (dockerPytest).
 import { createHash } from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
@@ -42,6 +44,42 @@ const pythonArea = (dir) => ({
   available: () => exists(dir, 'pyproject.toml') && has('uv'),
   checks: pythonChecks(dir),
 })
+// 실행 자체가 정책으로 막힌 경우만 대체합니다. 테스트 실패는 그대로 실패입니다.
+const POLICY_BLOCKED = /os error 4551|애플리케이션 제어 정책|DLL load failed/
+
+// docker-compose.yml 의 backend 이미지(`${COMPOSE_PROJECT_NAME}-backend`)를 찾습니다. 없으면 null.
+function backendImage() {
+  if (!has('docker')) return null
+  const res = run('docker', ['compose', 'config', '--images'], ROOT)
+  if (!res.ok) return null
+  const image = res.output
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    .find((l) => /-backend(:|$)/.test(l))
+  if (!image || !run('docker', ['image', 'inspect', image], ROOT).ok) return null
+  return image
+}
+
+// 소스는 읽기 전용으로 붙이고, 개발 의존성을 포함한 가상환경은 컨테이너 안(/tmp/venv)에 만들어 볼륨에 재사용합니다.
+// 로컬 backend/.venv 는 건드리지 않습니다.
+function dockerPytest(cwd) {
+  const image = backendImage()
+  if (!image) return null
+  const project = image.replace(/:.*$/, '').replace(/-backend$/, '')
+  const src = path.join(ROOT, cwd)
+  const mount = `${src.includes(' ') ? `"${src}"` : src}:/src:ro`
+  return run(
+    'docker',
+    [
+      'run', '--rm', '-u', 'root', '-v', mount, '-v', `${project}-verify-venv:/tmp/venv`, '-w', '/src',
+      '-e', 'UV_PROJECT_ENVIRONMENT=/tmp/venv', '-e', 'UV_LINK_MODE=copy', '-e', 'UV_COMPILE_BYTECODE=0',
+      '-e', 'PYTHONDONTWRITEBYTECODE=1', image,
+      'uv', 'run', '--locked', 'python', '-m', 'pytest', '-q', '-p', 'no:cacheprovider',
+    ],
+    ROOT,
+  )
+}
+
 const isSpring = exists('backend', 'gradlew')
 // Next.js 는 next build 가 타입 검사를 하지만 오래 걸리므로 tsc 만 돌립니다.
 const typecheck = exists('frontend', 'next.config.ts')
@@ -108,7 +146,11 @@ for (const [area, spec] of Object.entries(AREAS)) {
   }
   let ok = true
   for (const check of spec.checks) {
-    const res = run(check.cmd, check.args, path.join(ROOT, check.cwd))
+    let res = run(check.cmd, check.args, path.join(ROOT, check.cwd))
+    if (!res.ok && check.name === 'pytest' && POLICY_BLOCKED.test(res.output)) {
+      const docker = dockerPytest(check.cwd)
+      if (docker) res = { ...docker, output: `[로컬 실행이 정책으로 막혀 Docker 에서 실행]\n${docker.output}` }
+    }
     if (!res.ok) {
       failures.push(`## ${area}: ${check.name} 실패\n${tail(res.output)}`)
       ok = false

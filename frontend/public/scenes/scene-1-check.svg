@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" font-family="Pretendard, 'Noto Sans KR', sans-serif">
+<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#eff4ff"/><stop offset="1" stop-color="#dbe1ff"/></linearGradient></defs>
+<rect width="1280" height="720" fill="url(#bg)"/>
+<rect x="40" y="40" width="1200" height="640" rx="28" fill="#ffffff" stroke="#c7d2fe" stroke-width="2"/>
+<rect x="40" y="40" width="1200" height="64" rx="28" fill="#f8f9ff"/>
+<circle cx="84" cy="72" r="9" fill="#ba1a1a"/><circle cx="112" cy="72" r="9" fill="#cbd5e1"/><circle cx="140" cy="72" r="9" fill="#dbe1ff"/>
+<text x="170" y="80" font-size="22" fill="#475569">카메라·마이크 점검</text>
+<rect x="1056" y="56" width="160" height="34" rx="17" fill="#0051d5"/><text x="1136" y="80" font-size="18" fill="#ffffff" text-anchor="middle">예시 이미지</text>
+<rect x="80" y="130" width="640" height="500" rx="20" fill="#334155"/><clipPath id="c80"><rect x="80" y="130" width="640" height="500" rx="20"/></clipPath><g clip-path="url(#c80)"><circle cx="400.0" cy="340.0" r="80.0" fill="#94a3b8"/><path d="M208.0 628.0 Q400.0 388.0 592.0 628.0 Z" fill="#94a3b8"/></g>
+<rect x="300" y="190" width="200" height="250" rx="100" fill="none" stroke="#34d399" stroke-width="5" stroke-dasharray="14 10"/>
+<g font-size="26" fill="#0b1c30">
+<rect x="760" y="140" width="440" height="80" rx="16" fill="#ecfdf5"/><text x="790" y="190">✓ 안내 확인·동의</text>
+<rect x="760" y="236" width="440" height="80" rx="16" fill="#ecfdf5"/><text x="790" y="286">✓ 마이크 입력</text>
+<rect x="760" y="332" width="440" height="80" rx="16" fill="#ecfdf5"/><text x="790" y="382">✓ 질문 읽기 소리</text>
+<rect x="760" y="428" width="440" height="80" rx="16" fill="#eff4ff"/><text x="790" y="478">◎ 얼굴 인식 중…</text>
+<rect x="760" y="524" width="440" height="80" rx="16" fill="#f1f5f9"/><text x="790" y="574" fill="#94a3b8">기준 자세 측정</text></g>
+</svg>

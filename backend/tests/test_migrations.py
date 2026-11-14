@@ -57,3 +57,29 @@ def test_alembic_upgrade_creates_interview_tables(tmp_path):
         assert "ix_interviews_user_id_created_at" in index_names
     finally:
         engine.dispose()
+
+
+def test_alembic_upgrade_creates_career_document_tables(tmp_path):
+    engine, inspector = upgraded_inspector(tmp_path)
+    try:
+        tables = set(inspector.get_table_names())
+        assert {"resumes", "cover_letters", "portfolio_projects"} <= tables
+
+        def columns(table: str) -> set[str]:
+            return {c["name"] for c in inspector.get_columns(table)}
+
+        assert columns("resumes") == {
+            "id", "user_id", "title", "target_role", "content", "review", "reviewed_at", "created_at", "updated_at",
+        }  # fmt: skip
+        assert columns("cover_letters") == {
+            "id", "user_id", "title", "company", "target_role", "job_posting", "items", "review", "reviewed_at",
+            "created_at", "updated_at",
+        }  # fmt: skip
+        assert columns("portfolio_projects") == {
+            "id", "user_id", "title", "summary", "role", "period", "team_size", "tech_stack", "description",
+            "achievements", "github_url", "demo_url", "featured", "assist", "assisted_at", "created_at", "updated_at",
+        }  # fmt: skip
+        for table in ("resumes", "cover_letters", "portfolio_projects"):
+            assert f"ix_{table}_user_id_updated_at" in {i["name"] for i in inspector.get_indexes(table)}
+    finally:
+        engine.dispose()

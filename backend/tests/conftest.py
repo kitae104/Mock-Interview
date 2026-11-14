@@ -7,7 +7,10 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
+import app.cover_letters.models  # noqa: F401  (테이블 등록)
 import app.interviews.models  # noqa: F401  (테이블 등록)
+import app.portfolios.models  # noqa: F401  (테이블 등록)
+import app.resumes.models  # noqa: F401  (테이블 등록)
 import app.users.models  # noqa: F401  (테이블 등록)
 from app.ai.providers import Message, ModelError, get_chat_model
 from app.core.config import Settings, get_settings
